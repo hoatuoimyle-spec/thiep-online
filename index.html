@@ -29,7 +29,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const customerId = urlParams.get('id');
 
-        // Link Google Web App của bạn (sẽ lấy ở Bước 3)
+        // Link Google Web App của bạn
         const API_URL = "https://script.google.com/macros/s/AKfycbxkIv3VPOhbbfNDY4odmXZK8CvHeqh5_EnTZY-3Q5JK5Em9XVBmFasUTE6UBT9y7qoa/exec";
 
         if (customerId) {
@@ -39,7 +39,22 @@
                     if (data.status === "success") {
                         document.getElementById('title').innerText = data.title;
                         document.getElementById('content').innerText = data.content;
-                        document.getElementById('date').innerText = "📅 " + data.date;
+                        
+                        // Xử lý định dạng ngày tháng thành dd/mm/yyyy
+                        if (data.date) {
+                            let formattedDate = data.date;
+                            if (data.date.includes('T') || !isNaN(Date.parse(data.date))) {
+                                let dateObj = new Date(data.date);
+                                if (!isNaN(dateObj.getTime())) {
+                                    let day = String(dateObj.getDate()).padStart(2, '0');
+                                    let month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                                    let year = dateObj.getFullYear();
+                                    formattedDate = `${day}/${month}/${year}`;
+                                }
+                            }
+                            document.getElementById('date').innerText = "📅 " + formattedDate;
+                        }
+
                         if (data.image) {
                             const imgEl = document.getElementById('image');
                             imgEl.src = data.image;
