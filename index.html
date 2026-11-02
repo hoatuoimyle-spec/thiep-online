@@ -257,20 +257,22 @@
     }
 
     function fillCard(d) {
-        $('title').textContent = d.title || '';
-        $('content').dataset.full = d.content || '';
-        if (d.to) $('to').textContent = `Gửi ${d.to} 💖`;
-        if (d.from) $('from').textContent = `— ${d.from}`;
-        if (d.date) $('date').textContent = '📅 ' + formatDate(d.date);
+    $('title').textContent = d.title || '';
+    $('content').dataset.full = d.content || '';
+    if (d.to) $('to').textContent = `Gửi ${d.to} 💖`;
+    if (d.from) $('from').textContent = `— ${d.from}`;
+    
+    // Cập nhật lại dòng này để gọi hàm formatDate
+    if (d.date) $('date').textContent = '📅 ' + formatDate(d.date);
 
-        if (d.image) {
-            const img = $('image');
-            img.onerror = () => { $('photo').style.display = 'none'; };
-            img.src = mediaUrl(d.image, 'image');
-            $('photo').style.display = 'block';
-        }
-        if (d.voice) $('voiceBox').classList.add('show');
+    if (d.image) {
+        const img = $('image');
+        img.onerror = () => { $('photo').style.display = 'none'; };
+        img.src = mediaUrl(d.image, 'image');
+        $('photo').style.display = 'block';
     }
+    if (d.voice) $('voiceBox').classList.add('show');
+}
 
     // ================== MỞ THIỆP ==================
     function openCard() {
