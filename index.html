@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thiệp Chúc Mừng</title>
+    <style>
+        body { margin: 0; padding: 0; background: #fce4ec; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .envelope { background: #ff80ab; width: 280px; height: 180px; border-radius: 10px; display: flex; justify-content: center; align-items: center; color: white; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .message-box { display: none; background: white; padding: 25px; border-radius: 15px; max-width: 320px; width: 90%; box-shadow: 0 10px 30px rgba(0,0,0,0.15); }
+        .message-box h3 { color: #d81b60; margin-top: 0; text-align: center; }
+        .message-box img { width: 100%; border-radius: 10px; margin-top: 10px; }
+        .date { font-size: 13px; color: #888; margin-top: 15px; display: block; text-align: right; }
+    </style>
+</head>
+<body>
+
+    <div class="envelope" id="envelope" onclick="openCard()">💌 Chạm để mở thư</div>
+
+    <div class="message-box" id="messageBox">
+        <h3 id="title">...</h3>
+        <p id="content">...</p>
+        <img id="image" src="" alt="Hình kỷ niệm" style="display:none;">
+        <span class="date" id="date"></span>
+    </div>
+
+    <script>
+        // Lấy ID từ URL (ví dụ: ?id=KH001)
+        const urlParams = new URLSearchParams(window.location.search);
+        const customerId = urlParams.get('id');
+
+        // Link Google Web App của bạn (sẽ lấy ở Bước 3)
+        const API_URL = "LINK_GOOGLE_EXECUTE_CUA_BAN_O_BUOC_3";
+
+        if (customerId) {
+            fetch(`${API_URL}?id=${customerId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        document.getElementById('title').innerText = data.title;
+                        document.getElementById('content').innerText = data.content;
+                        document.getElementById('date').innerText = "📅 " + data.date;
+                        if (data.image) {
+                            const imgEl = document.getElementById('image');
+                            imgEl.src = data.image;
+                            imgEl.style.display = 'block';
+                        }
+                    } else {
+                        document.getElementById('title').innerText = "Không tìm thấy thiệp!";
+                    }
+                });
+        }
+
+        function openCard() {
+            document.getElementById('envelope').style.display = 'none';
+            document.getElementById('messageBox').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
