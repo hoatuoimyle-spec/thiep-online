@@ -25,15 +25,12 @@
         display: flex; justify-content: center; align-items: center;
         padding: 24px 16px; overflow-x: hidden;
     }
-
-    /* ===== Nền aurora ===== */
     .aurora { position: fixed; inset: 0; z-index: 0; overflow: hidden; }
     .blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: .55; animation: drift 14s ease-in-out infinite alternate; }
     .b1 { width: 340px; height: 340px; background: var(--pink); top: -80px; left: -80px; }
     .b2 { width: 380px; height: 380px; background: var(--purple); bottom: -100px; right: -100px; animation-delay: -5s; }
     .b3 { width: 260px; height: 260px; background: var(--blue); top: 40%; left: 55%; animation-delay: -9s; opacity: .35; }
     @keyframes drift { to { transform: translate(40px, -50px) scale(1.2); } }
-
     #floaters, #confetti { position: fixed; inset: 0; pointer-events: none; }
     #floaters { z-index: 1; overflow: hidden; }
     #confetti { z-index: 50; width: 100%; height: 100%; }
@@ -43,8 +40,6 @@
         10% { opacity: .9; }
         100% { transform: translateY(-110vh) translateX(var(--sway)) scale(1.2); opacity: 0; }
     }
-
-    /* ===== Phong bì ===== */
     .stage { position: relative; z-index: 2; width: 100%; display: flex; justify-content: center; }
     .envelope-wrap { text-align: center; transition: opacity .6s, transform .6s; }
     .envelope-wrap.gone { opacity: 0; transform: scale(.6) translateY(40px); pointer-events: none; position: absolute; }
@@ -76,8 +71,6 @@
     .hint { margin-top: 28px; font-weight: 500; letter-spacing: .3px; opacity: .9; animation: pulse 1.8s ease-in-out infinite; }
     .hint.err { color: #ff8a9b; animation: none; }
     @keyframes pulse { 50% { opacity: .45; } }
-
-    /* ===== Thiệp ===== */
     .card {
         display: none; position: relative; width: 100%; max-width: 380px;
         padding: 28px 24px 22px; border-radius: 28px;
@@ -98,7 +91,6 @@
     .content { white-space: pre-wrap; line-height: 1.7; font-size: 16px; min-height: 40px; word-wrap: break-word; }
     .caret::after { content: '▍'; animation: blink .8s steps(1) infinite; color: var(--pink); }
     @keyframes blink { 50% { opacity: 0; } }
-
     .photo {
         display: none; background: #fff; padding: 8px 8px 28px; border-radius: 6px;
         margin: 20px auto 6px; transform: rotate(-2.5deg); max-width: 85%;
@@ -106,8 +98,6 @@
     }
     .photo:hover { transform: rotate(0) scale(1.03); }
     .photo img { width: 100%; display: block; border-radius: 3px; }
-
-    /* ===== Voice ===== */
     .voice {
         display: none; align-items: center; gap: 12px; margin-top: 18px; padding: 10px 14px;
         border-radius: 999px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.2);
@@ -120,7 +110,6 @@
     .vbar { flex: 1; height: 6px; border-radius: 6px; background: rgba(255,255,255,.2); overflow: hidden; }
     .vbar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--pink), var(--blue)); }
     .vlabel { font-size: 12px; opacity: .8; flex: none; }
-
     .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; font-size: 13px; opacity: .8; gap: 8px; }
     .from { font-family: 'Pacifico', cursive; font-size: 15px; }
     .actions { display: flex; gap: 8px; margin-top: 16px; justify-content: center; }
@@ -130,8 +119,6 @@
     }
     .btn:active { transform: scale(.94); }
     .btn:hover { background: rgba(255,255,255,.2); }
-
-    /* ===== Nút nhạc nền ===== */
     .music {
         display: none; position: fixed; top: max(14px, env(safe-area-inset-top)); right: 14px; z-index: 60;
         align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; cursor: pointer;
@@ -145,22 +132,18 @@
     .music.playing .eq i:nth-child(2) { animation-delay: -.3s; }
     .music.playing .eq i:nth-child(3) { animation-delay: -.6s; }
     @keyframes eq { 50% { height: 14px; } }
-
     @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation: none !important; transition: none !important; }
     }
 </style>
 </head>
 <body>
-
     <div class="aurora"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
     <div id="floaters"></div>
     <canvas id="confetti"></canvas>
-
     <button class="music" id="musicBtn" aria-label="Bật/tắt nhạc">
         <span class="eq"><i></i><i></i><i></i></span><span id="musicTxt">Nhạc</span>
     </button>
-
     <main class="stage">
         <div class="envelope-wrap" id="envelopeWrap">
             <div class="envelope disabled" id="envelope" role="button" tabindex="0" aria-label="Mở thiệp">
@@ -171,50 +154,37 @@
             </div>
             <p class="hint" id="hint">Đang tải thiệp...</p>
         </div>
-
         <section class="card" id="card">
             <div class="to" id="to"></div>
             <h3 id="title"></h3>
             <div class="content" id="content"></div>
-
             <div class="photo" id="photo"><img id="image" alt="Hình kỷ niệm"></div>
-
             <div class="voice" id="voiceBox">
                 <button id="voiceBtn" aria-label="Nghe lời nhắn">▶</button>
                 <div class="vbar"><i id="voiceProg"></i></div>
                 <span class="vlabel">🎙️ Lời nhắn</span>
             </div>
-
             <div class="foot">
                 <span class="from" id="from"></span>
                 <span id="date"></span>
             </div>
-
             <div class="actions">
                 <button class="btn" id="replayBtn">🔁 Xem lại</button>
                 <button class="btn" id="shareBtn">💌 Chia sẻ</button>
             </div>
         </section>
     </main>
-
 <script>
-    // ================== CẤU HÌNH ==================
     const API_URL = "https://script.google.com/macros/s/AKfycbxkIv3VPOhbbfNDY4odmXZK8CvHeqh5_EnTZY-3Q5JK5Em9XVBmFasUTE6UBT9y7qoa/exec";
-    // Cột Google Sheet (tuỳ chọn, thêm thì có thêm tính năng):
-    // id | title | content | date | image | audio (nhạc nền) | voice (lời nhắn) | from (người gửi) | to (người nhận)
-
     const $ = id => document.getElementById(id);
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const customerId = new URLSearchParams(location.search).get('id');
-
     let cardData = null, bgm = null, voice = null, opened = false, typeTimer = null;
 
-    // ================== TIỆN ÍCH ==================
     function driveId(u) {
         const m = u.match(/\/d\/([\w-]+)/) || u.match(/[?&]id=([\w-]+)/);
         return m ? m[1] : null;
     }
-    // Tự đổi link Google Drive sang link trực tiếp; link khác (hoặc đường dẫn trong repo) giữ nguyên
     function mediaUrl(u, kind) {
         if (!u) return '';
         u = String(u).trim();
@@ -232,7 +202,6 @@
         return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
     }
 
-    // ================== TẢI DỮ LIỆU ==================
     async function init() {
         if (!customerId) return fail('Link thiệp chưa có mã (?id=...)');
         try {
@@ -257,31 +226,30 @@
     }
 
     function fillCard(d) {
-    $('title').textContent = d.title || '';
-    $('content').dataset.full = d.content || '';
-    if (d.to) $('to').textContent = `Gửi ${d.to} 💖`;
-    if (d.from) $('from').textContent = `— ${d.from}`;
-    
-    // Cập nhật lại dòng này để gọi hàm formatDate
-    if (d.date) $('date').textContent = '📅 ' + formatDate(d.date);
+        $('title').textContent = d.title || '';
+        $('content').dataset.full = d.content || '';
+        if (d.to) $('to').textContent = `Gửi ${d.to} 💖`;
+        if (d.from) $('from').textContent = `— ${d.from}`;
+        
+        // Đã sửa lại gọi hàm formatDate chuẩn dd/mm/yyyy tại đây:
+        if (d.date) $('date').textContent = '📅 ' + formatDate(d.date);
 
-    if (d.image) {
-        const img = $('image');
-        img.onerror = () => { $('photo').style.display = 'none'; };
-        img.src = mediaUrl(d.image, 'image');
-        $('photo').style.display = 'block';
+        if (d.image) {
+            const img = $('image');
+            img.onerror = () => { $('photo').style.display = 'none'; };
+            img.src = mediaUrl(d.image, 'image');
+            $('photo').style.display = 'block';
+        }
+        if (d.voice) $('voiceBox').classList.add('show');
     }
-    if (d.voice) $('voiceBox').classList.add('show');
-}
 
-    // ================== MỞ THIỆP ==================
     function openCard() {
         if (opened || !cardData) return;
         opened = true;
         $('envelope').classList.add('open');
         $('hint').style.opacity = 0;
         burstConfetti();
-        startMusic();          // phải gọi ngay trong lúc chạm để trình duyệt cho phép phát nhạc
+        startMusic();
         setTimeout(() => {
             $('envelopeWrap').classList.add('gone');
             $('card').classList.add('show');
@@ -291,7 +259,6 @@
     $('envelope').addEventListener('click', openCard);
     $('envelope').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCard(); } });
 
-    // ================== HIỆU ỨNG GÕ CHỮ ==================
     function typewrite(text) {
         clearInterval(typeTimer);
         const el = $('content');
@@ -304,11 +271,9 @@
             el.textContent = chars.slice(0, ++i).join('');
             if (i >= chars.length) { clearInterval(typeTimer); el.classList.remove('caret'); }
         }, 32);
-        // chạm vào nội dung để hiện hết ngay
         el.onclick = () => { clearInterval(typeTimer); el.textContent = text; el.classList.remove('caret'); };
     }
 
-    // ================== NHẠC NỀN + VOICE ==================
     function setMusicUI(playing) {
         $('musicBtn').classList.toggle('playing', playing);
         $('musicTxt').textContent = playing ? 'Đang phát' : 'Bật nhạc';
@@ -338,12 +303,11 @@
             voice.addEventListener('ended', () => { restore(); $('voiceProg').style.width = '0'; });
         }
         if (voice.paused) {
-            if (bgm) bgm.volume = 0.15;   // hạ nhạc nền khi nghe lời nhắn
+            if (bgm) bgm.volume = 0.15;
             voice.play().then(() => { $('voiceBtn').textContent = '⏸'; }).catch(() => {});
         } else voice.pause();
     });
 
-    // ================== PHÁO GIẤY ==================
     function burstConfetti() {
         if (reduceMotion) return;
         const c = $('confetti'), ctx = c.getContext('2d'), dpr = devicePixelRatio || 1;
@@ -375,7 +339,6 @@
         })();
     }
 
-    // ================== TIM / HOA BAY LÊN ==================
     if (!reduceMotion) {
         const icons = ['💖', '✨', '🌸', '🎀', '💫', '🤍'];
         setInterval(() => {
@@ -392,7 +355,6 @@
         }, 900);
     }
 
-    // ================== XEM LẠI + CHIA SẺ ==================
     $('replayBtn').addEventListener('click', () => {
         burstConfetti();
         typewrite($('content').dataset.full);
