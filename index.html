@@ -231,7 +231,7 @@
         if (d.to) $('to').textContent = `Gửi ${d.to} 💖`;
         if (d.from) $('from').textContent = `— ${d.from}`;
         
-        // Đã sửa lại gọi hàm formatDate chuẩn dd/mm/yyyy tại đây:
+        // Đã gọi đúng hàm formatDate để ép sang dd/mm/yyyy
         if (d.date) $('date').textContent = '📅 ' + formatDate(d.date);
 
         if (d.image) {
