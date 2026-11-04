@@ -751,7 +751,7 @@
             const id = driveId(u);
             if (id) return kind === 'image'
                 ? `https://drive.google.com/thumbnail?id=${id}&sz=w1200`
-                : `https://drive.google.com/uc?export=download&id=${id}`;
+                : `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`;
         }
         return u;
     }
