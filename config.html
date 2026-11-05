@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#12061f">
+<!-- PWA: cho phép “Cài đặt ứng dụng” trên điện thoại (Android Chrome / iOS Safari) -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Studio Thiệp">
 <title>Studio Thiệp · Tạo thiệp trong 3 bước</title>
 <!-- Xưởng tạo thiệp — đặt CÙNG THƯ MỤC với index.html.
      Cần Apps Script v4 (Code.gs có doPost). Mật khẩu đặt bằng hàm caiDat(). -->
@@ -158,6 +165,15 @@
     .mpan { position: relative; width: 100%; max-width: 400px; border-radius: 22px; padding: 20px;
         background: #221038; border: 1px solid var(--line); }
     .mpan h3 { margin: 0 0 14px; font-size: 16px; }
+    .lblrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .lblrow label { flex: none; }
+    .lblrow .chip { margin: 16px 0 7px; }
+    .mload { max-height: 46vh; overflow: auto; }
+    .mitem { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1.5px solid var(--line);
+        border-radius: 14px; margin-bottom: 8px; cursor: pointer; font-size: 13.5px; }
+    .mitem input { width: 18px; height: 18px; flex: none; accent-color: #ff6ec7; }
+    .mitem .mp { color: var(--dim); font-size: 11px; margin-left: auto; flex: none; }
+    .mitem.sel { border-color: var(--c1); background: rgba(255,110,199,.12); }
 
     .toast { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(8px);
         z-index: 99; max-width: min(88vw, 420px); padding: 10px 16px; border-radius: 999px;
@@ -238,8 +254,12 @@
             <textarea id="fPhotos" style="min-height:84px" placeholder="https://i.imgur.com/a.jpg&#10;https://i.imgur.com/b.jpg&#10;images/ke-niem.jpg"></textarea>
             <p class="hint">≥2 ảnh sẽ có cầu xoay 3D / sổ lật. Với stories, 4 ảnh đầu được dùng.</p>
 
-            <label>Nhạc nền</label>
-            <input id="fAudio" placeholder="audio/bai-hat.mp3 (nhiều bài cách bằng ; hoặc xuống dòng)" inputmode="url">
+            <div class="lblrow">
+                <label>Nhạc nền</label>
+                <button class="chip" id="btnAssets" type="button">🎵 Chọn từ assets</button>
+            </div>
+            <input id="fAudio" placeholder="assets/bai-hat.mp3 — nhiều bài cách bằng ; hoặc xuống dòng" inputmode="url">
+            <p class="hint">Nút 🎵 đọc danh sách mp3 bạn đã upload vào thư mục assets trên GitHub. Chọn nhiều bài sẽ tự chạy thành playlist.</p>
             <label>Lời nhắn giọng nói (link mp3)</label>
             <input id="fVoice" placeholder="https://…/loi-nhan.mp3" inputmode="url">
 
@@ -302,6 +322,20 @@
                 <button class="btn ghost" id="btnLogout">🚪 Đăng xuất</button>
                 <button class="btn" id="btnSaveSet">Lưu</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Chọn nhạc có sẵn trong thư mục assets trên GitHub -->
+    <div class="modal" id="mMusic">
+        <div class="veil" id="musicVeil"></div>
+        <div class="mpan">
+            <h3>🎵 Nhạc trong thư mục <span style="color:var(--c1)">assets</span></h3>
+            <div class="mload" id="musicBody"><p class="hint" style="text-align:center">Đang tải danh sách…</p></div>
+            <div class="row2">
+                <button class="btn ghost" id="musicClose">Đóng</button>
+                <button class="btn" id="musicApply">Chọn xong</button>
+            </div>
+            <p class="hint">Tích chọn bài — tích nhiều bài sẽ chạy thành playlist theo thứ tự. Muốn thêm nhạc mới: vào repo GitHub → Add file → Upload files → chọn mp3 vào thư mục assets.</p>
         </div>
     </div>
 
@@ -511,16 +545,16 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         btn.disabled = true;
         btn.innerHTML = '<span class="spin"></span> Đang viết…';
         try {
-            const j = await api({ action: 'ai', text: txt, tone: $('aiTone').value, to: val('fTo'), from: val('fFrom') });
+            const j = await api({ action: 'ai', token: token, text: txt, tone: $('aiTone').value, to: val('fTo'), from: val('fFrom') });
             $('fContent').value = j.text;
             updCnt();
             toast('✨ AI đã viết lại rồi nhé!');
         } catch (e) {
-            if (e.code === 'no_key') {
-                $('fContent').value = localRewrite(txt, $('aiTone').value);
-                updCnt();
-                toast('Chưa cài key AI → dùng bộ gợi ý offline (cài GEMINI_KEY để dùng AI thật)');
-            } else toast('AI đang bận: ' + (e.message || e));
+            $('fContent').value = localRewrite(txt, $('aiTone').value);
+            updCnt();
+            if (e.code === 'no_key') toast('Chưa cài GEMINI_KEY → dùng bộ gợi ý offline. Cài key (xem README) để AI thật viết nhé');
+            else if (e.code === 'auth') toast('Phiên hết hạn — đăng nhập lại là dùng tiếp được, lời chúc vẫn giữ nguyên');
+            else toast('AI bận (' + (e.message || 'lỗi mạng') + ') → tạm dùng gợi ý offline, ý chính của bạn vẫn được giữ');
         } finally {
             btn.disabled = false;
             btn.textContent = '✨ AI viết lại';
@@ -687,11 +721,76 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         renderOpts();
     }
 
+    // --- chọn nhạc có sẵn trong thư mục assets (GitHub Pages) ---
+    const AUDIO_EXT = /\.(mp3|m4a|aac|ogg|oga|wav|flac|opus)$/i;
+    function ghRepoInfo() {
+        // site dạng https://ten-tai-khoan.github.io/ten-repo/... → đọc thẳng repo đó
+        const m = location.hostname.match(/^([a-z0-9-]+)\.github\.io$/i);
+        const seg = location.pathname.split('/').filter(Boolean);
+        if (m && seg.length) return { owner: m[1], repo: seg[0] };
+        return null;
+    }
+    let pickedTracks = [];
+    async function openMusicPicker() {
+        pickedTracks = val('fAudio').split(/[;\n|]+/).map(s => s.trim()).filter(Boolean);
+        $('mMusic').classList.add('show');
+        const body = $('musicBody');
+        body.innerHTML = '<p class="hint" style="text-align:center">Đang tải danh sách…</p>';
+        const info = ghRepoInfo();
+        if (!info) {
+            body.innerHTML = '<p class="hint">Tính năng này đọc trực tiếp từ repo GitHub Pages. Site của bạn không chạy trên *.github.io nên không đọc được — bạn dán link/đường dẫn bài hát vào ô “Nhạc nền” là dùng bình thường nhé.</p>';
+            return;
+        }
+        let files = null, dirUsed = '';
+        for (const dir of ['assets', 'audio', 'music']) {
+            try {
+                const r = await fetch('https://api.github.com/repos/' + info.owner + '/' + info.repo + '/contents/' + dir,
+                    { headers: { 'Accept': 'application/vnd.github+json' } });
+                if (r.ok) {
+                    const j = await r.json();
+                    if (Array.isArray(j)) {
+                        const mp = j.filter(f => f.type === 'file' && AUDIO_EXT.test(f.name));
+                        if (mp.length) { files = mp; dirUsed = dir; break; }
+                    }
+                }
+            } catch (e) {}
+        }
+        if (!files) {
+            body.innerHTML = '<p class="hint">Chưa đọc được thư mục nhạc (repo phải để chế độ <b>Public</b> và có thư mục <b>assets</b> chứa mp3). Muốn thêm nhạc: mở repo GitHub → <b>Add file → Upload files</b> → chọn mp3 → Commit. Hoặc dán link vào ô “Nhạc nền”.</p>';
+            return;
+        }
+        const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+        body.innerHTML = files.map(f => {
+            const p = dirUsed + '/' + f.name;
+            const on = pickedTracks.includes(p) || pickedTracks.includes(f.name);
+            return '<label class="mitem' + (on ? ' sel' : '') + '"><input type="checkbox" data-p="' + esc(p) + '"' + (on ? ' checked' : '') + '><span style="word-break:break-word">🎵 ' + esc(f.name) + '</span><span class="mp">' + (f.size / 1048576).toFixed(1) + ' MB</span></label>';
+        }).join('');
+        body.querySelectorAll('input[type=checkbox]').forEach(cb => cb.addEventListener('change', () => {
+            const p = cb.dataset.p;
+            if (cb.checked) { if (!pickedTracks.includes(p)) pickedTracks.push(p); }
+            else pickedTracks = pickedTracks.filter(x => x !== p);
+            cb.closest('.mitem').classList.toggle('sel', cb.checked);
+        }));
+    }
+    function applyPicked() {
+        // giữ lại các link ngoài (https://…) đã dán tay, bỏ những bài trong assets bị bỏ tích
+        const manual = val('fAudio').split(/[;\n|]+/).map(s => s.trim()).filter(Boolean)
+            .filter(s => /^https?:|^data:/.test(s) || (!pickedTracks.includes(s) && !pickedTracks.some(p => p.endsWith('/' + s))));
+        const all = manual.concat(pickedTracks);
+        if (all.length) $('fAudio').value = all.join(';');
+        $('mMusic').classList.remove('show');
+        toast(all.length ? '🎵 Đã chọn ' + pickedTracks.length + ' bài từ assets' + (manual.length ? ' + ' + manual.length + ' link ngoài' : '') : 'Chưa chọn bài nào');
+    }
+
     // ================== SỰ KIỆN ==================
     $('btnLogin').addEventListener('click', doLogin);
     $('fPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
     $('btnBack1').addEventListener('click', () => show('scrTpl'));
     $('btnAI').addEventListener('click', aiRewrite);
+    $('btnAssets').addEventListener('click', openMusicPicker);
+    $('musicVeil').addEventListener('click', () => $('mMusic').classList.remove('show'));
+    $('musicClose').addEventListener('click', () => $('mMusic').classList.remove('show'));
+    $('musicApply').addEventListener('click', applyPicked);
     $('btnPreview').addEventListener('click', async () => {
         try {
             const id = await saveCard(true);
@@ -757,6 +856,11 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     renderOpts();
     if (loggedIn()) enter();
     else show('scrLogin');
+
+    // PWA: đăng ký service worker (chỉ chạy trên https) — cài app, mở nhanh
+    if ('serviceWorker' in navigator && location.protocol === 'https:') {
+        addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    }
 </script>
 </body>
 </html>
