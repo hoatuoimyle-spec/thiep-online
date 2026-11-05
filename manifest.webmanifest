@@ -1,0 +1,17 @@
+{
+    "name": "Studio Thiệp · Tạo thiệp trong 3 bước",
+    "short_name": "Studio Thiệp",
+    "description": "Tạo thiệp chúc mừng gửi người thương trong 3 bước: chọn mẫu, nhập lời chúc, nhận link & QR.",
+    "lang": "vi",
+    "start_url": "./config.html",
+    "scope": "./",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#12061f",
+    "theme_color": "#12061f",
+    "icons": [
+        { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+        { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+        { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    ]
+}
