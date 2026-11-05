@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#12061f">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Thiệp Chúc Mừng</title>
 <!-- OG meta tĩnh: Zalo/FB không chạy JS nên chỉ đọc được các thẻ này.
      Dùng trực tiếp: preview chung chung. Đứng sau Cloudflare Worker: Worker sẽ
@@ -1082,7 +1085,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             ];
         }
         // v3: file nhạc để trong dự án — nếu ghi "bai-hat.mp3" thì tự thử thêm "audio/bai-hat.mp3"
-        if (!u.includes('://') && !u.startsWith('/') && !u.startsWith('data:') && !u.startsWith('audio/'))
+        // (đường dẫn có thư mục như "assets/…" hoặc "music/…" giữ nguyên, không thêm tiền tố)
+        if (!u.includes('://') && !u.startsWith('/') && !u.startsWith('data:') && !u.includes('/'))
             return ['audio/' + u, u];
         return [u];
     }
