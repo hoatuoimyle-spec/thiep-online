@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#12061f">
+<meta name="theme-color" content="#F7F5F0">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Thiệp Chúc Mừng</title>
+<meta name="apple-mobile-web-app-title" content="Thiệp Nhà Lệ">
+<title>Thiệp Nhà Lệ</title>
 <!-- OG meta tĩnh: Zalo/FB không chạy JS nên chỉ đọc được các thẻ này.
      Dùng trực tiếp: preview chung chung. Đứng sau Cloudflare Worker: Worker sẽ
      ghi đè og:title/og:image theo từng thiệp (xem cloudflare-worker.js). -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Có một tấm thiệp dành cho bạn 💌">
+<meta property="og:title" content="Nhà Lệ gửi bạn một tấm thiệp 💌">
 <meta property="og:description" content="Một tấm thiệp nhỏ gọn yêu thương — chạm để mở ngay!">
 <meta property="og:image" content="og-cover.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,35 +21,39 @@
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
     /* =====================================================================
-       THEME MẶC ĐỊNH (hồng tím GenZ). Mỗi theme khác chỉ ghi đè các biến --xxx
+       THEME MẶC ĐỊNH — bảng màu thương hiệu "Nhà Lệ" (anti-AI, 60-30-10):
+       60% nền kem #F7F5F0 · 30% chữ/cấu trúc navy #1D2A3A · 10% điểm nhấn.
+       Matcha #94A388 (thẻ/badge) · Nâu đất #A95C48 (nút CTA duy nhất) ·
+       Nâu đất nhạt #D2A094 (hover / thanh tiến trình).
+       Mỗi theme khác chỉ ghi đè các biến --xxx
        và (nếu cần) vài hiệu ứng riêng ở khối "body[data-theme=...]" bên dưới.
        ===================================================================== */
     :root {
-        --bg: #12061f;
-        --c1: #ff6ec7; --c2: #7c4dff; --c3: #40c4ff; --blob-o: .5;
-        --accent: #ff6ec7;
-        --text: #fff;
+        --bg: #F7F5F0;
+        --c1: #D2A094; --c2: #A8B39A; --c3: #E4CDB6; --blob-o: .4;
+        --accent: #A95C48;
+        --text: #1D2A3A;
         --body-font: 'Be Vietnam Pro';
-        --env-back: linear-gradient(135deg, #ff8fd0, #b388ff);
-        --env-front: linear-gradient(160deg, #ff9ed8, #9b6bff);
-        --env-flap: linear-gradient(180deg, #ffb3e1, #d18bff);
+        --env-back: linear-gradient(135deg, #C97B5F, #A95C48);
+        --env-front: linear-gradient(160deg, #E8C2AC, #C97B5F);
+        --env-flap: linear-gradient(180deg, #F2D8C6, #D9A88F);
         --env-border: none;
-        --glow: rgba(255,110,199,.45);
+        --glow: rgba(169,92,72,.32);
         --env-shadow: 0 20px 50px var(--glow);
-        --title-grad: linear-gradient(90deg, #ffd1f0, #ff6ec7, #b388ff, #ffd1f0);
+        --title-grad: linear-gradient(90deg, #1D2A3A, #A95C48, #94A388, #1D2A3A);
         --title-font: 'Pacifico', cursive;
         --title-size: 30px; --title-weight: 400;
-        --card-bg: rgba(255,255,255,.1);
-        --card-border: rgba(255,255,255,.25); --card-bw: 1px;
-        --card-radius: 28px; --card-blur: blur(20px);
-        --card-shadow: 0 25px 60px rgba(0,0,0,.4);
-        --btn: linear-gradient(135deg, #ff6ec7, #7c4dff); --btn-text: #fff;
+        --card-bg: rgba(255,255,255,.8);
+        --card-border: rgba(29,42,58,.14); --card-bw: 1px;
+        --card-radius: 28px; --card-blur: blur(14px);
+        --card-shadow: 0 25px 60px rgba(29,42,58,.16);
+        --btn: #A95C48; --btn-text: #fff;
         --btn-radius: 999px; --btn-shadow: none;
-        --prog: linear-gradient(90deg, #ff6ec7, #40c4ff);
-        --ghost-bg: rgba(255,255,255,.1); --ghost-border: rgba(255,255,255,.3);
-        --track: rgba(255,255,255,.2);
+        --prog: linear-gradient(90deg, #A95C48, #D2A094);
+        --ghost-bg: rgba(255,255,255,.66); --ghost-border: rgba(29,42,58,.22);
+        --track: rgba(29,42,58,.14);
         --photo-bg: #fff;
-        --badge-bg: rgba(255,255,255,.12); --badge-border: rgba(255,255,255,.35); --badge-color: var(--accent);
+        --badge-bg: rgba(148,163,136,.16); --badge-border: rgba(148,163,136,.6); --badge-color: var(--accent);
     }
 
     /* ===================== 20/11 NGÀY NHÀ GIÁO ===================== */
@@ -400,8 +405,8 @@
     .floater { position: absolute; bottom: -40px; animation: rise linear forwards; opacity: 0; }
     .floater.fall { bottom: auto; top: -40px; animation-name: fall; }
     .floater.bubble {
-        background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,.08) 45%, rgba(79,195,232,.2));
-        border: 1px solid rgba(255,255,255,.7); border-radius: 50%;
+        background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.95), rgba(255,255,255,.1) 45%, rgba(148,163,136,.28));
+        border: 1px solid rgba(148,163,136,.55); border-radius: 50%;
     }
     @keyframes rise {
         0% { transform: translateY(0) translateX(0) scale(.8); opacity: 0; }
@@ -437,7 +442,7 @@
     .seal { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 38px; z-index: 4; transition: opacity .3s, transform .4s; filter: drop-shadow(0 4px 8px rgba(0,0,0,.3)); }
     .envelope.open .seal { opacity: 0; transform: translate(-50%, -50%) scale(2); }
     .hint { margin-top: 28px; font-weight: 500; letter-spacing: .3px; opacity: .9; animation: pulse 1.8s ease-in-out infinite; }
-    .hint.err { color: #ff6b81; animation: none; }
+    .hint.err { color: #C4472E; animation: none; }
     @keyframes pulse { 50% { opacity: .45; } }
 
     /* ===== Thiệp ===== */
@@ -484,7 +489,7 @@
         box-shadow: 0 12px 30px rgba(0,0,0,.35); transition: transform .3s;
     }
     .photo:hover { transform: rotate(0) scale(1.03); }
-    .photo img { width: 100%; display: block; border-radius: 3px; }
+    .photo img, .photo video { width: 100%; display: block; border-radius: 3px; }
 
     .voice {
         display: none; align-items: center; gap: 12px; margin-top: 18px; padding: 10px 14px;
@@ -509,8 +514,9 @@
     .music {
         display: none; position: fixed; top: max(14px, env(safe-area-inset-top)); right: 14px; z-index: 60;
         align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; cursor: pointer;
-        background: rgba(0,0,0,.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,.25); color: #fff; font: inherit; font-size: 13px;
+        background: rgba(255,255,255,.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(29,42,58,.16); color: #1D2A3A; font: inherit; font-size: 13px;
+        box-shadow: 0 4px 16px rgba(29,42,58,.12);
     }
     .music.show { display: flex; }
     .eq { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
@@ -522,9 +528,9 @@
 
     .back {
         display: none; position: fixed; top: max(14px, env(safe-area-inset-top)); left: 14px; z-index: 60;
-        padding: 8px 14px; border-radius: 999px; font-size: 13px; text-decoration: none; color: #fff;
-        background: rgba(0,0,0,.4); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255,255,255,.25);
+        padding: 8px 14px; border-radius: 999px; font-size: 13px; text-decoration: none; color: #1D2A3A;
+        background: rgba(255,255,255,.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(29,42,58,.16); box-shadow: 0 4px 16px rgba(29,42,58,.12);
     }
     .back.show { display: block; }
 
@@ -532,7 +538,7 @@
     .toast {
         position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(8px);
         z-index: 90; max-width: min(88vw, 420px); padding: 10px 16px; border-radius: 999px;
-        background: rgba(0,0,0,.72); color: #fff; font: inherit; font-size: 13px; text-align: center;
+        background: rgba(29,42,58,.92); color: #fff; font: inherit; font-size: 13px; text-align: center;
         opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s;
         backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     }
@@ -589,7 +595,7 @@
     #lightbox { display: none; position: fixed; inset: 0; z-index: 95; align-items: center; justify-content: center;
         background: rgba(0,0,0,.85); cursor: zoom-out; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
     #lightbox.show { display: flex; }
-    #lightbox img { max-width: 92vw; max-height: 84vh; border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    #lightbox img, #lightbox video { max-width: 92vw; max-height: 84vh; border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,.6);
         animation: pop .45s cubic-bezier(.2,1.3,.4,1); }
 
     .spark { position: fixed; z-index: 88; pointer-events: none; line-height: 1;
@@ -612,7 +618,7 @@
     /* =====================================================================
        V4 · KIỂU MỞ THIỆP (mode) + HIỆU ỨNG NỀN (fx)
        mode: envelope (mặc định) | hold | scratch | chat | stories
-       fx  : (trống) | galaxy | matrix | flipbook
+       fx  : (trống) | galaxy | matrix | flipbook | fireworks | snow | petals | bubbles | hearts | meteor
        Màu sắc lấy theo biến theme → 13 mẫu × 5 kiểu mở đều tự đúng tông.
        ===================================================================== */
     .envelope-wrap.hidden { display: none; }
@@ -621,6 +627,8 @@
     #fxcanvas { display: none; position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; }
     #fxcanvas.show { display: block; }
     body.fxmar .aurora { opacity: .25; }
+    /* galaxy: canvas phủ một đêm navy (#1D2A3A) để sao/thiên hà nổi rõ cả trên nền kem */
+    body.fxgal #fxcanvas { background: radial-gradient(130% 100% at 50% 30%, #2c3d55 0%, #1D2A3A 55%, #141f2c 100%); }
 
     /* Khung gate chung — chiếm màn hình trước khi mở thiệp */
     .gate { display: none; position: fixed; inset: 0; z-index: 30; flex-direction: column;
@@ -670,7 +678,7 @@
     @keyframes msgIn { from { opacity: 0; transform: translateY(12px) scale(.92); } }
     .msg.me { align-self: flex-end; border-radius: 18px 4px 18px 18px; background: var(--btn); color: var(--btn-text);
         border: var(--env-border); }
-    .msg img { max-width: 100%; max-height: 200px; object-fit: cover; border-radius: 12px; display: block; margin-top: 6px; cursor: zoom-in; }
+    .msg img, .msg video { max-width: 100%; max-height: 200px; object-fit: cover; border-radius: 12px; display: block; margin-top: 6px; cursor: zoom-in; }
     .msg.typing { display: flex; gap: 5px; padding: 14px 16px; }
     .msg.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); opacity: .35; animation: tp 1s infinite; }
     .msg.typing i:nth-child(2) { animation-delay: .18s; }
@@ -695,7 +703,7 @@
         text-align: center; padding: 40px 28px; gap: 14px; }
     .stseg.on { opacity: 1; pointer-events: auto; }
     .stseg.img { padding: 0; }
-    .stseg.img img { width: 100%; height: 100%; object-fit: cover; }
+    .stseg.img img, .stseg.img video { width: 100%; height: 100%; object-fit: cover; }
     .stseg.img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(rgba(0,0,0,.12), transparent 30%, transparent 62%, rgba(0,0,0,.55)); pointer-events: none; }
     .stemoji { font-size: 74px; filter: drop-shadow(0 8px 26px rgba(0,0,0,.5)); }
     .stbig { font-family: var(--title-font); font-size: 34px; line-height: 1.3; text-shadow: 0 4px 26px rgba(0,0,0,.5); }
@@ -866,15 +874,16 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     // Cột Google Sheet: id | title | content | date | image | audio | voice | from | to | theme | photos | mode | fx
     // Cột theme: default, nhagiao, y2k, brutal, coquette, rave, aero, phat, meo, xinloi, tet, giangsinh, kyniem
     // Cột mode (kiểu mở thiệp): envelope (mặc định) | hold | scratch | chat | stories
-    // Cột fx   (hiệu ứng thêm): galaxy (thiên hà three.js) | matrix (mưa ma trận) | flipbook (sổ lật ảnh)
+    // Cột fx   (hiệu ứng thêm): galaxy | matrix | flipbook | fireworks | snow | petals | bubbles | hearts | meteor
     // Xem thử: index.html?demo=meo · kết hợp: ?demo=tet&mode=hold&fx=galaxy · tắt hiệu ứng: ?fx=0
+    // v4.1: cột image/photos nhận cả file video (.mp4/.webm…) → tự phát như video kỷ niệm
 
     // Mỗi theme: nội dung + hiệu ứng. Phần màu/kiểu dáng nằm ở CSS (body[data-theme=...]).
     const THEMES = {
         default: {
-            title: 'Thiệp Chúc Mừng', meta: '#12061f', seal: '💌', hint: '✨ Chạm để mở thư ✨', fonts: ['Pacifico'],
+            title: 'Thiệp Chúc Mừng', meta: '#F7F5F0', seal: '💌', hint: '✨ Chạm để mở thư ✨', fonts: ['Pacifico'],
             icons: ['💖', '✨', '🌸', '🎀', '💫', '🤍'],
-            confetti: ['#ff6ec7', '#ffd54f', '#7c4dff', '#40c4ff', '#69f0ae', '#ff5252'], burst: [],
+            confetti: ['#A95C48', '#D2A094', '#94A388', '#1D2A3A', '#E4CDB6', '#C97B5F'], burst: [],
             badge: '', toFmt: n => `Gửi ${n} 💖`, fromPrefix: '— ',
             demo: { title: 'Chúc Mừng Sinh Nhật!', to: 'bạn yêu', from: 'Mình', date: 'today',
                 content: 'Tuổi mới thật nhiều niềm vui, ít deadline,\nnhiều tiền tiêu và luôn được yêu thương nhé! 🎂\nCảm ơn vì đã luôn là một phần đáng yêu trong cuộc sống của mình.' }
@@ -1062,6 +1071,28 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const m = u.match(/\/d\/([\w-]+)/) || u.match(/[?&]id=([\w-]+)/);
         return m ? m[1] : null;
     }
+    // v4.1: nhận diện file video theo đuôi — .mp4/.webm/.mov… sẽ được phát bằng <video>
+    const VIDEO_EXT = /\.(mp4|webm|mov|m4v|ogv)([?#]|$)/i;
+    const isVideo = u => VIDEO_EXT.test(String(u || '').trim());
+    // v4.1: tạo <img> hoặc <video> (tự phát im lặng, lặp vô hạn) tùy đuôi file —
+    // dùng chung cho ảnh bìa, cầu xoay, chat, sổ lật
+    function makeMedia(src, alt, onImgError) {
+        if (isVideo(src)) {
+            const v = document.createElement('video');
+            v.src = src; v.muted = true; v.loop = true; v.autoplay = true;
+            v.playsInline = true;
+            v.setAttribute('playsinline', '');
+            v.setAttribute('webkit-playsinline', '');
+            v.play().catch(() => {});
+            return v;
+        }
+        const im = document.createElement('img');
+        im.alt = alt || 'Hình kỷ niệm';
+        im.loading = 'lazy';
+        if (onImgError) im.onerror = onImgError;
+        im.src = src;
+        return im;
+    }
     // Tự đổi link Google Drive sang link trực tiếp; link khác (hoặc đường dẫn trong repo) giữ nguyên
     function mediaUrl(u, kind) {
         if (!u) return '';
@@ -1202,12 +1233,14 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             renderCounter(f);
         }
         if (d.image) {
-            const img = $('image');
-            img.onerror = () => { $('photo').style.display = 'none'; };
-            img.src = mediaUrl(d.image, 'image');
-            $('photo').style.display = 'block';
-            if (FX) $('photo').classList.add('kb');               // v3: ảnh "thở" chậm (Ken Burns)
-            $('photo').onclick = () => openLightbox(img.src);     // v3: chạm để xem ảnh lớn
+            const photo = $('photo');
+            const u = mediaUrl(d.image, isVideo(d.image) ? 'video' : 'image');
+            photo.innerHTML = '';
+            const el = makeMedia(u, 'Hình kỷ niệm', () => { photo.style.display = 'none'; });
+            photo.appendChild(el);
+            photo.style.display = 'block';
+            if (FX && !isVideo(u)) photo.classList.add('kb');             // v3: ảnh "thở" chậm (Ken Burns)
+            photo.onclick = () => openLightbox(u);                        // v4.1: video mở trình phát có nút, có tiếng
         }
         if (d.voice) $('voiceBox').classList.add('show');
         applyOG(d);
@@ -1245,6 +1278,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
     function hideGates() {
         document.querySelectorAll('.gate').forEach(g => g.classList.remove('show'));
+        document.querySelectorAll('.gate video').forEach(v => v.pause());   // v4.1: dừng video stories khi mở thiệp
         stopStories();
     }
     $('envelope').addEventListener('click', openCard);
@@ -1614,13 +1648,12 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             const it = document.createElement('div');
             it.className = 'it';
             it.style.transform = `rotateY(${i * 360 / n}deg) translateZ(${R}px)`;
-            const img = document.createElement('img');
-            img.alt = 'Kỷ niệm ' + (i + 1);
-            img.loading = 'lazy';
-            img.onerror = () => { img.remove(); it.style.background = `linear-gradient(135deg, ${cssVar('--accent')}, ${cssVar('--c2') || '#888'})`; };
-            img.src = mediaUrl(u, 'image');
-            it.appendChild(img);
-            it.addEventListener('click', () => { if (!sphereMoved) openLightbox(img.src); });
+            const src = mediaUrl(u, isVideo(u) ? 'video' : 'image');
+            const el = makeMedia(src, 'Kỷ niệm ' + (i + 1), () => {
+                el.remove(); it.style.background = `linear-gradient(135deg, ${cssVar('--accent')}, ${cssVar('--c2') || '#888'})`;
+            });
+            it.appendChild(el);
+            it.addEventListener('click', () => { if (!sphereMoved) openLightbox(src); });
             ringEl.appendChild(it);
         });
         box.classList.add('show');
@@ -1678,14 +1711,41 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         if (!document.hidden && FX && $('sphereBox').classList.contains('show') && !ringOn) spinLoop();
     });
 
-    // ================== V3 · LIGHTBOX ẢNH LỚN ==================
+    // ================== V3 · LIGHTBOX ẢNH LỚN (v4.1: phát được cả video) ==================
     function openLightbox(src) {
         if (!src) return;
-        $('lbImg').src = src;
-        $('lightbox').classList.add('show');
+        const lb = $('lightbox'), img = $('lbImg');
+        let v = $('lbVid');
+        if (isVideo(src)) {
+            if (!v) {
+                v = document.createElement('video');
+                v.id = 'lbVid'; v.controls = true;
+                v.playsInline = true;
+                v.setAttribute('playsinline', '');
+                lb.appendChild(v);
+            }
+            img.style.display = 'none';
+            v.style.display = 'block';
+            v.src = src;
+            v.play().catch(() => {});
+        } else {
+            if (v) { v.pause(); v.style.display = 'none'; v.removeAttribute('src'); }
+            img.style.display = 'block';
+            img.src = src;
+        }
+        lb.classList.add('show');
         buzz(6);
     }
-    $('lightbox').addEventListener('click', () => { $('lightbox').classList.remove('show'); $('lbImg').src = ''; });
+    function closeLightbox() {
+        const v = $('lbVid');
+        if (v) { v.pause(); v.removeAttribute('src'); }
+        $('lightbox').classList.remove('show');
+        $('lbImg').src = '';
+    }
+    $('lightbox').addEventListener('click', e => {
+        if (e.target.tagName === 'VIDEO') return;    // đang xem video: bấm vào màn hình trình phát đừng đóng
+        closeLightbox();
+    });
 
     // ================== V3 · BẢNG CHIA SẺ + OG META ==================
     function openSheet() {
@@ -1740,7 +1800,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     document.addEventListener('keydown', e => {
         if (e.key !== 'Escape') return;
         closeSheet();
-        $('lightbox').classList.remove('show');
+        closeLightbox();
     });
     function applyOG(d) {
         const put = (name, content, prop) => {
@@ -1755,7 +1815,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         put('description', 'Có một tấm thiệp điện tử dành riêng cho bạn 💌 Chạm để mở ngay!');
         put('og:title', (d.title || T.title) + (d.to ? ` — gửi ${d.to}` : ''), true);
         put('og:description', 'Một tấm thiệp nhỏ gọn yêu thương 💌 Mở ngay!', true);
-        if (d.image) put('og:image', mediaUrl(d.image, 'image'), true);
+        if (d.image && !isVideo(d.image)) put('og:image', mediaUrl(d.image, 'image'), true);
     }
 
     // ================== V3 · ẢNH XEM THỬ (SVG tự dựng, không cần mạng) ==================
@@ -1764,11 +1824,11 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${h1}"/><stop offset="1" stop-color="${h2}"/></linearGradient></defs><rect width="300" height="300" fill="url(#g)"/><text x="150" y="140" font-size="90" text-anchor="middle">${e}</text><text x="150" y="252" font-size="26" text-anchor="middle" fill="rgba(255,255,255,.92)" font-family="sans-serif" font-weight="700">${t}</text></svg>`);
         // Nối bằng xuống dòng (không dùng ";") để không vướng dấu ";" trong prefix data-URI
         return [
-            mk('#ff6ec7', '#7c4dff', '🌸', 'kỷ niệm 1'),
-            mk('#40c4ff', '#7c4dff', '✨', 'kỷ niệm 2'),
-            mk('#ffd54f', '#ff6ec7', '💖', 'kỷ niệm 3'),
-            mk('#69f0ae', '#40c4ff', '🍀', 'kỷ niệm 4'),
-            mk('#ff9e80', '#ffd54f', '🎂', 'kỷ niệm 5')
+            mk('#A95C48', '#94A388', '🌸', 'kỷ niệm 1'),
+            mk('#D2A094', '#1D2A3A', '✨', 'kỷ niệm 2'),
+            mk('#C97B5F', '#E4CDB6', '💖', 'kỷ niệm 3'),
+            mk('#94A388', '#D2A094', '🍀', 'kỷ niệm 4'),
+            mk('#1D2A3A', '#A95C48', '🎂', 'kỷ niệm 5')
         ].join('\n');
     }
 
@@ -1974,7 +2034,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             const ctx = cv.getContext('2d');
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             const g = ctx.createLinearGradient(0, 0, r.width, r.height);
-            g.addColorStop(0, '#c7ccd6'); g.addColorStop(.5, '#e9ecf2'); g.addColorStop(1, '#aeb4c2');
+            g.addColorStop(0, '#EDE3D3'); g.addColorStop(.5, '#F7F5F0'); g.addColorStop(1, '#DCCCB4');
             ctx.fillStyle = g;
             ctx.fillRect(0, 0, r.width, r.height);
             ctx.textAlign = 'center';
@@ -1983,10 +2043,10 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             for (let i = 0; i < 18; i++)
                 ctx.fillText(T.icons[Math.random() * T.icons.length | 0], Math.random() * r.width, Math.random() * r.height);
             ctx.globalAlpha = 1;
-            ctx.fillStyle = 'rgba(84,92,108,.92)';
+            ctx.fillStyle = 'rgba(122,94,74,.92)';
             ctx.font = `700 ${Math.min(24, r.width / 14)}px ${cssVar('--body-font') || 'sans-serif'}`;
             ctx.fillText('🪙 Cào để mở quà', r.width / 2, r.height / 2);
-            ctx.fillStyle = 'rgba(84,92,108,.6)';
+            ctx.fillStyle = 'rgba(122,94,74,.6)';
             ctx.font = `500 ${Math.min(15, r.width / 24)}px sans-serif`;
             ctx.fillText('(cào bằng ngón tay hoặc chuột)', r.width / 2, r.height / 2 + 30);
         };
@@ -2050,7 +2110,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         script.push('Chào ' + (d.to || 'bạn') + '! 👋');
         script.push('Mình có một tấm thiệp nhỏ gửi bạn… 💌');
         String(d.content || d.title || '').split('\n').map(s => s.trim()).filter(Boolean).forEach(l => script.push(l));
-        const imgSrc = d.image ? mediaUrl(d.image, 'image') : '';
+        const imgSrc = d.image ? mediaUrl(d.image, isVideo(d.image) ? 'video' : 'image') : '';
         if (imgSrc) script.push({ img: imgSrc, cap: 'Gửi kèm một kỷ niệm nè 📷' });
         script.push('Mở thiệp bên dưới để xem trọn vẹn nhé! ✨');
         const scrollDown = () => { log.scrollTop = log.scrollHeight; };
@@ -2065,10 +2125,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             m.className = 'msg';
             if (it && typeof it === 'object') {
                 m.textContent = it.cap;
-                const im = document.createElement('img');
-                im.src = it.img; im.alt = 'Ảnh kỷ niệm'; im.loading = 'lazy';
-                im.onclick = () => openLightbox(it.img);
-                m.appendChild(im);
+                const el = makeMedia(it.img, 'Ảnh kỷ niệm');        // v4.1: video trong tin nhắn cũng tự phát
+                el.onclick = () => openLightbox(it.img);
+                m.appendChild(el);
             } else m.textContent = it;
             log.appendChild(m);
         };
@@ -2105,15 +2164,17 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         stSegs = [];
         stSegs.push({ type: 'cover', emoji: T.seal || '💌', sub: d.to ? T.toFmt(d.to) : '', title: d.title || T.title });
         const ph = String(d.photos || '').split(/[;\n]+/).map(s => s.trim()).filter(Boolean).slice(0, 4);
-        if (ph.length) ph.forEach(u => stSegs.push({ type: 'img', src: esc(mediaUrl(u, 'image')) }));
-        else if (d.image) stSegs.push({ type: 'img', src: esc(mediaUrl(d.image, 'image')) });
+        if (ph.length) ph.forEach(u => stSegs.push({ type: 'img', vid: isVideo(u), src: esc(mediaUrl(u, isVideo(u) ? 'video' : 'image')) }));
+        else if (d.image) stSegs.push({ type: 'img', vid: isVideo(d.image), src: esc(mediaUrl(d.image, isVideo(d.image) ? 'video' : 'image')) });
         const body = String(d.content || '').trim();
         if (body) stSegs.push({ type: 'text', text: body });
         stSegs.push({ type: 'end', from: d.from || '', date: d.date ? formatDate(d.date) : '' });
         bars.innerHTML = stSegs.map(() => '<i><b></b></i>').join('');
         stBarsEl = [...bars.querySelectorAll('b')];
         stage.innerHTML = stSegs.map((s, k) => {
-            if (s.type === 'img') return `<div class="stseg img" data-k="${k}"><img src="${s.src}" alt="Kỷ niệm ${k + 1}"></div>`;
+            if (s.type === 'img') return `<div class="stseg img" data-k="${k}">${s.vid
+                ? `<video src="${s.src}" autoplay muted loop playsinline></video>`
+                : `<img src="${s.src}" alt="Kỷ niệm ${k + 1}">`}</div>`;
             if (s.type === 'cover') return `<div class="stseg" data-k="${k}"><div class="stemoji">${s.emoji}</div><div class="stsub">${esc(s.sub)}</div><div class="stbig">${esc(s.title)}</div><div class="stsub">Chạm để xem →</div></div>`;
             if (s.type === 'text') return `<div class="stseg" data-k="${k}"><div class="sttxt">${esc(s.text)}</div></div>`;
             return `<div class="stseg" data-k="${k}"><div class="stemoji">💞</div><div class="stfrom">${esc(s.from ? '— ' + s.from : '')}</div><div class="stsub">${esc(s.date)}</div><button class="stbtn" id="stOpen">💌 Xem thiệp đầy đủ</button></div>`;
@@ -2126,6 +2187,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             stIdx = k;
             stopStories();
             stage.querySelectorAll('.stseg').forEach(el => el.classList.toggle('on', +el.dataset.k === k));
+            stage.querySelectorAll('video').forEach(v => v.pause());   // v4.1: chỉ video đoạn đang bật được phát
+            const av = stage.querySelector('.stseg.on video');
+            if (av) av.play().catch(() => {});
             cnt.textContent = (k + 1) + '/' + stSegs.length;
             stBarsEl.forEach((b, j) => {
                 b.style.transition = 'none';
@@ -2135,6 +2199,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             if (seg.type === 'end') return;              // đoạn cuối chờ người xem bấm
             let ms = 4200;
             if (seg.type === 'cover') ms = 3400;
+            if (seg.type === 'img' && seg.vid) ms = 8000;   // video cần thời gian xem dài hơn ảnh
             if (seg.type === 'text') ms = Math.max(4500, Math.min(16000, seg.text.length * 62));
             void stBarsEl[k].offsetWidth;                // ép reflow để animation chạy lại từ đầu
             stBarsEl[k].style.transition = `width ${ms}ms linear`;
@@ -2147,9 +2212,10 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
 
     // =====================================================================
-    // V4 · HIỆU ỨNG fx: GALAXY (three.js) / MATRIX / FLIPBOOK (sổ lật)
+    // V4 · HIỆU ỨNG fx: GALAXY / MATRIX / FLIPBOOK + V4.1 THÊM 6 HIỆU ỨNG
+    // fireworks · snow · petals · bubbles · hearts · meteor (canvas 2D nhẹ)
     // =====================================================================
-    const FXVALS = ['galaxy', 'matrix', 'flipbook'];
+    const FXVALS = ['galaxy', 'matrix', 'flipbook', 'fireworks', 'snow', 'petals', 'bubbles', 'hearts', 'meteor'];
     const hexToRgb = h => {
         h = String(h || '').trim().replace('#', '');
         if (h.length === 3) h = h.split('').map(c => c + c).join('');
@@ -2165,8 +2231,12 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     function applyFX(d) {
         const f = fxOf(d);
         if (f === 'flipbook' && buildFlipbook(d.photos)) return;   // sổ lật thay thế cầu xoay
-        if (FX && f === 'galaxy') startGalaxy();
-        else if (FX && f === 'matrix') startMatrix();
+        if (FX) {
+            if (f === 'galaxy') startGalaxy();
+            else if (f === 'matrix') startMatrix();
+            else if (f === 'fireworks') startFireworks();
+            else if (f === 'snow' || f === 'petals' || f === 'bubbles' || f === 'hearts' || f === 'meteor') startParticleFX(f);
+        }
         buildSphere(d.photos);
     }
     function loadScriptOnce(src) {
@@ -2185,6 +2255,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     async function startGalaxy() {
         const cv = $('fxcanvas');
         cv.classList.add('show');
+        document.body.classList.add('fxgal');   // đêm navy để thiên hà nổi trên nền kem
+
         dbg('galaxy: bat dau, THREE=' + typeof window.THREE);
         try {
             if (!window.THREE) await loadScriptOnce('https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js');
@@ -2340,6 +2412,169 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         })(0);
     }
 
+    // =====================================================================
+    // V4.1 · 6 HIỆU ỨNG NỀN MỚI (canvas 2D siêu nhẹ, màu theo theme):
+    //   fireworks 🎆 pháo hoa     · snow ❄️ tuyết rơi      · petals 🌸 cánh hoa
+    //   bubbles  🫧 bong bóng bay · hearts 💖 tim bồng lềnh · meteor 🌠 sao băng
+    // Cùng dùng chung #fxcanvas; ?fx=0 vẫn tắt hết; máy yếu (LITE) tự giảm mật độ.
+    // =====================================================================
+    function fxSetup2d() {
+        const cv = $('fxcanvas');
+        cv.classList.add('show');
+        const ctx = cv.getContext('2d');
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        const setup = () => {
+            cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        };
+        setup();
+        addEventListener('resize', setup);
+        return ctx;
+    }
+
+    // --- 🎆 Pháo hoa: tên bay lên rồi nổ thành hạt màu theo theme ---
+    let fireworksOn = false;
+    function startFireworks() {
+        if (fireworksOn) return;
+        fireworksOn = true;
+        const ctx = fxSetup2d();
+        const cols = T.confetti;
+        const rnd = (a, b) => a + Math.random() * (b - a);
+        const rockets = [], sparks = [];
+        (function frame() {
+            requestAnimationFrame(frame);
+            const W = innerWidth, H = innerHeight;
+            ctx.clearRect(0, 0, W, H);
+            if (!document.hidden && Math.random() < (LITE ? .032 : .06) && rockets.length < 6)
+                rockets.push({ x: rnd(W * .15, W * .85), y: H + 8, vx: rnd(-.6, .6), vy: -rnd(6.4, 9.4), ty: rnd(H * .16, H * .46), c: cols[Math.random() * cols.length | 0] });
+            for (let i = rockets.length - 1; i >= 0; i--) {
+                const r = rockets[i];
+                r.x += r.vx; r.y += r.vy; r.vy += .06;
+                ctx.globalAlpha = .95;
+                ctx.fillStyle = r.c;
+                ctx.beginPath(); ctx.arc(r.x, r.y, 2.2, 0, 7); ctx.fill();
+                if (r.vy > -1.6 || r.y <= r.ty) {
+                    rockets.splice(i, 1);
+                    const n = LITE ? 26 : 46;
+                    for (let k = 0; k < n; k++) {
+                        const a = Math.random() * Math.PI * 2, sp = rnd(.8, 5.4);
+                        sparks.push({ x: r.x, y: r.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, c: Math.random() < .25 ? '#fff' : r.c });
+                    }
+                }
+            }
+            for (let i = sparks.length - 1; i >= 0; i--) {
+                const s = sparks[i];
+                s.x += s.vx; s.y += s.vy; s.vy += .055; s.vx *= .985; s.vy *= .99; s.life -= .011;
+                if (s.life <= 0) { sparks.splice(i, 1); continue; }
+                ctx.globalAlpha = Math.max(s.life, 0);
+                ctx.fillStyle = s.c;
+                ctx.fillRect(s.x, s.y, 2.4, 2.4);
+            }
+            ctx.globalAlpha = 1;
+        })();
+    }
+
+    // --- ❄️🌸🫧💖🌠 Các hiệu ứng hạt rơi/bay: chung một engine, khác cấu hình ---
+    let pfxOn = '';
+    function startParticleFX(kind) {
+        if (pfxOn === kind) return;
+        pfxOn = kind;
+        const ctx = fxSetup2d();
+        const rnd = (a, b) => a + Math.random() * (b - a);
+        const accent = cssVar('--accent') || '#A95C48';
+        const parts = [];
+        const RATE = { snow: 120, petals: 300, bubbles: 380, hearts: 650, meteor: 1500 };
+        const MAXN = { snow: 130, petals: 55, bubbles: 38, hearts: 26, meteor: 7 };
+        const spawn = {
+            snow: () => parts.push({ t: 'snow', x: rnd(0, innerWidth), y: -8, r: rnd(1.2, 3.2), vy: rnd(.5, 1.3), ph: rnd(0, 7), sw: rnd(.3, .9), o: rnd(.45, .9) }),
+            petals: () => parts.push({ t: 'petals', x: rnd(0, innerWidth), y: -14, s: rnd(5, 11), vy: rnd(.7, 1.5), ph: rnd(0, 7), rot: rnd(0, 7), vr: rnd(-.05, .05), c: ['#ffc0db', '#ffd7e6', '#ffb0cd', '#fff5f9', accent][Math.random() * 5 | 0] }),
+            bubbles: () => parts.push({ t: 'bubbles', x: rnd(0, innerWidth), y: innerHeight + 12, r: rnd(4, 15), vy: -rnd(.5, 1.5), ph: rnd(0, 7), sw: rnd(.2, .7) }),
+            hearts: () => parts.push({ t: 'hearts', x: rnd(0, innerWidth), y: innerHeight + 16, s: rnd(8, 20), vy: -rnd(.6, 1.3), ph: rnd(0, 7), sw: rnd(.2, .8), rot: rnd(-.35, .35), c: [accent, '#ff5a8a', '#ffa0c8', '#fff'][Math.random() * 4 | 0] }),
+            meteor: () => parts.push({ t: 'meteor', x: rnd(innerWidth * .25, innerWidth * 1.05), y: rnd(-30, innerHeight * .3), vx: -rnd(4.5, 8), vy: rnd(2.2, 4.2), len: rnd(80, 170), w: rnd(1.3, 2.4), life: 1 })
+        };
+        let last = 0;
+        (function frame(t) {
+            requestAnimationFrame(frame);
+            const W = innerWidth, H = innerHeight;
+            ctx.clearRect(0, 0, W, H);
+            if (t - last > (LITE ? RATE[kind] * 1.6 : RATE[kind])) {
+                last = t;
+                if (!document.hidden && parts.length < (LITE ? Math.ceil(MAXN[kind] * .6) : MAXN[kind])) spawn[kind]();
+            }
+            for (let i = parts.length - 1; i >= 0; i--) {
+                const p = parts[i];
+                if (p.t === 'snow') {
+                    p.y += p.vy; p.x += Math.sin(t / 900 + p.ph) * p.sw;
+                    if (p.y > H + 8) { parts.splice(i, 1); continue; }
+                    ctx.globalAlpha = p.o * (.7 + .3 * Math.sin(t / 500 + p.ph));
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill();
+                } else if (p.t === 'petals') {
+                    p.y += p.vy; p.x += Math.sin(t / 800 + p.ph) * .8; p.rot += p.vr;
+                    if (p.y > H + 16) { parts.splice(i, 1); continue; }
+                    ctx.globalAlpha = .85;
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.rot + Math.sin(t / 700 + p.ph) * .5);
+                    ctx.fillStyle = p.c;
+                    ctx.beginPath(); ctx.ellipse(0, 0, p.s, p.s * .45, 0, 0, 7); ctx.fill();
+                    ctx.restore();
+                } else if (p.t === 'bubbles') {
+                    p.y += p.vy; p.x += Math.sin(t / 1000 + p.ph) * p.sw;
+                    if (p.y < -20) { parts.splice(i, 1); continue; }
+                    ctx.globalAlpha = .5;
+                    ctx.strokeStyle = 'rgba(255,255,255,.85)';
+                    ctx.lineWidth = 1.4;
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.stroke();
+                    ctx.globalAlpha = .35;
+                    ctx.fillStyle = 'rgba(255,255,255,.35)';
+                    ctx.beginPath(); ctx.arc(p.x - p.r * .3, p.y - p.r * .3, p.r * .3, 0, 7); ctx.fill();
+                } else if (p.t === 'hearts') {
+                    p.y += p.vy; p.x += Math.sin(t / 900 + p.ph) * p.sw;
+                    if (p.y < -24) { parts.splice(i, 1); continue; }
+                    ctx.globalAlpha = .9;
+                    ctx.fillStyle = p.c;
+                    drawHeart(ctx, p.x, p.y, p.s, p.rot + Math.sin(t / 800 + p.ph) * .12);
+                } else {                              // meteor
+                    p.x += p.vx; p.y += p.vy; p.life -= .006;
+                    if (p.life <= 0 || p.y > H + 60 || p.x < -p.len) { parts.splice(i, 1); continue; }
+                    const k = p.len / (Math.hypot(p.vx, p.vy) || 1);
+                    const g = ctx.createLinearGradient(p.x, p.y, p.x - p.vx * k, p.y - p.vy * k);
+                    g.addColorStop(0, 'rgba(255,255,255,' + (.9 * Math.min(1, p.life * 3)).toFixed(3) + ')');
+                    g.addColorStop(1, 'rgba(255,255,255,0)');
+                    ctx.globalAlpha = 1;
+                    ctx.strokeStyle = g;
+                    ctx.lineWidth = p.w;
+                    ctx.lineCap = 'round';
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p.x - p.vx * k, p.y - p.vy * k);
+                    ctx.stroke();
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.w * 1.1, 0, 7); ctx.fill();
+                }
+            }
+            ctx.globalAlpha = 1;
+        })(0);
+    }
+    function drawHeart(ctx, x, y, s, rot) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(rot || 0);
+        ctx.scale(s / 13, s / 13);
+        ctx.beginPath();
+        ctx.moveTo(0, 4);
+        ctx.bezierCurveTo(0, 2, -2, 0, -4, 0);
+        ctx.bezierCurveTo(-7.5, 0, -7.5, 4.5, -7.5, 4.5);
+        ctx.bezierCurveTo(-7.5, 7.5, -4.5, 10.5, 0, 14);
+        ctx.bezierCurveTo(4.5, 10.5, 7.5, 7.5, 7.5, 4.5);
+        ctx.bezierCurveTo(7.5, 4.5, 7.5, 0, 4, 0);
+        ctx.bezierCurveTo(2, 0, 0, 2, 0, 4);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+    }
+
     // --- Sổ lật kỷ niệm · album giấy lật từng trang (fx=flipbook) ---
     function buildFlipbook(photosRaw) {
         const box = $('flipBox'), book = $('book'), note = $('pgNote');
@@ -2361,16 +2596,12 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             if (!it) { el.innerHTML = '<div class="pe">💞</div><div class="pt">Hết rồi!</div><div class="ps">Chạm nửa trái để xem lại</div>'; return el; }
             if (it.cover) { el.innerHTML = `<div class="pe">${T.seal || '📖'}</div><div class="pt">Sổ kỷ niệm</div><div class="ps">${esc(toName)}</div>`; return el; }
             if (it.end) { el.innerHTML = `<div class="pe">🕯️</div><div class="pt">Mãi nhớ</div><div class="ps">${esc(d.from || '')}</div>`; return el; }
-            const img = document.createElement('img');
-            img.src = it.src; img.alt = 'Ảnh kỷ niệm'; img.loading = 'lazy';
-            img.onerror = () => {
+            return makeMedia(it.src, 'Ảnh kỷ niệm', e => {           // v4.1: video trên trang sổ cũng tự phát
                 const fb = document.createElement('div');
                 fb.className = 'pgface';
                 fb.innerHTML = '<div class="pe">🖼️</div>';
-                img.replaceWith(fb);
-            };
-            el.appendChild(img);
-            return el;
+                e.target.replaceWith(fb);
+            });
         };
         const els = pages.map((p, k) => {
             const pg = document.createElement('div');
