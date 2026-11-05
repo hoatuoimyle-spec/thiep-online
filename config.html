@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#12061f">
+<meta name="theme-color" content="#F7F5F0">
 <!-- PWA: cho phép “Cài đặt ứng dụng” trên điện thoại (Android Chrome / iOS Safari) -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -11,7 +11,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Thiệp Nhà Lệ">
-<title>Studio Thiệp · Tạo thiệp trong 3 bước</title>
+<title>Thiệp Nhà Lệ · Tạo thiệp trong 3 bước</title>
 <!-- Xưởng tạo thiệp — đặt CÙNG THƯ MỤC với index.html.
      Cần Apps Script v4 (Code.gs có doPost). Mật khẩu đặt bằng hàm caiDat(). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,20 +19,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Pacifico&display=swap" rel="stylesheet">
 <style>
     :root {
-        --bg: #12061f; --bg2: #1d0b33;
-        --c1: #ff6ec7; --c2: #7c4dff; --c3: #40c4ff; --accent: #ff6ec7;
-        --text: #fff; --dim: rgba(255,255,255,.66);
-        --glass: rgba(255,255,255,.08); --glass2: rgba(255,255,255,.13);
-        --line: rgba(255,255,255,.16); --ok: #69f0ae; --err: #ff6b81;
-        --btn: linear-gradient(135deg, #ff6ec7, #7c4dff);
+        /* Bảng màu thương hiệu "Nhà Lệ" (anti-AI, quy tắc 60-30-10):
+           60% nền kem #F7F5F0 · 30% navy #1D2A3A · 10% điểm nhấn:
+           matcha #94A388 · nâu đất #A95C48 (CTA) · nâu đất nhạt #D2A094 (hover). */
+        --bg: #F7F5F0; --bg2: #EFEAE1;
+        --c1: #A95C48; --c2: #94A388; --c3: #D2A094; --accent: #A95C48;
+        --text: #1D2A3A; --dim: rgba(29,42,58,.64);
+        --glass: rgba(255,255,255,.72); --glass2: rgba(255,255,255,.92);
+        --line: rgba(29,42,58,.15); --ok: #4E7A46; --err: #B3402A;
+        --btn: #A95C48;
     }
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body { margin: 0; }
     body {
         min-height: 100vh; min-height: 100dvh; color: var(--text);
         font-family: 'Be Vietnam Pro', system-ui, sans-serif;
-        background: radial-gradient(1200px 700px at 85% -10%, #3b1a5e 0%, transparent 55%),
-                    radial-gradient(900px 600px at -10% 100%, #46123f 0%, transparent 50%),
+        background: radial-gradient(1100px 640px at 88% -8%, rgba(148,163,136,.32) 0%, transparent 55%),
+                    radial-gradient(900px 620px at -12% 104%, rgba(210,160,148,.30) 0%, transparent 52%),
                     linear-gradient(160deg, var(--bg), var(--bg2));
         background-attachment: fixed;
         padding: max(14px, env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom));
@@ -44,7 +47,7 @@
     @keyframes in { from { opacity: 0; transform: translateY(16px); } }
 
     .logo { font-family: 'Pacifico', cursive; font-size: 26px; text-align: center; margin: 8px 0 2px;
-        background: linear-gradient(90deg, #ffd1f0, var(--c1), #b388ff, #ffd1f0); background-size: 250% 100%;
+        background: linear-gradient(90deg, #1D2A3A, #A95C48, #94A388, #1D2A3A); background-size: 250% 100%;
         -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 5s linear infinite; }
     @keyframes shine { to { background-position: 250% 0; } }
     .sub { text-align: center; color: var(--dim); font-size: 13px; margin: 0 0 18px; }
@@ -58,9 +61,10 @@
     /* ---- nút chung ---- */
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
         border: 0; border-radius: 999px; padding: 14px; font: inherit; font-weight: 700; font-size: 15px;
-        color: #fff; background: var(--btn); box-shadow: 0 10px 26px rgba(124,77,255,.35); cursor: pointer;
-        transition: transform .15s, opacity .2s; }
+        color: #fff; background: var(--btn); box-shadow: 0 10px 26px rgba(169,92,72,.32); cursor: pointer;
+        transition: transform .15s, opacity .2s, background .25s; }
     .btn:active { transform: scale(.96); }
+    .btn:not(.ghost):hover:not(:disabled) { background: #D2A094; }
     .btn:disabled { opacity: .45; pointer-events: none; }
     .btn.ghost { background: var(--glass); border: 1px solid var(--line); box-shadow: none; }
     .btn.sm { width: auto; padding: 10px 16px; font-size: 13px; border-radius: 999px; }
@@ -77,7 +81,7 @@
 
     input, textarea, select {
         width: 100%; padding: 13px 15px; border-radius: 15px; border: 1px solid var(--line);
-        background: rgba(0,0,0,.25); color: var(--text); font: inherit; font-size: 15px; outline: none;
+        background: rgba(255,255,255,.85); color: var(--text); font: inherit; font-size: 15px; outline: none;
         transition: border-color .2s;
     }
     input:focus, textarea:focus, select:focus { border-color: var(--c1); }
@@ -100,12 +104,12 @@
     .tpl .tn { font-weight: 700; font-size: 13.5px; text-shadow: 0 2px 8px rgba(0,0,0,.35); padding: 0 6px; text-align: center; }
     .tpl.light { color: #3a2b33; }
     .tpl.light .tn { text-shadow: none; }
-    .tpl.sel { border-color: #fff; box-shadow: 0 0 0 4px rgba(255,255,255,.25), 0 14px 30px rgba(0,0,0,.35); }
+    .tpl.sel { border-color: #A95C48; box-shadow: 0 0 0 4px rgba(169,92,72,.22), 0 14px 30px rgba(29,42,58,.18); }
     .tpl.sel::after { content: '✓'; position: absolute; top: 8px; right: 10px; width: 26px; height: 26px;
-        border-radius: 50%; background: #fff; color: #d63384; font-weight: 800; font-size: 15px;
+        border-radius: 50%; background: #A95C48; color: #fff; font-weight: 800; font-size: 15px;
         display: flex; align-items: center; justify-content: center; }
     .sticky { position: sticky; bottom: 10px; margin-top: 18px; }
-    .sticky .btn { box-shadow: 0 14px 34px rgba(0,0,0,.5), 0 10px 26px rgba(124,77,255,.35); }
+    .sticky .btn { box-shadow: 0 14px 34px rgba(29,42,58,.16), 0 10px 26px rgba(169,92,72,.32); }
 
     /* ---- bước 2 ---- */
     .fieldcard { padding: 4px 2px 18px; }
@@ -124,7 +128,7 @@
     .opt:active { transform: scale(.93); }
     .opt .oe { font-size: 21px; display: block; }
     .opt .on { font-size: 10.5px; display: block; margin-top: 4px; color: var(--dim); line-height: 1.3; }
-    .opt.sel { border-color: var(--c1); background: rgba(255,110,199,.14); box-shadow: 0 0 0 3px rgba(255,110,199,.18); }
+    .opt.sel { border-color: var(--c1); background: rgba(169,92,72,.1); box-shadow: 0 0 0 3px rgba(169,92,72,.18); }
     .opt.sel .on { color: var(--text); }
 
     /* ---- bước 3 ---- */
@@ -137,7 +141,7 @@
     .linkbox input { flex: 1; font-size: 13px; }
     .linkbox .btn.sm { flex: none; }
     #qrCv { width: min(70vw, 280px); height: auto; border-radius: 28px; margin: 14px auto 4px; display: block;
-        box-shadow: 0 18px 44px rgba(0,0,0,.45); }
+        box-shadow: 0 18px 44px rgba(29,42,58,.2); }
     .qrcap { font-size: 11.5px; color: var(--dim); margin: 6px 0 2px; }
 
     /* ---- danh sách thiệp ---- */
@@ -146,7 +150,7 @@
     .drawer .veil { position: absolute; inset: 0; background: rgba(0,0,0,.5); backdrop-filter: blur(3px); }
     .drawer .pan { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: min(560px, 100%);
         max-height: 82vh; overflow-y: auto; border-radius: 24px 24px 0 0; padding: 18px 16px calc(20px + env(safe-area-inset-bottom));
-        background: #221038; border: 1px solid var(--line); border-bottom: 0; animation: up .3s cubic-bezier(.2,.9,.3,1) both; }
+        background: #fff; border: 1px solid var(--line); border-bottom: 0; animation: up .3s cubic-bezier(.2,.9,.3,1) both; }
     @keyframes up { from { transform: translate(-50%, 100%); } }
     .drawer h3 { margin: 0 0 12px; font-size: 16px; text-align: center; }
     .citem { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border-radius: 16px;
@@ -156,28 +160,34 @@
     .citem .cm { font-size: 11px; color: var(--dim); margin-top: 3px; }
     .citem .ca { display: flex; gap: 6px; }
     .citem .ca button { width: 34px; height: 34px; border-radius: 11px; border: 1px solid var(--line);
-        background: rgba(0,0,0,.25); color: var(--text); font-size: 14px; cursor: pointer; }
+        background: rgba(29,42,58,.06); color: var(--text); font-size: 14px; cursor: pointer; }
 
     /* ---- modal cài đặt ---- */
     .modal { position: fixed; inset: 0; z-index: 70; display: none; align-items: center; justify-content: center; padding: 20px; }
     .modal.show { display: flex; }
     .modal .veil { position: absolute; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(3px); }
     .mpan { position: relative; width: 100%; max-width: 400px; border-radius: 22px; padding: 20px;
-        background: #221038; border: 1px solid var(--line); }
+        background: #fff; border: 1px solid var(--line); }
     .mpan h3 { margin: 0 0 14px; font-size: 16px; }
     .lblrow { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-    .lblrow label { flex: none; }
-    .lblrow .chip { margin: 16px 0 7px; }
+    .lblrow label { flex: 1; }
+    .lblrow .chip { margin: 16px 0 7px; flex: none; white-space: nowrap; }
     .mload { max-height: 46vh; overflow: auto; }
     .mitem { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1.5px solid var(--line);
         border-radius: 14px; margin-bottom: 8px; cursor: pointer; font-size: 13.5px; }
-    .mitem input { width: 18px; height: 18px; flex: none; accent-color: #ff6ec7; }
+    .mitem input { width: 18px; height: 18px; flex: none; accent-color: #A95C48; }
     .mitem .mp { color: var(--dim); font-size: 11px; margin-left: auto; flex: none; }
-    .mitem.sel { border-color: var(--c1); background: rgba(255,110,199,.12); }
+    .mitem.sel { border-color: var(--c1); background: rgba(169,92,72,.09); }
+    .imggrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .igitem { border: 1.5px solid var(--line); border-radius: 12px; overflow: hidden; cursor: pointer; background: var(--glass); padding: 0; }
+    .igitem.sel { border-color: var(--c1); box-shadow: 0 0 0 2px rgba(169,92,72,.4); }
+    .igpic { display: flex; align-items: center; justify-content: center; width: 100%; aspect-ratio: 1; background: rgba(29,42,58,.05); font-size: 30px; }
+    .igpic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .igname { display: block; font-size: 10px; padding: 4px 5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; }
 
     .toast { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(8px);
         z-index: 99; max-width: min(88vw, 420px); padding: 10px 16px; border-radius: 999px;
-        background: rgba(0,0,0,.78); color: #fff; font-size: 13px; text-align: center;
+        background: rgba(29,42,58,.95); color: #fff; font-size: 13px; text-align: center;
         opacity: 0; pointer-events: none; transition: opacity .25s, transform .25s; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .spin { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.4);
@@ -193,7 +203,7 @@
         <div class="lock" id="lockCard">
             <div class="emo">🔐</div>
             <h2>Thiệp Nhà Lệ</h2>
-            <p>Chỉ dành cho chủ xưởng — nhập mật khẩu để tạo thiệp</p>
+            <p>Chỉ dành cho chủ nhà — nhập mật khẩu để tạo thiệp.<br>Mật khẩu đặt bằng hàm <b>caiDat()</b> trong Apps Script.</p>
             <input type="password" id="fPass" placeholder="Mật khẩu…" autocomplete="current-password">
             <div class="sticky"><button class="btn" id="btnLogin">Đăng nhập →</button></div>
         </div>
@@ -202,7 +212,7 @@
     <!-- Bước 1 · chọn mẫu -->
     <section class="scr" id="scrTpl">
         <div class="top">
-            <div class="logo">Studio Thiệp</div>
+            <div class="logo">Thiệp Nhà Lệ</div>
             <div class="icbtns">
                 <button class="icbtn" id="btnList" title="Thiệp của tôi">🗂</button>
                 <button class="icbtn" id="btnSet" title="Cài đặt">⚙️</button>
@@ -248,11 +258,17 @@
             <input id="fDate" type="date">
             <p class="hint">Có ngày → thiệp tự đếm ngược từng giây. Để trống nếu không cần.</p>
 
-            <label>Ảnh bìa (1 link)</label>
-            <input id="fImage" placeholder="https://… hoặc images/anh.jpg" inputmode="url">
-            <label>Ảnh kỷ niệm — mỗi dòng 1 link (2–10 ảnh)</label>
-            <textarea id="fPhotos" style="min-height:84px" placeholder="https://i.imgur.com/a.jpg&#10;https://i.imgur.com/b.jpg&#10;images/ke-niem.jpg"></textarea>
-            <p class="hint">≥2 ảnh sẽ có cầu xoay 3D / sổ lật. Với stories, 4 ảnh đầu được dùng.</p>
+            <div class="lblrow">
+                <label>Ảnh bìa (ảnh hoặc video)</label>
+                <button class="chip" id="btnImgCover" type="button">🖼 Chọn từ images</button>
+            </div>
+            <input id="fImage" placeholder="https://… hoặc images/anh.jpg hoặc images/video.mp4" inputmode="url">
+            <div class="lblrow">
+                <label>Ảnh kỷ niệm — mỗi dòng 1 link (2–10 file)</label>
+                <button class="chip" id="btnImgPhotos" type="button">🖼 Chọn từ images</button>
+            </div>
+            <textarea id="fPhotos" style="min-height:84px" placeholder="https://i.imgur.com/a.jpg&#10;https://i.imgur.com/b.jpg&#10;images/ke-niem.jpg&#10;images/phim-nho.mp4"></textarea>
+            <p class="hint">≥2 ảnh có cầu xoay 3D / sổ lật. File .mp4/.webm → tự phát thành video (có tiếng khi bấm xem lớn). Link ngoài vẫn dùng tốt.</p>
 
             <div class="lblrow">
                 <label>Nhạc nền</label>
@@ -266,7 +282,7 @@
             <label>Kiểu mở thiệp</label>
             <div class="optgrid" id="modeGrid"></div>
             <label>Hiệu ứng thêm</label>
-            <div class="optgrid g4" id="fxGrid"></div>
+            <div class="optgrid" id="fxGrid"></div>
         </div>
 
         <div class="row2">
@@ -339,6 +355,20 @@
         </div>
     </div>
 
+    <!-- Chọn ảnh/video có sẵn trong thư mục images trên GitHub -->
+    <div class="modal" id="mImage">
+        <div class="veil" id="imageVeil"></div>
+        <div class="mpan">
+            <h3>🖼 File trong thư mục <span style="color:var(--c1)">images</span></h3>
+            <div class="mload" id="imageBody"><p class="hint" style="text-align:center">Đang tải danh sách…</p></div>
+            <div class="row2">
+                <button class="btn ghost" id="imageClose">Đóng</button>
+                <button class="btn" id="imageApply">Chọn xong</button>
+            </div>
+            <p class="hint">Chạm để chọn. Ảnh bìa chỉ nhận 1 file; ảnh kỷ niệm chọn được nhiều (thứ tự bằng thứ tự chạm). Thêm file mới: repo GitHub → Add file → Upload files → vào thư mục images.</p>
+        </div>
+    </div>
+
     <div class="toast" id="toast" role="status"></div>
 </div>
 
@@ -361,7 +391,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
 
     // ================== 13 MẪU THIỆP ==================
     const TPLS = [
-        { k: 'default',   n: 'Tổng hợp',   e: '💌', dark: 0, g: 'linear-gradient(135deg,#ff6ec7,#7c4dff)',
+        { k: 'default',   n: 'Tổng hợp',   e: '💌', dark: 0, g: 'linear-gradient(135deg,#A95C48,#94A388)',
           sug: ['Chúc bạn một ngày thật rực rỡ,\nnụ cười tươi hơn cả hoa 🌸\nVà luôn nhớ rằng bạn rất được yêu thương 💖', 'Gửi bạn chút niềm vui giữa ngày bận rộn ✨\nMong mọi thứ hôm nay đều suôn sẻ,\ncòn tối nay thì thật ngọt ngào 🌙'] },
         { k: 'nhagiao',   n: 'Tri ân Thầy Cô', e: '🌻', dark: 0, g: 'linear-gradient(135deg,#0b1d19,#2e7d6b)',
           sug: ['Cảm ơn thầy/cô đã kiên nhẫn dẫn lối,\ndạy em không chỉ chữ mà cả cách làm người 🌻\nChúc thầy/cô luôn mạnh khỏe và nhiều niềm vui ạ!', 'Một bông hoa cho thầy/cô ngày 20/11 🌻\nCảm ơn vì mọi sự tận tâm của thầy/cô.\nHọc trò của thầy/cô luôn tự hào về cô!'] },
@@ -396,10 +426,16 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         { k: 'stories',  e: '📱', n: 'Stories' }
     ];
     const FXS = [
-        { k: '',         e: '✨', n: 'Theo mẫu' },
-        { k: 'galaxy',   e: '🌌', n: 'Thiên hà' },
-        { k: 'matrix',   e: '🟢', n: 'Ma trận' },
-        { k: 'flipbook', e: '📖', n: 'Sổ lật' }
+        { k: '',           e: '✨', n: 'Theo mẫu' },
+        { k: 'galaxy',     e: '🌌', n: 'Thiên hà' },
+        { k: 'matrix',     e: '🟢', n: 'Ma trận' },
+        { k: 'flipbook',   e: '📖', n: 'Sổ lật' },
+        { k: 'fireworks',  e: '🎆', n: 'Pháo hoa' },
+        { k: 'snow',       e: '❄️', n: 'Tuyết rơi' },
+        { k: 'petals',     e: '🌸', n: 'Cánh hoa' },
+        { k: 'bubbles',    e: '🫧', n: 'Bong bóng' },
+        { k: 'hearts',     e: '💖', n: 'Tim bay' },
+        { k: 'meteor',     e: '🌠', n: 'Sao băng' }
     ];
 
     const state = { theme: '', mode: 'envelope', fx: '', editingId: '', lastLink: '' };
@@ -465,7 +501,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
     function loggedIn() { return token && Date.now() < tokExp; }
     async function enter() {
-        $('hello').textContent = 'Xin chào chủ xưởng 👋 Chọn một mẫu để bắt đầu';
+        $('hello').textContent = 'Xin chào chủ nhà 👋 Chọn một mẫu để bắt đầu';
         renderTplGrid();
         show('scrTpl');
     }
@@ -550,11 +586,15 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             updCnt();
             toast('✨ AI đã viết lại rồi nhé!');
         } catch (e) {
-            $('fContent').value = localRewrite(txt, $('aiTone').value);
-            updCnt();
-            if (e.code === 'no_key') toast('Chưa cài GEMINI_KEY → dùng bộ gợi ý offline. Cài key (xem README) để AI thật viết nhé');
-            else if (e.code === 'auth') toast('Phiên hết hạn — đăng nhập lại là dùng tiếp được, lời chúc vẫn giữ nguyên');
-            else toast('AI bận (' + (e.message || 'lỗi mạng') + ') → tạm dùng gợi ý offline, ý chính của bạn vẫn được giữ');
+            if (e.code === 'auth') {
+                // chỉ hết phiên — GIỮ NGUYÊN lời chúc của bạn, không ghi đè bằng gợi ý offline
+                toast('⏳ Phiên hết hạn — đăng nhập lại là dùng tiếp được, lời chúc vẫn giữ nguyên');
+            } else {
+                $('fContent').value = localRewrite(txt, $('aiTone').value);
+                updCnt();
+                if (e.code === 'no_key') toast('Chưa cài GEMINI_KEY → dùng bộ gợi ý offline. Cài key (xem README) để AI thật viết nhé');
+                else toast('AI bận (' + (e.message || 'lỗi mạng') + ') → tạm dùng gợi ý offline, ý chính của bạn vẫn được giữ');
+            }
         } finally {
             btn.disabled = false;
             btn.textContent = '✨ AI viết lại';
@@ -634,7 +674,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const t = TPLS.find(x => x.k === state.theme) || TPLS[0];
         try {
             // màu QR theo 2 màu đầu của gradient mẫu
-            const m = t.g.match(/#[0-9a-f]{6}/gi) || ['#ff6ec7', '#7c4dff'];
+            const m = t.g.match(/#[0-9a-f]{6}/gi) || ['#A95C48', '#94A388'];
             drawPrettyQR($('qrCv'), state.lastLink, m[0], m[1] || m[0]);
         } catch (e) {
             toast('QR tạo lỗi — link vẫn dùng tốt nhé');
@@ -782,6 +822,76 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         toast(all.length ? '🎵 Đã chọn ' + pickedTracks.length + ' bài từ assets' + (manual.length ? ' + ' + manual.length + ' link ngoài' : '') : 'Chưa chọn bài nào');
     }
 
+    // --- chọn ảnh/video có sẵn trong thư mục images (GitHub Pages) ---
+    const IMG_EXT = /\.(jpe?g|png|webp|gif|avif|bmp)$/i;
+    const VIDEO_EXT = /\.(mp4|webm|mov|m4v|ogv)$/i;
+    let imgTarget = 'photos', pickedImages = [];
+    async function openImagePicker(target) {
+        imgTarget = target;
+        pickedImages = target === 'cover'
+            ? [val('fImage')].filter(Boolean)
+            : $('fPhotos').value.split(/[;\n]+/).map(s => s.trim()).filter(Boolean);
+        $('mImage').classList.add('show');
+        const body = $('imageBody');
+        body.innerHTML = '<p class="hint" style="text-align:center">Đang tải danh sách…</p>';
+        const info = ghRepoInfo();
+        if (!info) {
+            body.innerHTML = '<p class="hint">Tính năng này đọc trực tiếp từ repo GitHub Pages. Site của bạn không chạy trên *.github.io nên không đọc được — bạn dán link/đường dẫn ảnh vào ô bên dưới là dùng bình thường nhé.</p>';
+            return;
+        }
+        let files = null, dirUsed = '';
+        for (const dir of ['images', 'image', 'assets/images', 'img', 'anh']) {
+            try {
+                const r = await fetch('https://api.github.com/repos/' + info.owner + '/' + info.repo + '/contents/' + dir,
+                    { headers: { 'Accept': 'application/vnd.github+json' } });
+                if (r.ok) {
+                    const j = await r.json();
+                    if (Array.isArray(j)) {
+                        const fl = j.filter(f => f.type === 'file' && (IMG_EXT.test(f.name) || VIDEO_EXT.test(f.name)));
+                        if (fl.length) { files = fl; dirUsed = dir; break; }
+                    }
+                }
+            } catch (e) {}
+        }
+        if (!files) {
+            body.innerHTML = '<p class="hint">Chưa đọc được thư mục ảnh (repo phải để chế độ <b>Public</b> và có thư mục <b>image</b>/<b>images</b> chứa ảnh/video). Muốn thêm: mở repo GitHub → <b>Add file → Create new file</b> → gõ tên “<b>image/anh.jpg</b>” → upload. Hoặc dán link vào ô bên dưới.</p>';
+            return;
+        }
+        const esc2 = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+        body.innerHTML = '<div class="imggrid">' + files.map(f => {
+            const p = dirUsed + '/' + f.name;
+            const vid = VIDEO_EXT.test(f.name);
+            const url = f.download_url || ('https://raw.githubusercontent.com/' + info.owner + '/' + info.repo + '/HEAD/' + p);
+            const on = pickedImages.includes(p) || pickedImages.some(x => x.endsWith('/' + f.name));
+            return '<div class="igitem' + (on ? ' sel' : '') + '" data-p="' + esc2(p) + '">' +
+                '<span class="igpic">' + (vid ? '🎬' : '<img src="' + esc2(url) + '" loading="lazy" alt="">') + '</span>' +
+                '<span class="igname">' + (vid ? '🎬 ' : '') + esc2(f.name) + '</span></div>';
+        }).join('') + '</div>';
+        body.querySelectorAll('.igitem').forEach(el => el.addEventListener('click', () => {
+            const p = el.dataset.p;
+            if (imgTarget === 'cover') {
+                pickedImages = [p];
+                body.querySelectorAll('.igitem').forEach(x => x.classList.toggle('sel', x === el));
+            } else {
+                const i = pickedImages.indexOf(p);
+                if (i >= 0) { pickedImages.splice(i, 1); el.classList.remove('sel'); }
+                else { pickedImages.push(p); el.classList.add('sel'); }
+            }
+        }));
+    }
+    function applyImages() {
+        if (imgTarget === 'cover') {
+            if (pickedImages.length) $('fImage').value = pickedImages[0];
+        } else if (pickedImages.length) {
+            // giữ lại link ngoài đã dán tay, nối tiếp theo ảnh trong thư mục (đúng thứ tự chạm)
+            const manual = $('fPhotos').value.split(/[;\n]+/).map(s => s.trim()).filter(Boolean)
+                .filter(s => /^https?:|^data:/.test(s) || (!pickedImages.includes(s) && !pickedImages.some(p => p.endsWith('/' + s))));
+            $('fPhotos').value = manual.concat(pickedImages).join('\n');
+        }
+        $('mImage').classList.remove('show');
+        toast(pickedImages.length ? '🖼 Đã chọn ' + pickedImages.length + ' file từ images' : 'Chưa chọn file nào');
+    }
+
     // ================== SỰ KIỆN ==================
     $('btnLogin').addEventListener('click', doLogin);
     $('fPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
@@ -791,6 +901,11 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     $('musicVeil').addEventListener('click', () => $('mMusic').classList.remove('show'));
     $('musicClose').addEventListener('click', () => $('mMusic').classList.remove('show'));
     $('musicApply').addEventListener('click', applyPicked);
+    $('btnImgCover').addEventListener('click', () => openImagePicker('cover'));
+    $('btnImgPhotos').addEventListener('click', () => openImagePicker('photos'));
+    $('imageVeil').addEventListener('click', () => $('mImage').classList.remove('show'));
+    $('imageClose').addEventListener('click', () => $('mImage').classList.remove('show'));
+    $('imageApply').addEventListener('click', applyImages);
     $('btnPreview').addEventListener('click', async () => {
         try {
             const id = await saveCard(true);
