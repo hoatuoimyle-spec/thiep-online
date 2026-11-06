@@ -12,8 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Thiệp Nhà Lệ">
 <title>Thiệp Nhà Lệ · Tạo thiệp trong 3 bước</title>
-<!-- Xưởng tạo thiệp — đặt CÙNG THƯ MỤC với index.html.
-     Cần Apps Script v4 (Code.gs có doPost). Mật khẩu đặt bằng hàm caiDat(). -->
+<!-- Trang quản trị của chủ nhà — đặt CÙNG THƯ MỤC với index.html. Cần Apps Script v4 (Code.gs có doPost). -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Pacifico&display=swap" rel="stylesheet">
@@ -46,10 +45,10 @@
     .scr.show { display: block; }
     @keyframes in { from { opacity: 0; transform: translateY(16px); } }
 
-    .logo { font-family: 'Pacifico', cursive; font-size: 26px; text-align: center; margin: 8px 0 2px;
-        background: linear-gradient(90deg, #1D2A3A, #A95C48, #94A388, #1D2A3A); background-size: 250% 100%;
-        -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 5s linear infinite; }
-    @keyframes shine { to { background-position: 250% 0; } }
+    .logo { font-family: 'Pacifico', cursive; font-size: 26px; text-align: center; margin: 8px 0 2px; color: var(--text); }
+    .brand { display: flex; align-items: center; gap: 9px; }
+    .blogo { width: 34px; height: 34px; flex: none; display: block; }
+    .blogo svg { width: 100%; height: 100%; display: block; }
     .sub { text-align: center; color: var(--dim); font-size: 13px; margin: 0 0 18px; }
 
     .top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
@@ -66,16 +65,24 @@
     .btn:active { transform: scale(.96); }
     .btn:not(.ghost):hover:not(:disabled) { background: #D2A094; }
     .btn:disabled { opacity: .45; pointer-events: none; }
-    .btn.ghost { background: var(--glass); border: 1px solid var(--line); box-shadow: none; }
+    .btn.ghost { background: var(--glass); color: var(--text); border: 1px solid var(--line); box-shadow: none; }
+    .btn.ghost:hover:not(:disabled) { background: var(--glass2); }
     .btn.sm { width: auto; padding: 10px 16px; font-size: 13px; border-radius: 999px; }
     .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
 
     /* ---- đăng nhập ---- */
-    .lock { max-width: 360px; margin: 9vh auto 0; padding: 30px 24px; border-radius: 26px;
-        background: var(--glass); border: 1px solid var(--line); backdrop-filter: blur(14px); text-align: center; }
-    .lock .emo { font-size: 52px; margin-bottom: 6px; }
-    .lock h2 { margin: 0 0 4px; font-size: 19px; }
-    .lock p { color: var(--dim); font-size: 12.5px; margin: 0 0 18px; line-height: 1.6; }
+    .lock { max-width: 360px; margin: 8vh auto 0; padding: 32px 26px 28px; border-radius: 26px;
+        background: var(--glass2); border: 1px solid var(--line); box-shadow: 0 24px 60px rgba(29,42,58,.10);
+        backdrop-filter: blur(14px); text-align: center; }
+    .bighero { width: 98px; height: 98px; margin: 0 auto 8px; }
+    .bighero svg { width: 100%; height: 100%; display: block; }
+    .lock h2 { margin: 0; font-family: 'Pacifico', cursive; font-weight: 400; font-size: 26px; color: var(--text); }
+    .locksub { color: var(--dim); font-size: 12.5px; margin: 7px 0 20px; line-height: 1.6; }
+    .passwrap { position: relative; }
+    .passwrap input { padding-right: 48px; }
+    .seye { position: absolute; right: 7px; top: 50%; transform: translateY(-50%); width: 34px; height: 34px;
+        border: 0; border-radius: 11px; background: transparent; cursor: pointer; font-size: 15px; color: var(--dim); }
+    .seye:hover { background: rgba(29,42,58,.07); }
     .lock.err { animation: shake .4s; }
     @keyframes shake { 20%, 60% { transform: translateX(-8px); } 40%, 80% { transform: translateX(8px); } }
 
@@ -201,18 +208,21 @@
     <!-- Đăng nhập -->
     <section class="scr" id="scrLogin">
         <div class="lock" id="lockCard">
-            <div class="emo">🔐</div>
+            <div class="bighero" id="logoHero" aria-hidden="true"></div>
             <h2>Thiệp Nhà Lệ</h2>
-            <p>Chỉ dành cho chủ nhà — nhập mật khẩu để tạo thiệp.<br>Mật khẩu đặt bằng hàm <b>caiDat()</b> trong Apps Script.</p>
-            <input type="password" id="fPass" placeholder="Mật khẩu…" autocomplete="current-password">
-            <div class="sticky"><button class="btn" id="btnLogin">Đăng nhập →</button></div>
+            <p class="locksub">Khu vực dành riêng cho chủ nhà.<br>Đăng nhập để tạo và quản lý thiệp.</p>
+            <div class="passwrap">
+                <input type="password" id="fPass" placeholder="Mật khẩu" autocomplete="current-password">
+                <button class="seye" id="btnEye" type="button" title="Hiện / ẩn mật khẩu">👁</button>
+            </div>
+            <div class="sticky"><button class="btn" id="btnLogin">Đăng nhập</button></div>
         </div>
     </section>
 
     <!-- Bước 1 · chọn mẫu -->
     <section class="scr" id="scrTpl">
         <div class="top">
-            <div class="logo">Thiệp Nhà Lệ</div>
+            <div class="brand"><span class="blogo" aria-hidden="true"></span><span class="logo">Thiệp Nhà Lệ</span></div>
             <div class="icbtns">
                 <button class="icbtn" id="btnList" title="Thiệp của tôi">🗂</button>
                 <button class="icbtn" id="btnSet" title="Cài đặt">⚙️</button>
@@ -387,6 +397,25 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     let LINK_BASE = localStorage.getItem('thiep-base') || (baseDir + 'index.html');
 
     const $ = id => document.getElementById(id);
+
+    // ---- Logo: lá thiệp ngại ngùng — vẽ đúng 5 màu thương hiệu (kem/navy/matcha/nâu đất/nâu nhạt), SVG inline ----
+    const LOGO_SVG = '<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Logo Thiệp Nhà Lệ">'
+        + '<ellipse cx="61" cy="113" rx="26" ry="4.5" fill="#1D2A3A" opacity=".07"/>'
+        + '<path d="M100 13 101.8 16.2 105 18 101.8 19.8 100 23 98.2 19.8 95 18 98.2 16.2Z" fill="#D2A094"/>'
+        + '<circle cx="105" cy="42" r="2" fill="#A95C48" opacity=".55"/>'
+        + '<path d="M14 33 15.3 35.7 18 37 15.3 38.3 14 41 12.7 38.3 10 37 12.7 35.7Z" fill="#94A388"/>'
+        + '<path d="M17 58c-2.6-1.9-4.4-3.4-4.4-5.3 0-1.5 1.1-2.6 2.5-2.6.8 0 1.5.4 1.9 1.1.4-.7 1.1-1.1 1.9-1.1 1.4 0 2.5 1.1 2.5 2.6 0 1.9-1.8 3.4-4.4 5.3z" fill="#D2A094" transform="rotate(-10 17 55)"/>'
+        + '<g transform="rotate(-5 60 64)">'
+        + '<rect x="26" y="18" width="68" height="92" rx="12" fill="#FFFDF9" stroke="#1D2A3A" stroke-width="3.5"/>'
+        + '<rect x="18" y="10" width="34" height="13" rx="3" fill="#94A388" stroke="#1D2A3A" stroke-width="2" transform="rotate(-8 35 16.5)"/>'
+        + '<ellipse cx="38.5" cy="60" rx="6" ry="4" fill="#D2A094"/><ellipse cx="81.5" cy="60" rx="6" ry="4" fill="#D2A094"/>'
+        + '<path d="M39 51q4.5 5 9 0" fill="none" stroke="#1D2A3A" stroke-width="3" stroke-linecap="round"/>'
+        + '<path d="M72 51q4.5 5 9 0" fill="none" stroke="#1D2A3A" stroke-width="3" stroke-linecap="round"/>'
+        + '<path d="M55 63.5q2.5 2.6 5 0t5 0" fill="none" stroke="#1D2A3A" stroke-width="2.6" stroke-linecap="round"/>'
+        + '<path d="M60 93c-6-4.5-10.5-8.2-10.5-12.8 0-3.6 2.7-6.2 6.1-6.2 1.9 0 3.6 1 4.4 2.6.8-1.6 2.5-2.6 4.4-2.6 3.4 0 6.1 2.6 6.1 6.2 0 4.6-4.5 8.3-10.5 12.8z" fill="#A95C48" stroke="#1D2A3A" stroke-width="2.5" stroke-linejoin="round"/>'
+        + '<circle cx="50.5" cy="76.5" r="4.2" fill="#FFFDF9" stroke="#1D2A3A" stroke-width="2.5"/>'
+        + '<circle cx="69.5" cy="76.5" r="4.2" fill="#FFFDF9" stroke="#1D2A3A" stroke-width="2.5"/>'
+        + '</g></svg>';
     const val = id => $(id).value.trim();
 
     // ================== 13 MẪU THIỆP ==================
@@ -593,7 +622,10 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
                 $('fContent').value = localRewrite(txt, $('aiTone').value);
                 updCnt();
                 if (e.code === 'no_key') toast('Chưa cài GEMINI_KEY → dùng bộ gợi ý offline. Cài key (xem README) để AI thật viết nhé');
-                else toast('AI bận (' + (e.message || 'lỗi mạng') + ') → tạm dùng gợi ý offline, ý chính của bạn vẫn được giữ');
+                else {
+                    const why = (e.message || 'lỗi mạng').replace('Failed to fetch', 'không gọi được máy chủ');
+                    toast('AI bận (' + why + ') → tạm dùng gợi ý offline, ý chính của bạn vẫn được giữ');
+                }
             }
         } finally {
             btn.disabled = false;
@@ -894,6 +926,11 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
 
     // ================== SỰ KIỆN ==================
     $('btnLogin').addEventListener('click', doLogin);
+    $('btnEye').addEventListener('click', () => {
+        const p = $('fPass');
+        p.type = p.type === 'password' ? 'text' : 'password';
+        $('btnEye').textContent = p.type === 'password' ? '👁' : '🙈';
+    });
     $('fPass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
     $('btnBack1').addEventListener('click', () => show('scrTpl'));
     $('btnAI').addEventListener('click', aiRewrite);
@@ -968,6 +1005,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     $('btnLogout').addEventListener('click', () => { $('mSet').classList.remove('show'); doLogout('Đã đăng xuất'); });
 
     // ================== KHỞI ĐỘNG ==================
+    $('logoHero').innerHTML = LOGO_SVG;
+    document.querySelectorAll('.blogo').forEach(el => el.innerHTML = LOGO_SVG);
     renderOpts();
     if (loggedIn()) enter();
     else show('scrLogin');
