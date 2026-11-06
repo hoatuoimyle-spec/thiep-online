@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#F7F5F0">
+<meta name="theme-color" content="#FFE9F3">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -21,39 +21,40 @@
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
     /* =====================================================================
-       THEME MẶC ĐỊNH — bảng màu thương hiệu "Nhà Lệ" (anti-AI, 60-30-10):
-       60% nền kem #F7F5F0 · 30% chữ/cấu trúc navy #1D2A3A · 10% điểm nhấn.
-       Matcha #94A388 (thẻ/badge) · Nâu đất #A95C48 (nút CTA duy nhất) ·
-       Nâu đất nhạt #D2A094 (hover / thanh tiến trình).
+       THEME MẶC ĐỊNH v5.2 — bảng màu “Candy GenZ” (cập nhật theo feedback:
+       nền kem cũ bị nhận xét là “già quá”, chuyển sang pastel hồng–tím–xanh
+       hợp GenZ nữ, vẫn giữ chữ navy #1D2A3A cho độ tương phản):
+       nền gradient #FFE9F3 → #F5E8FF → #E0F4FF · CTA hồng dâu #D6336C ·
+       aurora hồng #FFA8D8 / xanh biếc #9BDFFF / tím pastel #CBAAFF.
        Mỗi theme khác chỉ ghi đè các biến --xxx
        và (nếu cần) vài hiệu ứng riêng ở khối "body[data-theme=...]" bên dưới.
        ===================================================================== */
     :root {
-        --bg: #F7F5F0;
-        --c1: #D2A094; --c2: #A8B39A; --c3: #E4CDB6; --blob-o: .4;
-        --accent: #A95C48;
+        --bg: linear-gradient(165deg, #FFE9F3 0%, #F5E8FF 46%, #E0F4FF 100%);
+        --c1: #FFA8D8; --c2: #9BDFFF; --c3: #CBAAFF; --blob-o: .5;
+        --accent: #D6336C;
         --text: #1D2A3A;
         --body-font: 'Be Vietnam Pro';
-        --env-back: linear-gradient(135deg, #C97B5F, #A95C48);
-        --env-front: linear-gradient(160deg, #E8C2AC, #C97B5F);
-        --env-flap: linear-gradient(180deg, #F2D8C6, #D9A88F);
+        --env-back: linear-gradient(135deg, #FF9ED2, #E0559E);
+        --env-front: linear-gradient(160deg, #FFD9EC, #FF9ED2);
+        --env-flap: linear-gradient(180deg, #FFE7F2, #FFB9DC);
         --env-border: none;
-        --glow: rgba(169,92,72,.32);
+        --glow: rgba(224,85,158,.4);
         --env-shadow: 0 20px 50px var(--glow);
-        --title-grad: linear-gradient(90deg, #1D2A3A, #A95C48, #94A388, #1D2A3A);
+        --title-grad: linear-gradient(90deg, #E0447C, #9B6BFF, #38B6FF, #E0447C);
         --title-font: 'Pacifico', cursive;
         --title-size: 30px; --title-weight: 400;
         --card-bg: rgba(255,255,255,.8);
-        --card-border: rgba(29,42,58,.14); --card-bw: 1px;
+        --card-border: rgba(214,51,108,.2); --card-bw: 1px;
         --card-radius: 28px; --card-blur: blur(14px);
-        --card-shadow: 0 25px 60px rgba(29,42,58,.16);
-        --btn: #A95C48; --btn-text: #fff;
+        --card-shadow: 0 25px 60px rgba(214,51,108,.18);
+        --btn: #D6336C; --btn-text: #fff;
         --btn-radius: 999px; --btn-shadow: none;
-        --prog: linear-gradient(90deg, #A95C48, #D2A094);
-        --ghost-bg: rgba(255,255,255,.66); --ghost-border: rgba(29,42,58,.22);
-        --track: rgba(29,42,58,.14);
+        --prog: linear-gradient(90deg, #D6336C, #7FD8FF);
+        --ghost-bg: rgba(255,255,255,.7); --ghost-border: rgba(214,51,108,.28);
+        --track: rgba(214,51,108,.15);
         --photo-bg: #fff;
-        --badge-bg: rgba(148,163,136,.16); --badge-border: rgba(148,163,136,.6); --badge-color: var(--accent);
+        --badge-bg: rgba(224,85,158,.12); --badge-border: rgba(224,85,158,.55); --badge-color: var(--accent);
     }
 
     /* ===================== 20/11 NGÀY NHÀ GIÁO ===================== */
@@ -165,6 +166,57 @@
     body[data-theme="coquette"] .card::before { left: 14px; }
     body[data-theme="coquette"] .card::after { right: 14px; animation-delay: -1.7s; }
     @keyframes sway { from { transform: rotate(-8deg); } to { transform: rotate(8deg); } }
+
+    /* ===================== BLING KAWAII (pink · cyan · purple) =====================
+       Mới v5.2 — theo yêu cầu "hot trending cho GenZ nữ": pastel hồng–xanh–tím,
+       bling bling lấp lánh khắp nền, phong cách siêu dễ thương. */
+    body[data-theme="kawaii"] {
+        --bg: linear-gradient(165deg, #FFDFF0 0%, #F0E4FF 48%, #D9F6FF 100%);
+        --c1: #FF8FD0; --c2: #8FD8FF; --c3: #C9A2FF; --blob-o: .55;
+        --accent: #E0447C; --text: #4A2545; --body-font: 'Quicksand';
+        --env-back: linear-gradient(135deg, #FF9ED2, #E0447C);
+        --env-front: linear-gradient(160deg, #FFDCEE, #FF8FCE);
+        --env-flap: linear-gradient(180deg, #FFE9F4, #FFB3DD);
+        --glow: rgba(255,143,208,.5);
+        --title-grad: linear-gradient(100deg, #FF6FB5, #B98BFF, #6FD3FF, #FF6FB5);
+        --title-font: 'Baloo 2', cursive; --title-size: 30px; --title-weight: 800;
+        --card-bg: rgba(255,255,255,.82); --card-border: rgba(255,143,208,.55); --card-bw: 2px; --card-radius: 32px;
+        --card-shadow: 0 25px 60px rgba(224,68,124,.22);
+        --btn: linear-gradient(135deg, #FF6FB5, #B98BFF); --btn-text: #fff;
+        --prog: linear-gradient(90deg, #FF6FB5, #6FD3FF);
+        --ghost-bg: rgba(255,255,255,.78); --ghost-border: rgba(255,143,208,.75); --track: rgba(224,68,124,.14);
+        --photo-bg: #fff;
+        --badge-bg: rgba(255,255,255,.78); --badge-border: rgba(255,143,208,.85); --badge-color: #D6336C;
+    }
+    /* Bling bling: 2 lớp sao lấp lánh nhấp nháy phủ khắp nền */
+    body[data-theme="kawaii"]::before, body[data-theme="kawaii"]::after {
+        content: ''; position: fixed; inset: -8%; pointer-events: none; z-index: 1;
+        background-image:
+            radial-gradient(circle at 12% 20%, rgba(255,255,255,.95) 0 1.6px, transparent 3px),
+            radial-gradient(circle at 76% 12%, rgba(255,255,255,.9) 0 1.3px, transparent 2.6px),
+            radial-gradient(circle at 88% 62%, rgba(255,255,255,.85) 0 1.8px, transparent 3.2px),
+            radial-gradient(circle at 30% 76%, rgba(255,255,255,.9) 0 1.4px, transparent 2.8px),
+            radial-gradient(circle at 54% 40%, rgba(255,255,255,.8) 0 1.2px, transparent 2.4px),
+            radial-gradient(circle at 8% 55%, rgba(255,255,255,.85) 0 1.5px, transparent 3px),
+            radial-gradient(circle at 64% 88%, rgba(255,255,255,.9) 0 1.4px, transparent 2.8px),
+            radial-gradient(circle at 42% 8%, rgba(255,255,255,.85) 0 1.3px, transparent 2.6px),
+            radial-gradient(circle at 22% 42%, rgba(255,255,255,.7) 0 1px, transparent 2.2px),
+            radial-gradient(circle at 92% 34%, rgba(255,255,255,.8) 0 1.2px, transparent 2.4px);
+        animation: bling 2.4s ease-in-out infinite alternate;
+    }
+    body[data-theme="kawaii"]::after { inset: -4%; animation-delay: -1.2s; animation-duration: 3.1s; }
+    @keyframes bling { from { opacity: .35; } to { opacity: 1; } }
+    body.lite[data-theme="kawaii"]::before, body.lite[data-theme="kawaii"]::after { animation: none; opacity: .8; }
+    /* Viền card chạy gradient hồng-tím-xanh như kẹo */
+    body[data-theme="kawaii"] .card::before {
+        content: ''; position: absolute; inset: -2px; border-radius: inherit; padding: 2px; pointer-events: none;
+        background: linear-gradient(135deg, #FF6FB5, #B98BFF, #6FD3FF, #FF6FB5);
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        mask-composite: exclude;
+        animation: hue 8s linear infinite;
+    }
 
     /* ===================== ACID RAVE ===================== */
     body[data-theme="rave"] {
@@ -639,7 +691,7 @@
              | pet 🐱 | bio 🔐 | ribbon 🎀 | blow 🕯️ | lever 🎰   (V5 thêm 5 kiểu)
        fx  : (trống) | galaxy | matrix | flipbook | fireworks
              | spectrum 🎵 | caustics 🌊 | gyro 💫 | kaleido 🔮 | glitch 👾
-       Màu sắc lấy theo biến theme → 13 mẫu × 10 kiểu mở đều tự đúng tông.
+       Màu sắc lấy theo biến theme → 14 mẫu × 10 kiểu mở đều tự đúng tông.
        ===================================================================== */
     .envelope-wrap.hidden { display: none; }
 
@@ -738,35 +790,55 @@
     .sttap div { flex: 1; }
     .stcnt { position: absolute; right: 14px; top: 22px; z-index: 6; font-size: 11px; opacity: .8; }
 
-    /* --- FLIPBOOK · sổ lật kỷ niệm (thay cầu xoay khi fx=flipbook) --- */
-    .flipbox { display: none; margin: 22px auto 4px; text-align: center; }
+    /* --- FLIPBOOK · sổ lật kỷ niệm (fx=flipbook) — bản "sổ tay 2 trang" v5.2:
+       quyển sổ gồm 2 trang ngang (trái + phải). ẢNH CHỈ NẰM TRANG PHẢI,
+       trang trái luôn là giấy trang trí (mặt sau mỗi trang + bìa trong). --- */
+    .flipbox { display: none; margin: 18px auto 4px; text-align: center; }
     .flipbox.show { display: block; }
-    .book { position: relative; width: min(76vw, 290px); height: min(96vw, 360px); margin: 0 auto; perspective: 1500px; touch-action: pan-y; }
-    @media (max-width: 520px) { .book { width: min(88vw, 330px); height: min(118vw, 425px); } }   /* điện thoại: sổ to hơn cho dễ nhìn */
-    .pg { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+    .book { --pgw: min(40vw, 215px);
+        position: relative; width: calc(var(--pgw) * 2); height: min(54vw, 292px);
+        margin: 0 auto; perspective: 1600px; touch-action: pan-y; }
+    /* bìa trong bên trái — thấy trước khi lật trang đầu tiên, không bao giờ có ảnh */
+    .book .inside { position: absolute; left: 0; top: 0; bottom: 0; width: 50%; z-index: 0;
+        border-radius: 8px 0 0 8px; overflow: hidden; background: var(--photo-bg, #fff);
+        box-shadow: inset -14px 0 20px -16px rgba(0,0,0,.28), 0 10px 26px rgba(0,0,0,.18); }
+    .pg { position: absolute; top: 0; bottom: 0; left: 50%; width: 50%;
+        transform-origin: left center; transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
         transition: transform .95s cubic-bezier(.4,.1,.2,1); will-change: transform; }
-    /* FIX MOBILE: trên iOS/Safari, mặt trang KHÔNG có transform riêng (mặt trước) nằm trong
-       preserve-3d + overflow:hidden + border-radius thường KHÔNG được vẽ ảnh tới khi chạm —
+    /* FIX MOBILE: trên iOS/Safari, mặt trang KHÔNG có transform riêng nằm trong
+       preserve-3d + overflow:hidden thường KHÔNG được vẽ ảnh tới khi chạm —
        ép mặt nào cũng có transform + translateZ(0) để browser dựng lớp riêng cho nó. */
     .pg .fr, .pg .bk { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
-        transform: translateZ(0);
-        border-radius: 4px 14px 14px 4px; overflow: hidden; background: var(--photo-bg, #fff);
-        box-shadow: 0 12px 30px rgba(0,0,0,.35); display: flex; align-items: center; justify-content: center; }
-    .pg .bk { transform: rotateY(180deg) translateZ(0); }
+        transform: translateZ(0); overflow: hidden; background: var(--photo-bg, #fff);
+        display: flex; align-items: center; justify-content: center; }
+    .pg .fr { border-radius: 4px 12px 12px 4px; box-shadow: inset 12px 0 16px -13px rgba(0,0,0,.32), 0 10px 26px rgba(0,0,0,.3); }
+    .pg .bk { transform: rotateY(180deg) translateZ(0); border-radius: 12px 4px 4px 12px;
+        box-shadow: inset -12px 0 16px -13px rgba(0,0,0,.32), 0 10px 26px rgba(0,0,0,.3); }
     .pg.turn { transform: rotateY(-180deg); }
     .pg img { width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(0); }
     .pg video { width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(0); }
     .pgface { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
-        width: 100%; height: 100%; padding: 18px; text-align: center; color: #5a4a52; }
+        width: 100%; height: 100%; padding: 14px; text-align: center; color: #5a4a52; }
     body[data-theme="brutal"] .pgface { color: #111; }
-    .pgface .pe { font-size: 46px; }
-    .pgface .pt { font-family: var(--title-font); font-size: 21px; line-height: 1.3; }
-    .pgface .ps { font-size: 12.5px; opacity: .75; }
+    .pgface .pe { font-size: 40px; }
+    .pgface .pt { font-family: var(--title-font); font-size: 19px; line-height: 1.3; }
+    .pgface .ps { font-size: 12px; opacity: .75; }
+    /* trang giấy trang trí (mặt sau mỗi trang & bìa trong) — kawaii, không bao giờ đặt ảnh */
+    .pgface.paper { position: relative; gap: 5px;
+        background: linear-gradient(rgba(90,74,82,.055) 1px, transparent 1px) 0 14px/100% 24px, var(--photo-bg, #fff); }
+    .pgface.paper::before { content: ''; position: absolute; top: 9px; left: 50%; width: 64px; height: 18px;
+        transform: translateX(-50%) rotate(-3deg); border-radius: 3px; opacity: .5;
+        background: linear-gradient(90deg, var(--c1), var(--c3)); }
+    .pgface.paper .pk { font-size: 30px; }
+    .pgface.paper .pt { font-size: 15px; }
+    .pgface.paper .ps { font-size: 11px; opacity: .6; }
+    /* fx=flipbook: nới khung thiệp để sổ 2 trang đủ chỗ, viền phải/trái mỏng đi */
+    body.fxflip .card { max-width: min(94vw, 560px); padding-inline: 16px; }
     .pgnote { font-size: 12px; opacity: .8; margin-top: 10px; }
 
     /* =====================================================================
        V5 · 5 KIỂU MỞ MỚI (pet · bio · ribbon · blow · lever)
-       + tông màu lấy theo biến theme → 13 mẫu đều tự hòa hợp, không phá bảng màu gốc.
+       + tông màu lấy theo biến theme → 14 mẫu đều tự hòa hợp, không phá bảng màu gốc.
        ===================================================================== */
     /* --- PET · vuốt ve thú cưng --- */
     .petwrap { display: flex; flex-direction: column; align-items: center; gap: 16px; user-select: none; -webkit-user-select: none; }
@@ -1117,7 +1189,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     // Muốn test với backend khác: localStorage.setItem('thiep-api', 'http://…/exec') rồi tải lại
     const API_URL = (location.search.indexOf('debug') >= 0 && localStorage.getItem('thiep-api')) || "https://script.google.com/macros/s/AKfycbxkIv3VPOhbbfNDY4odmXZK8CvHeqh5_EnTZY-3Q5JK5Em9XVBmFasUTE6UBT9y7qoa/exec";
     // Cột Google Sheet: id | title | content | date | image | audio | voice | from | to | theme | photos | mode | fx
-    // Cột theme: default, nhagiao, y2k, brutal, coquette, rave, aero, phat, meo, xinloi, tet, giangsinh, kyniem
+    // Cột theme: default, nhagiao, y2k, brutal, coquette, kawaii, rave, aero, phat, meo, xinloi, tet, giangsinh, kyniem
     // Cột mode (kiểu mở thiệp): envelope (mặc định) | hold | scratch | chat | stories | pet | bio | ribbon | blow | lever
     // Cột fx   (hiệu ứng thêm): galaxy | matrix | flipbook | fireworks | spectrum | caustics | gyro | kaleido | glitch
     // Xem thử: index.html?demo=meo · kết hợp: ?demo=tet&mode=hold&fx=galaxy · tắt hiệu ứng: ?fx=0
@@ -1126,9 +1198,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     // Mỗi theme: nội dung + hiệu ứng. Phần màu/kiểu dáng nằm ở CSS (body[data-theme=...]).
     const THEMES = {
         default: {
-            title: 'Thiệp Chúc Mừng', meta: '#F7F5F0', seal: '💌', hint: '✨ Chạm để mở thư ✨', fonts: ['Pacifico'],
-            icons: ['💖', '✨', '🌸', '🎀', '💫', '🤍'],
-            confetti: ['#A95C48', '#D2A094', '#94A388', '#1D2A3A', '#E4CDB6', '#C97B5F'], burst: [],
+            title: 'Thiệp Chúc Mừng', meta: '#FFE9F3', seal: '💌', hint: '✨ Chạm để mở thư ✨', fonts: ['Pacifico'],
+            icons: ['💖', '✨', '🌸', '🎀', '💫', '💗'],
+            confetti: ['#FF6FB5', '#B98BFF', '#6FD3FF', '#FFD3EA', '#FFFFFF', '#FFE08A'], burst: ['💗', '✨', '🎀', '⭐'],
             badge: '', toFmt: n => `Gửi ${n} 💖`, fromPrefix: '— ',
             demo: { title: 'Chúc Mừng Sinh Nhật!', to: 'bạn yêu', from: 'Mình', date: 'today',
                 content: 'Tuổi mới thật nhiều niềm vui, ít deadline,\nnhiều tiền tiêu và luôn được yêu thương nhé! 🎂\nCảm ơn vì đã luôn là một phần đáng yêu trong cuộc sống của mình.' }
@@ -1165,6 +1237,15 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             badge: '🎀 gửi em một chút dịu dàng', toFmt: n => `Gửi ${n} 🤍`, fromPrefix: '— ', reveal: 'lines',
             demo: { title: 'Gửi Em Gái Nhỏ', to: 'em', from: 'Chị', date: '08/03/2026',
                 content: 'Chúc em một ngày dịu dàng như cánh hoa,\nlấp lánh như ngọc trai và ngọt như viên kẹo hồng.\nLuôn xinh đẹp, luôn được yêu thương nhé 🎀' }
+        },
+        kawaii: {
+            title: 'Thiệp Bling Kawaii', meta: '#FFDFF0', seal: '💗', hint: '💗 Chạm để mở thư lấp lánh 💗',
+            fonts: ['Baloo+2:wght@700;800', 'Quicksand:wght@400;500;700'],
+            icons: ['💗', '✨', '🎀', '⭐', '💎', '🫧', '🌸'], rate: 750, size: [16, 30],
+            confetti: ['#FF6FB5', '#B98BFF', '#6FD3FF', '#FFD3EA', '#FFFFFF'], burst: ['✨', '🎀', '💗', '⭐', '💎'],
+            badge: '✨ bling bling · dành cho bạn dễ thương nhất ✨', toFmt: n => `Gửi ${n} 💗`, fromPrefix: '— ',
+            demo: { title: 'Bestie Siêu Cấp Cute!', to: 'cậu', from: 'tớ', date: 'today',
+                content: 'Chúc cậu hôm nay lấp lánh như kim cương ✨\ndễ thương gấp một tỉ lần ngày thường,\nvà may mắn rơi đầy túi luôn nha 💗 Bling bling!' }
         },
         rave: {
             title: 'Invitation', meta: '#050505', seal: '🌀', hint: '🌀 TAP TO ENTER 🌀', fonts: ['Anton', 'Chakra+Petch:wght@400;500;700'],
@@ -1241,7 +1322,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     const ALIASES = {
         nhagiao: ['nhagiao', '2011', 'teacher', 'trian', 'thayco'],
         y2k: ['y2k', 'chrome', 'holo'], brutal: ['brutal', 'sticker'],
-        coquette: ['coquette', 'ballet', 'ngoctrai'], rave: ['rave', 'acid', 'party'],
+        coquette: ['coquette', 'ballet', 'ngoctrai'], kawaii: ['kawaii', 'bling', 'cute', 'dethuong', 'genz'], rave: ['rave', 'acid', 'party'],
         aero: ['aero', 'frutiger', 'bongbong'], phat: ['phat', 'tinhtam', 'hoasen'],
         meo: ['meo', 'mew', 'cat'], xinloi: ['xinloi', 'sorry', 'apology'],
         tet: ['tet', 'laxi', 'xuan'], giangsinh: ['giangsinh', 'noel', 'xmas', 'christmas'],
@@ -1255,6 +1336,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         y2k: ['glow-up mỗi ngày 💿', 'vibe không bao giờ hết pin ⚡', 'slay mọi deadline ✦'],
         brutal: ['QUẦY CHO ÁC 🔥', 'KHÔNG VÁNG MÀU 💥', 'chill hết nấc ⭐'],
         coquette: ['dịu dàng mỗi ngày 🎀', 'xinh như búp bê 🤍', 'ngọt như kẹo 🍒'],
+        kawaii: ['bling bling mỗi ngày ✨', 'cute overload 🎀', 'yêu bạn xiêu lòng 💗'],
         rave: ['DANCE ALL NIGHT 🎧', 'BASS DROP! 🔥', 'neon vibes ⚡'],
         aero: ['bong bóng may mắn 🫧', 'thuận gió thuận nước 🌊', 'tươi mát cả ngày ☀️'],
         phat: ['tâm luôn bình an 🪷', 'vạn sự hanh thông 🙏', 'thân tâm an lạc 🍃'],
@@ -2335,7 +2417,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     // V4→V5 · KIỂU MỞ THIỆP (mode: hold / scratch / chat / stories)
     //         + V5 thêm 5 kiểu xu hướng: pet · bio · ribbon · blow · lever
     // Mỗi mode là một "cửa" (gate) hiện trước khi vào thiệp; hoàn tất thì gọi
-    // finishOpen(). Màu lấy theo biến theme nên 13 mẫu × 10 kiểu đều tự hòa hợp.
+    // finishOpen(). Màu lấy theo biến theme nên 14 mẫu × 10 kiểu đều tự hòa hợp.
     // =====================================================================
     const MODES = ['envelope', 'hold', 'scratch', 'chat', 'stories', 'pet', 'bio', 'ribbon', 'blow', 'lever'];
     const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -3476,16 +3558,20 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         })(0);
     }
 
-    // --- Sổ lật kỷ niệm · album giấy lật từng trang (fx=flipbook) ---
+    // --- Sổ lật kỷ niệm · sổ tay 2 trang (fx=flipbook) ---
+    // Quy tắc v5.2: ẢNH CHỈ NẰM TRANG PHẢI (mặt trước của từng lá). Trang trái
+    // luôn là giấy trang trí (mặt sau các lá + bìa trong) → không bao giờ có ảnh bên trái.
     function buildFlipbook(photosRaw) {
         const box = $('flipBox'), book = $('book'), note = $('pgNote');
         const list = String(photosRaw || '').split(/[;\n]+/).map(s => s.trim()).filter(Boolean).slice(0, 8);
         if (list.length < 1) return false;
         $('sphereBox').classList.remove('show');
         if (!coverVideo) $('photo').style.display = 'none';   // v4.2: giữ video bìa luôn hiển thị
+        document.body.classList.add('fxflip');                // v5.2: nới khung thiệp cho sổ 2 trang
         book.innerHTML = '';
         const d = cardData || {};
         const toName = d.to ? T.toFmt(d.to) : (d.title || T.title);
+        const PAPERS = ['🎀', '✨', '💗', '⭐', '🫧', '🍰', '🦋', '🌸', '💎', '🍭'];
         const items = [{ cover: true }];
         list.forEach(u => {
             const src = mediaUrl(u, 'image');
@@ -3496,12 +3582,16 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             items.push({ src });
         });
         items.push({ end: true });
-        const pages = [];
-        for (let k = 0; k < items.length; k += 2) pages.push({ front: items[k], back: items[k + 1] || null });
         const face = it => {
             const el = document.createElement('div');
+            if (it.paper) {                                   // trang giấy trang trí (bên trái)
+                el.className = 'pgface paper';
+                el.innerHTML = `<div class="pk">${PAPERS[it.i % PAPERS.length]}</div>` +
+                    `<div class="pt">${it.i % 2 ? 'Còn nữa nè' : 'Lật tiếp nha'}</div>` +
+                    `<div class="ps">chạm trang phải →</div>`;
+                return el;
+            }
             el.className = 'pgface';
-            if (!it) { el.innerHTML = '<div class="pe">💞</div><div class="pt">Hết rồi!</div><div class="ps">Chạm nửa trái để xem lại</div>'; return el; }
             if (it.cover) { el.innerHTML = `<div class="pe">${T.seal || '📖'}</div><div class="pt">Sổ kỷ niệm</div><div class="ps">${esc(toName)}</div>`; return el; }
             if (it.end) { el.innerHTML = `<div class="pe">🕯️</div><div class="pt">Mãi nhớ</div><div class="ps">${esc(d.from || '')}</div>`; return el; }
             const media = makeMedia(it.src, 'Ảnh kỷ niệm', e => {    // v4.1: video trên trang sổ cũng tự phát
@@ -3516,24 +3606,30 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             }
             return media;
         };
-        const els = pages.map((p, k) => {
+        const els = items.map((it, k) => {
             const pg = document.createElement('div');
             pg.className = 'pg';
-            pg.style.zIndex = pages.length - k;          // trang sau nằm dưới trang trước
-            const fr = document.createElement('div'); fr.className = 'fr'; fr.appendChild(face(p.front));
-            const bk = document.createElement('div'); bk.className = 'bk'; bk.appendChild(face(p.back));
+            pg.style.zIndex = items.length - k;          // trang sau nằm dưới trang trước
+            const fr = document.createElement('div'); fr.className = 'fr'; fr.appendChild(face(it));      // mặt trước = nội dung (trang PHẢI)
+            const bk = document.createElement('div'); bk.className = 'bk'; bk.appendChild(face({ paper: true, i: k }));  // mặt sau = giấy (trang TRÁI)
             pg.append(fr, bk);
             book.appendChild(pg);
             return pg;
         });
+        const inside = document.createElement('div');    // bìa trong bên trái lúc chưa lật trang nào
+        inside.className = 'inside';
+        inside.innerHTML = '<div class="pgface paper" style="position:absolute;inset:0">' +
+            '<div class="pk">📖</div><div class="pt">Sổ nhỏ</div><div class="ps">chạm trang phải để lật →</div></div>';
+        book.appendChild(inside);
         let turned = 0;
+        const LAST = () => items.length - 1;             // trang “Mãi nhớ” luôn nằm trang phải, không lật quá
         const sync = () => {
-            note.textContent = turned === 0 ? '📖 Chạm bên phải để lật trang'
-                : turned >= pages.length ? '💞 Đã xem hết — chạm bên trái để xem lại'
-                : `📖 Trang ${turned + 1}/${pages.length} · chạm để lật tiếp`;
+            note.textContent = turned === 0 ? '📖 Ảnh nằm trang phải — chạm trang phải để lật'
+                : turned >= LAST() ? '💞 Đã xem hết — chạm trang trái để xem lại'
+                : `📖 Trang ${turned + 1}/${items.length} · chạm để lật tiếp`;
         };
         const next = () => {
-            if (turned >= pages.length) return;
+            if (turned >= LAST()) return;
             const k = turned, pg = els[k];
             turned++;
             pg.style.zIndex = 100 + k;                   // khi đang lật thì nổi trên cùng
@@ -3545,14 +3641,14 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             if (turned <= 0) return;
             turned--;
             const k = turned, pg = els[k];
-            pg.style.zIndex = pages.length + 10;
+            pg.style.zIndex = items.length + 10;
             pg.classList.remove('turn');
-            setTimeout(() => { pg.style.zIndex = pages.length - k; }, 500);
+            setTimeout(() => { pg.style.zIndex = items.length - k; }, 500);
             sync();
         };
         book.addEventListener('click', e => {
             const r = book.getBoundingClientRect();
-            (e.clientX - r.left) < r.width / 3 ? prev() : next();
+            (e.clientX - r.left) < r.width / 2 ? prev() : next();   // nửa trái = lật lại, nửa phải = lật tiếp
         });
         let sx = null;                                   // vuốt để lật
         book.addEventListener('pointerdown', e => { sx = e.clientX; });
