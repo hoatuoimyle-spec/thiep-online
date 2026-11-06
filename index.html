@@ -1960,7 +1960,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
     // ---- Báo cho chủ thiệp biết người nhận đã mở (1 lần / phiên trình duyệt) ----
     function reportOpen() {
-        if (demoParam || DEBUG || !customerId) return;
+        if (demoParam || DEBUG || urlParams.has('p') || !customerId) return;   // ?p=1 = chủ nhà xem thử → không tính lượt mở
         const k = 'thiep-opened:' + customerId;
         try { if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); } catch (e) {}
         try { fetch(API_URL + '?act=open&id=' + encodeURIComponent(customerId), { keepalive: true }).catch(() => {}); } catch (e) {}
