@@ -634,10 +634,12 @@
     .voice button.beat { animation: beat 1s ease-in-out infinite; }
 
     /* =====================================================================
-       V4 · KIỂU MỞ THIỆP (mode) + HIỆU ỨNG NỀN (fx)
+       V4→V5 · KIỂU MỞ THIỆP (mode) + HIỆU ỨNG NỀN (fx)
        mode: envelope (mặc định) | hold | scratch | chat | stories
-       fx  : (trống) | galaxy | matrix | flipbook | fireworks | snow | petals | bubbles | hearts | meteor
-       Màu sắc lấy theo biến theme → 13 mẫu × 5 kiểu mở đều tự đúng tông.
+             | pet 🐱 | bio 🔐 | ribbon 🎀 | blow 🕯️ | lever 🎰   (V5 thêm 5 kiểu)
+       fx  : (trống) | galaxy | matrix | flipbook | fireworks
+             | spectrum 🎵 | caustics 🌊 | gyro 💫 | kaleido 🔮 | glitch 👾
+       Màu sắc lấy theo biến theme → 13 mẫu × 10 kiểu mở đều tự đúng tông.
        ===================================================================== */
     .envelope-wrap.hidden { display: none; }
 
@@ -645,6 +647,7 @@
     #fxcanvas { display: none; position: fixed; inset: 0; z-index: 0; width: 100%; height: 100%; pointer-events: none; }
     #fxcanvas.show { display: block; }
     body.fxmar .aurora { opacity: .25; }
+    body.fxgli .aurora { opacity: .15; }   /* glitch: nền tối ăn đứt cho vibe cyber */
     /* galaxy: canvas phủ một đêm navy (#1D2A3A) để sao/thiên hà nổi rõ cả trên nền kem */
     body.fxgal #fxcanvas { background: radial-gradient(130% 100% at 50% 30%, #2c3d55 0%, #1D2A3A 55%, #141f2c 100%); }
 
@@ -738,15 +741,21 @@
     /* --- FLIPBOOK · sổ lật kỷ niệm (thay cầu xoay khi fx=flipbook) --- */
     .flipbox { display: none; margin: 22px auto 4px; text-align: center; }
     .flipbox.show { display: block; }
-    .book { position: relative; width: min(76vw, 290px); height: min(96vw, 360px); margin: 0 auto; perspective: 1500px; }
-    .pg { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d;
-        transition: transform .95s cubic-bezier(.4,.1,.2,1); }
+    .book { position: relative; width: min(76vw, 290px); height: min(96vw, 360px); margin: 0 auto; perspective: 1500px; touch-action: pan-y; }
+    @media (max-width: 520px) { .book { width: min(88vw, 330px); height: min(118vw, 425px); } }   /* điện thoại: sổ to hơn cho dễ nhìn */
+    .pg { position: absolute; inset: 0; transform-origin: left center; transform-style: preserve-3d; -webkit-transform-style: preserve-3d;
+        transition: transform .95s cubic-bezier(.4,.1,.2,1); will-change: transform; }
+    /* FIX MOBILE: trên iOS/Safari, mặt trang KHÔNG có transform riêng (mặt trước) nằm trong
+       preserve-3d + overflow:hidden + border-radius thường KHÔNG được vẽ ảnh tới khi chạm —
+       ép mặt nào cũng có transform + translateZ(0) để browser dựng lớp riêng cho nó. */
     .pg .fr, .pg .bk { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+        transform: translateZ(0);
         border-radius: 4px 14px 14px 4px; overflow: hidden; background: var(--photo-bg, #fff);
         box-shadow: 0 12px 30px rgba(0,0,0,.35); display: flex; align-items: center; justify-content: center; }
-    .pg .bk { transform: rotateY(180deg); }
+    .pg .bk { transform: rotateY(180deg) translateZ(0); }
     .pg.turn { transform: rotateY(-180deg); }
-    .pg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pg img { width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(0); }
+    .pg video { width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(0); }
     .pgface { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
         width: 100%; height: 100%; padding: 18px; text-align: center; color: #5a4a52; }
     body[data-theme="brutal"] .pgface { color: #111; }
@@ -754,6 +763,110 @@
     .pgface .pt { font-family: var(--title-font); font-size: 21px; line-height: 1.3; }
     .pgface .ps { font-size: 12.5px; opacity: .75; }
     .pgnote { font-size: 12px; opacity: .8; margin-top: 10px; }
+
+    /* =====================================================================
+       V5 · 5 KIỂU MỞ MỚI (pet · bio · ribbon · blow · lever)
+       + tông màu lấy theo biến theme → 13 mẫu đều tự hòa hợp, không phá bảng màu gốc.
+       ===================================================================== */
+    /* --- PET · vuốt ve thú cưng --- */
+    .petwrap { display: flex; flex-direction: column; align-items: center; gap: 16px; user-select: none; -webkit-user-select: none; }
+    .petstage { width: min(78vw, 300px); height: min(52vw, 210px); position: relative; touch-action: none; cursor: grab; }
+    .petstage:active { cursor: grabbing; }
+    .petcat { width: 100%; height: 100%; filter: drop-shadow(0 18px 30px rgba(29,42,58,.35)); transition: transform .25s; }
+    .petstage.stroked .petcat { animation: petwob .5s ease; }
+    @keyframes petwob { 30% { transform: scale(1.05) rotate(-1.6deg); } 70% { transform: scale(1.03) rotate(1.2deg); } }
+    .petzzz { position: absolute; top: 2px; right: 8%; font-size: 26px; opacity: .9; animation: zzup 2.2s ease-in-out infinite; pointer-events: none; }
+    @keyframes zzup { 0% { opacity: 0; transform: translateY(6px) scale(.7); } 30% { opacity: .95; } 100% { opacity: 0; transform: translateY(-16px) scale(1.15); } }
+    .petwrap.awake .petzzz { display: none; }
+    .pethbar { width: min(78vw, 300px); height: 26px; border-radius: 999px; background: var(--ghost-bg); border: 1px solid var(--ghost-border);
+        position: relative; overflow: hidden; }
+    .pethbar i { position: absolute; inset: 3px auto 3px 3px; width: 0%; border-radius: 999px;
+        background: linear-gradient(90deg, var(--c1), var(--accent)); transition: width .45s cubic-bezier(.3,1.3,.4,1); }
+    .pethbar span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--btn-text); mix-blend-mode: normal; text-shadow: 0 1px 2px rgba(255,255,255,.4); }
+    .petheart { position: absolute; font-size: 20px; pointer-events: none; animation: petheart 1s ease-out forwards; }
+    @keyframes petheart { to { opacity: 0; transform: translateY(-70px) scale(1.5) rotate(20deg); } }
+
+    /* --- BIO · quét vân tay, màn hình tách đôi --- */
+    .biowrap { display: flex; flex-direction: column; align-items: center; gap: 18px; user-select: none; -webkit-user-select: none; }
+    .bioscan { position: relative; width: 210px; height: 210px; touch-action: none; cursor: pointer; }
+    .bioscan svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+    .bioscan .btrack { fill: none; stroke: var(--track); stroke-width: 6; }
+    .bioscan .bbar { fill: none; stroke: var(--accent); stroke-width: 6; stroke-linecap: round;
+        stroke-dasharray: 610; stroke-dashoffset: 610; filter: drop-shadow(0 0 8px var(--glow)); }
+    .bifp { position: absolute; inset: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        background: var(--ghost-bg); border: 1px solid var(--ghost-border); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        transition: transform .18s, box-shadow .3s; }
+    .biowrap.press .bifp { transform: scale(.93); box-shadow: 0 0 0 8px var(--glow); }
+    .bifp svg { width: 74%; height: 74%; transform: none; stroke: var(--accent); fill: none; stroke-width: 5; stroke-linecap: round;
+        filter: drop-shadow(0 0 6px var(--glow)); }
+    .biline { position: absolute; left: 8%; right: 8%; top: 6%; height: 3px; border-radius: 3px; background: var(--glow);
+        box-shadow: 0 0 12px var(--glow); opacity: 0; }
+    .biowrap.scanning .biline { opacity: 1; animation: biosweep .62s linear infinite alternate; }
+    @keyframes biosweep { from { top: 8%; } to { top: 86%; } }
+    .biowrap.ok .bifp { box-shadow: 0 0 0 14px var(--glow), 0 0 40px var(--glow); }
+    .biotxt { font-weight: 700; font-size: 14px; letter-spacing: .5px; opacity: .9; }
+    .biosplit { position: fixed; inset: 0; z-index: 40; pointer-events: none; display: none; }
+    .biosplit.go { display: block; }
+    .biosplit .bh { position: absolute; top: 0; bottom: 0; width: 50.5%; background: #101826;
+        transition: transform .85s cubic-bezier(.6,.05,.3,1); }
+    .biosplit .bh.l { left: 0; border-right: 2px solid var(--glow); }
+    .biosplit .bh.r { right: 0; border-left: 2px solid var(--glow); }
+    .biosplit.go .bh.l { transform: translateX(-101%); }
+    .biosplit.go .bh.r { transform: translateX(101%); }
+
+    /* --- RIBBON · cắt ruy băng mở quà --- */
+    .ribwrap { position: relative; width: min(84vw, 330px); height: min(64vw, 300px); touch-action: none; user-select: none; -webkit-user-select: none; }
+    .ribwrap svg { position: absolute; inset: 0; width: 100%; height: 100%; filter: drop-shadow(0 20px 34px rgba(29,42,58,.35)); }
+    .ribwrap .rb-cut { opacity: 0; }
+    .ribwrap.cut .rb-rib { animation: ribfallL .9s ease-in forwards; transform-origin: top center; }
+    .ribwrap.cut .rb-bow { animation: ribfallR .9s ease-in forwards; transform-origin: top center; }
+    @keyframes ribfallL { 30% { transform: rotate(-6deg); } 100% { opacity: 0; transform: rotate(-38deg) translateY(60px); } }
+    @keyframes ribfallR { 30% { transform: rotate(8deg) scale(1.1); } 100% { opacity: 0; transform: rotate(46deg) translateY(74px); } }
+    .ribwrap.cut .rb-lid { animation: lidpop .7s cubic-bezier(.3,1.6,.5,1) forwards; transform-origin: center bottom; }
+    @keyframes lidpop { 40% { transform: translateY(-26px) rotate(-5deg); } 100% { transform: translateY(-20px) rotate(-9deg); } }
+    #ribTrail { position: absolute; inset: -60px; width: calc(100% + 120px); height: calc(100% + 120px); pointer-events: none; }
+
+    /* --- BLOW · thổi nến qua micro --- */
+    .blowwrap { display: flex; flex-direction: column; align-items: center; gap: 20px; user-select: none; -webkit-user-select: none; }
+    .blowstage { width: 170px; height: 240px; position: relative; cursor: pointer; }
+    .blowstage svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .blflame { transform-origin: 50% 100%; animation: flick .38s ease-in-out infinite alternate; filter: drop-shadow(0 0 18px rgba(255,180,60,.85)); transition: opacity .4s, transform .4s; }
+    @keyframes flick { from { transform: scale(1, 1) rotate(-2.4deg); } to { transform: scale(.9, 1.12) rotate(2.8deg); } }
+    .blowstage.out .blflame { opacity: 0; transform: scale(.2, .1); animation: none; }
+    .blsmoke { opacity: 0; }
+    .blowstage.out .blsmoke { opacity: 1; animation: smokeup 1.6s ease-out forwards; }
+    @keyframes smokeup { 0% { opacity: 0; transform: translateY(0); } 20% { opacity: .75; } 100% { opacity: 0; transform: translateY(-64px); } }
+    .blglow { transition: opacity .5s; }
+    .blowstage.out .blglow { opacity: 0; }
+    .blowlvl { width: min(70vw, 260px); height: 10px; border-radius: 999px; background: var(--ghost-bg); border: 1px solid var(--ghost-border); overflow: hidden; }
+    .blowlvl i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--c1), var(--accent)); transition: width .2s; }
+    .blowmic { min-height: 42px; display: flex; align-items: center; }
+
+    /* --- LEVER · cần gạt xèng quay quà --- */
+    .slwrap { position: relative; display: flex; align-items: center; gap: 0; user-select: none; -webkit-user-select: none; }
+    .slcab { width: min(64vw, 250px); border-radius: 22px; padding: 16px 14px 18px; background: var(--ghost-bg);
+        border: 1px solid var(--ghost-border); box-shadow: var(--card-shadow); position: relative; overflow: hidden; }
+    .slmarquee { text-align: center; font-weight: 800; font-size: 13px; letter-spacing: 2px; padding: 8px 6px; border-radius: 12px;
+        background: var(--track); color: var(--accent); margin-bottom: 12px; }
+    .slwrap.win .slmarquee { animation: slblink .3s steps(2) 8; }
+    @keyframes slblink { 50% { filter: brightness(1.6); } }
+    .slreels { display: flex; gap: 8px; justify-content: center; }
+    .slreel { width: 31%; aspect-ratio: 1/1.18; border-radius: 14px; background: var(--card-bg); border: 1px solid var(--ghost-border);
+        display: flex; align-items: center; justify-content: center; font-size: 40px; position: relative; overflow: hidden;
+        box-shadow: inset 0 8px 14px rgba(29,42,58,.12); }
+    .slreel.spin { animation: reelshake .12s linear infinite; }
+    @keyframes reelshake { 50% { transform: translateY(-2px); } }
+    .slreel.stop { animation: reelpop .45s cubic-bezier(.3,1.7,.5,1); }
+    @keyframes reelpop { 40% { transform: scale(1.14); } }
+    .sllever { position: relative; width: 74px; height: 200px; touch-action: none; cursor: grab; flex: none; }
+    .sllever:active { cursor: grabbing; }
+    .slbase { position: absolute; left: 6px; bottom: 26px; width: 46px; height: 30px; border-radius: 10px; background: var(--track); border: 1px solid var(--ghost-border); }
+    .slarm { position: absolute; left: 21px; bottom: 44px; width: 14px; height: 128px; border-radius: 8px;
+        background: linear-gradient(180deg, var(--ghost-border), var(--track)); transform-origin: center bottom; transform: rotate(0deg); transition: transform .5s cubic-bezier(.3,1.5,.5,1); }
+    .slknob { position: absolute; top: -22px; left: 50%; margin-left: -22px; width: 44px; height: 44px; border-radius: 50%;
+        background: radial-gradient(circle at 32% 30%, var(--glow), var(--accent)); box-shadow: 0 6px 14px rgba(29,42,58,.4); }
+    .slwrap.pull .slarm { transition: transform .12s ease-in; }
+    .slshadow { position: absolute; left: 0; right: 74px; bottom: 8px; height: 10px; border-radius: 999px; background: rgba(29,42,58,.14); }
 
     @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -843,6 +956,119 @@
             </div>
         </div>
 
+        <!-- V5 · 5 KIỂU MỞ MỚI: pet / bio / ribbon / blow / lever -->
+        <div class="gate" id="mPet">
+            <div class="petwrap" id="petWrap">
+                <div class="petstage" id="petStage" role="button" aria-label="Vuốt ve chú mèo để mở thiệp">
+                    <svg class="petcat" viewBox="0 0 300 210" aria-hidden="true">
+                        <ellipse cx="158" cy="196" rx="112" ry="10" fill="rgba(29,42,58,.12)"/>
+                        <path d="M252 158 q38 4 34 -30 q-3 -26 -28 -22 q-16 2 -14 18 q10 -6 18 0 q8 8 -4 16 q-10 6 -22 4 Z" fill="#E8D3BD"/>
+                        <path d="M60 150 q0 -52 92 -52 q96 0 100 50 q3 42 -60 46 q-90 6 -122 -8 q-14 -7 -10 -36 Z" fill="#F3E5D5"/>
+                        <path d="M84 66 l-16 -30 l38 12 Z" fill="#F3E5D5"/><path d="M84 66 l-10 -19 l22 7 Z" fill="#F2B8AC"/>
+                        <path d="M138 60 l6 -34 l26 24 Z" fill="#F3E5D5"/><path d="M138 60 l4 -21 l15 14 Z" fill="#F2B8AC"/>
+                        <circle cx="112" cy="98" r="50" fill="#F3E5D5"/>
+                        <path d="M92 98 q6 7 12 0" stroke="#1D2A3A" stroke-width="4" fill="none" stroke-linecap="round"/>
+                        <path d="M122 98 q6 7 12 0" stroke="#1D2A3A" stroke-width="4" fill="none" stroke-linecap="round"/>
+                        <path d="M110 112 q4 5 8 0" stroke="#1D2A3A" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+                        <ellipse cx="84" cy="112" rx="9" ry="5.5" fill="#F2B8AC" opacity=".8"/>
+                        <ellipse cx="142" cy="112" rx="9" ry="5.5" fill="#F2B8AC" opacity=".8"/>
+                        <g stroke="rgba(29,42,58,.5)" stroke-width="2.4" stroke-linecap="round">
+                            <path d="M64 104 l-26 -6"/><path d="M64 112 l-26 4"/><path d="M160 104 l26 -6"/><path d="M160 112 l26 4"/>
+                        </g>
+                        <path d="M196 176 q26 4 40 -8" stroke="#E8D3BD" stroke-width="18" fill="none" stroke-linecap="round"/>
+                        <ellipse cx="150" cy="176" rx="26" ry="14" fill="#F3E5D5"/>
+                        <path d="M104 150 q50 16 96 0 l-6 16 q-42 12 -84 0 Z" fill="var(--accent)" opacity=".92"/>
+                        <circle cx="152" cy="166" r="7" fill="var(--glow)"/>
+                    </svg>
+                    <div class="petzzz" id="petZzz">💤</div>
+                </div>
+                <div class="pethbar"><i id="petFill"></i><span id="petPct">0% 😴</span></div>
+            </div>
+            <p class="ghint" id="petHint">Mèo đang ngủ — vuốt nhẹ lưng nó 3-4 lần để đánh thức 🐱</p>
+        </div>
+        <div class="gate" id="mBio">
+            <div class="biowrap" id="bioWrap">
+                <div class="bioscan" id="bioScan" role="button" aria-label="Đặt ngón tay lên để quét vân tay">
+                    <svg viewBox="0 0 210 210" aria-hidden="true">
+                        <circle class="btrack" cx="105" cy="105" r="97"></circle>
+                        <circle class="bbar" id="bioBar" cx="105" cy="105" r="97"></circle>
+                    </svg>
+                    <div class="bifp">
+                        <svg viewBox="0 0 120 120" aria-hidden="true">
+                            <circle cx="60" cy="60" r="44" stroke-dasharray="150 60" stroke-dashoffset="20"/>
+                            <circle cx="60" cy="60" r="34" stroke-dasharray="96 74" stroke-dashoffset="120"/>
+                            <circle cx="60" cy="60" r="24" stroke-dasharray="70 50" stroke-dashoffset="30"/>
+                            <circle cx="60" cy="60" r="14" stroke-dasharray="52 26" stroke-dashoffset="70"/>
+                            <circle cx="60" cy="60" r="5"/>
+                        </svg>
+                        <div class="biline"></div>
+                    </div>
+                </div>
+                <div class="biotxt" id="bioTxt">ĐẶT NGÓN TAY LÊN ĐỂ QUÉT</div>
+            </div>
+            <div class="biosplit" id="bioSplit"><div class="bh l"></div><div class="bh r"></div></div>
+            <p class="ghint" id="bioHint">Giữ ngón tay yên 2 giây — hệ thống xác thực sinh trắc học 🔓</p>
+        </div>
+        <div class="gate" id="mRibbon">
+            <div class="ribwrap" id="ribWrap">
+                <svg viewBox="0 0 330 300" aria-hidden="true">
+                    <ellipse cx="165" cy="252" rx="120" ry="11" fill="rgba(29,42,58,.12)"/>
+                    <g class="rb-lid">
+                        <rect x="72" y="84" width="186" height="36" rx="11" fill="var(--c1)" stroke="var(--ghost-border)"/>
+                        <g class="rb-bow">
+                            <path d="M165 84 q-34 -26 -40 -6 q-5 16 26 12 Z" fill="var(--accent)"/>
+                            <path d="M165 84 q34 -26 40 -6 q5 16 -26 12 Z" fill="var(--accent)"/>
+                            <circle cx="165" cy="82" r="9" fill="var(--glow)"/>
+                        </g>
+                    </g>
+                    <rect x="82" y="120" width="166" height="126" rx="13" fill="var(--card-bg)" stroke="var(--ghost-border)"/>
+                    <rect x="82" y="120" width="166" height="22" rx="11" fill="rgba(29,42,58,.10)"/>
+                    <rect class="rb-rib" x="150" y="120" width="30" height="126" fill="var(--accent)"/>
+                    <text x="165" y="196" text-anchor="middle" font-size="44">💌</text>
+                </svg>
+                <canvas id="ribTrail"></canvas>
+            </div>
+            <p class="ghint" id="ribHint">Vuốt CHÉO dứt khoát xuyên qua sợi ruy băng để mở quà 🎀</p>
+        </div>
+        <div class="gate" id="mBlow">
+            <div class="blowwrap" id="blowWrap">
+                <div class="blowstage" id="blowStage" role="button" aria-label="Ngọn nến — chạm để thổi tắt nếu không có micro">
+                    <svg viewBox="0 0 170 240" aria-hidden="true">
+                        <ellipse class="blglow" cx="85" cy="80" rx="62" ry="70" fill="rgba(255,178,64,.22)"/>
+                        <path class="blsmoke" d="M85 62 q-9 -18 5 -30 q13 -12 5 -27" stroke="rgba(158,170,186,.8)" stroke-width="7" fill="none" stroke-linecap="round"/>
+                        <path class="blflame" d="M85 38 C99 56 101 70 85 83 C69 70 71 56 85 38 Z" fill="#FFB340"/>
+                        <path class="blflame" d="M85 56 C90 65 91 72 85 78 C79 72 80 65 85 56 Z" fill="#FFE9B0"/>
+                        <rect x="81.5" y="82" width="7" height="11" rx="2.5" fill="#5A4634"/>
+                        <rect x="62" y="93" width="46" height="62" rx="9" fill="var(--accent)"/>
+                        <rect x="62" y="93" width="46" height="15" rx="7.5" fill="var(--c1)"/>
+                        <rect x="44" y="155" width="82" height="15" rx="7.5" fill="var(--c1)"/>
+                        <path d="M56 170 h58 l11 52 h-80 Z" fill="var(--card-bg)" stroke="var(--ghost-border)"/>
+                    </svg>
+                </div>
+                <div class="blowlvl"><i id="blowFill"></i></div>
+                <div class="blowmic"><button class="stbtn" id="blowMic">🎤 Bật micro để thổi</button></div>
+            </div>
+            <p class="ghint" id="blowHint">Thổi nhẹ vào điện thoại để tắt nến — thiệp sẽ mở ngay 🕯️</p>
+        </div>
+        <div class="gate" id="mLever">
+            <div class="slwrap" id="slWrap">
+                <div class="slcab">
+                    <div class="slmarquee" id="slMarquee">🎀 MỞ QUÀ 🎀</div>
+                    <div class="slreels">
+                        <div class="slreel" id="slR1">🎀</div>
+                        <div class="slreel" id="slR2">✨</div>
+                        <div class="slreel" id="slR3">🍬</div>
+                    </div>
+                </div>
+                <div class="sllever" id="slLever" role="button" aria-label="Kéo cần gạt xuống để quay quà">
+                    <div class="slshadow"></div>
+                    <div class="slbase"></div>
+                    <div class="slarm" id="slArm"><div class="slknob" id="slKnob"></div></div>
+                </div>
+            </div>
+            <p class="ghint" id="slHint">Kéo cần gạt xuống — quay trúng 3 🎁 là quà mở ngay 🎰</p>
+        </div>
+
         <section class="card" id="card">
             <div class="badge" id="badge"></div>
             <div class="to" id="to"></div>
@@ -892,8 +1118,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     const API_URL = (location.search.indexOf('debug') >= 0 && localStorage.getItem('thiep-api')) || "https://script.google.com/macros/s/AKfycbxkIv3VPOhbbfNDY4odmXZK8CvHeqh5_EnTZY-3Q5JK5Em9XVBmFasUTE6UBT9y7qoa/exec";
     // Cột Google Sheet: id | title | content | date | image | audio | voice | from | to | theme | photos | mode | fx
     // Cột theme: default, nhagiao, y2k, brutal, coquette, rave, aero, phat, meo, xinloi, tet, giangsinh, kyniem
-    // Cột mode (kiểu mở thiệp): envelope (mặc định) | hold | scratch | chat | stories
-    // Cột fx   (hiệu ứng thêm): galaxy | matrix | flipbook | fireworks | snow | petals | bubbles | hearts | meteor
+    // Cột mode (kiểu mở thiệp): envelope (mặc định) | hold | scratch | chat | stories | pet | bio | ribbon | blow | lever
+    // Cột fx   (hiệu ứng thêm): galaxy | matrix | flipbook | fireworks | spectrum | caustics | gyro | kaleido | glitch
     // Xem thử: index.html?demo=meo · kết hợp: ?demo=tet&mode=hold&fx=galaxy · tắt hiệu ứng: ?fx=0
     // v4.1: cột image/photos nhận cả file video (.mp4/.webm…) → tự phát như video kỷ niệm
 
@@ -1381,6 +1607,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         document.querySelectorAll('.gate').forEach(g => g.classList.remove('show'));
         document.querySelectorAll('.gate video').forEach(v => v.pause());   // v4.1: dừng video stories khi mở thiệp
         stopStories();
+        gateCleanups.forEach(fn => { try { fn(); } catch (e) {} });         // v5: tắt micro/timer của gate mới
+        gateCleanups.length = 0;
     }
     $('envelope').addEventListener('click', openCard);
     $('envelope').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openCard(); } });
@@ -2104,13 +2332,15 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
 
     // =====================================================================
-    // V4 · KIỂU MỞ THIỆP (mode: hold / scratch / chat / stories)
+    // V4→V5 · KIỂU MỞ THIỆP (mode: hold / scratch / chat / stories)
+    //         + V5 thêm 5 kiểu xu hướng: pet · bio · ribbon · blow · lever
     // Mỗi mode là một "cửa" (gate) hiện trước khi vào thiệp; hoàn tất thì gọi
-    // finishOpen(). Màu lấy theo biến theme nên 13 mẫu × 5 kiểu đều tự hòa hợp.
+    // finishOpen(). Màu lấy theo biến theme nên 13 mẫu × 10 kiểu đều tự hòa hợp.
     // =====================================================================
-    const MODES = ['envelope', 'hold', 'scratch', 'chat', 'stories'];
+    const MODES = ['envelope', 'hold', 'scratch', 'chat', 'stories', 'pet', 'bio', 'ribbon', 'blow', 'lever'];
     const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let gateBooted = false, musicPrewarmed = false;
+    const gateCleanups = [];                            // v5: dọn micro/timer khi gate đóng
     function modeOf(d) {
         const m = String(urlParams.get('mode') || (d && d.mode) || '').toLowerCase().trim();
         return MODES.includes(m) ? m : 'envelope';
@@ -2121,14 +2351,14 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const m = modeOf(cardData);
         if (m === 'envelope') return;
         $('envelopeWrap').classList.add('hidden');
-        const map = { hold: 'mHold', scratch: 'mScratch', chat: 'mChat', stories: 'mStories' };
+        const map = { hold: 'mHold', scratch: 'mScratch', chat: 'mChat', stories: 'mStories',
+            pet: 'mPet', bio: 'mBio', ribbon: 'mRibbon', blow: 'mBlow', lever: 'mLever' };
         const gate = $(map[m]);
         if (!gate) return;
         gate.classList.add('show');
-        if (m === 'hold') initHold();
-        else if (m === 'scratch') initScratch();
-        else if (m === 'chat') initChat();
-        else if (m === 'stories') initStories();
+        const boot = { hold: initHold, scratch: initScratch, chat: initChat, stories: initStories,
+            pet: initPet, bio: initBio, ribbon: initRibbon, blow: initBlow, lever: initLever };
+        if (boot[m]) boot[m]();
     }
     // iOS/Safari chỉ cho phát nhạc trong sự kiện chạm → bật sẵn (âm lượng 0) ngay
     // lúc người dùng giữ/cào, khi mở thiệp xong chỉ việc trả âm lượng lại.
@@ -2374,10 +2604,348 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
 
     // =====================================================================
-    // V4 · HIỆU ỨNG fx: GALAXY / MATRIX / FLIPBOOK + V4.1 THÊM 6 HIỆU ỨNG
-    // fireworks · snow · petals · bubbles · hearts · meteor (canvas 2D nhẹ)
+    // V5 · 5 KIỂU MỞ XU HƯỚNG GENZ: pet 🐱 · bio 🔐 · ribbon 🎀 · blow 🕯️ · lever 🎰
+    // Vẫn đúng khuôn: gesture đầu tiên gọi prewarmMusic(), xong thì finishOpen().
+    // Timer/stream cần dọn khi gate đóng → đăng ký vào gateCleanups.
     // =====================================================================
-    const FXVALS = ['galaxy', 'matrix', 'flipbook', 'fireworks', 'snow', 'petals', 'bubbles', 'hearts', 'meteor'];
+
+    // --- PET · vuốt ve mèo ngủ: đủ 3-4 lượt vuốt là mèo dậy và mở quà ---
+    function initPet() {
+        const stage = $('petStage'), wrap = $('petWrap'), fill = $('petFill'), pct = $('petPct');
+        const NEED = LITE ? 3 : 4;                        // số lượt vuốt để đầy thanh
+        let cur = 0, acc = 0, lastX = 0, down = false, done = false, meowCtx = null;
+        const meow = () => {                              // tiếng meow tổng hợp WebAudio — không cần file ngoài
+            try {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                if (!meowCtx) meowCtx = new AC();
+                if (meowCtx.state === 'suspended') meowCtx.resume().catch(() => {});
+                const t = meowCtx.currentTime, o = meowCtx.createOscillator(), g = meowCtx.createGain();
+                o.type = 'sine';
+                o.frequency.setValueAtTime(600, t);
+                o.frequency.linearRampToValueAtTime(950, t + .1);
+                o.frequency.linearRampToValueAtTime(430, t + .32);
+                g.gain.setValueAtTime(.0001, t);
+                g.gain.exponentialRampToValueAtTime(.15, t + .04);
+                g.gain.exponentialRampToValueAtTime(.0001, t + .34);
+                o.connect(g); g.connect(meowCtx.destination);
+                o.start(t); o.stop(t + .36);
+            } catch (e) {}
+        };
+        const heart = x => {
+            const h = document.createElement('div');
+            h.className = 'petheart';
+            h.textContent = ['💖', '💗', '✨'][Math.random() * 3 | 0];
+            h.style.left = Math.max(10, x) + 'px'; h.style.top = '28%';
+            stage.appendChild(h);
+            setTimeout(() => h.remove(), 1000);
+        };
+        const strokeDone = x => {
+            if (done) return;
+            cur++;
+            const pr = Math.min(100, Math.round(cur / NEED * 100));
+            fill.style.width = pr + '%';
+            pct.textContent = pr + '% ' + (cur >= NEED ? '😻' : '😸');
+            stage.classList.remove('stroked'); void stage.offsetWidth; stage.classList.add('stroked');
+            meow(); buzz(12); heart(x || stage.offsetWidth * .5);
+            if (cur >= 2) wrap.classList.add('awake');    // vuốt 2 lượt là mèo tỉnh, hết 💤
+            if (cur >= NEED) {
+                done = true;
+                $('petHint').textContent = 'Mèo thích rồi! Quà mở nhé 🎉';
+                buzz([20, 50, 20]);
+                burstConfetti();
+                setTimeout(() => finishOpen(400), 550);
+            }
+        };
+        stage.addEventListener('pointerdown', e => {
+            if (done) return;
+            e.preventDefault(); down = true; acc = 0; lastX = e.clientX;
+            try { stage.setPointerCapture(e.pointerId); } catch (err) {}
+            prewarmMusic();
+        });
+        stage.addEventListener('pointermove', e => {
+            if (!down || done) return;
+            acc += e.clientX - lastX; lastX = e.clientX;
+            if (Math.abs(acc) >= stage.offsetWidth * .5) {           // 1 lượt vuốt ≈ nửa chiều rộng mèo
+                acc = 0;
+                strokeDone(e.clientX - stage.getBoundingClientRect().left);
+            }
+        });
+        const up = () => { down = false; acc = 0; };
+        stage.addEventListener('pointerup', up);
+        stage.addEventListener('pointercancel', up);
+    }
+
+    // --- BIO · giữ ngón tay 2 giây quét vân tay, xong thì màn hình tách đôi ---
+    function initBio() {
+        const wrap = $('bioWrap'), scan = $('bioScan'), bar = $('bioBar'), txt = $('bioTxt');
+        const FULL = 610, DUR = 2000;                     // 610 = chu vi đường tròn r=97
+        let p = 0, holding = false, done = false, last = performance.now(), tick = 0;
+        (function loop(now) {
+            if (done) return;
+            requestAnimationFrame(loop);
+            const dt = Math.min(50, now - last); last = now;
+            p = Math.max(0, Math.min(1, p + (holding ? dt / DUR : -dt / (DUR * .5))));
+            bar.style.strokeDashoffset = FULL * (1 - p);
+            if (holding && now - tick > 240) { tick = now; buzz(5); }   // rung nhịp như máy quét thật
+            if (p >= 1 && !done) {
+                done = true;
+                txt.textContent = '✅ KHỚP VÂN TAY — CHÀO MỪNG';
+                wrap.classList.add('ok');
+                buzz([25, 40, 25, 40, 60]);
+                setTimeout(() => {
+                    $('bioSplit').classList.add('go');    // cửa màn hình tách làm đôi
+                    wrap.style.transition = 'opacity .5s';
+                    wrap.style.opacity = '0';
+                    setTimeout(() => finishOpen(150), 650);
+                }, 420);
+            }
+        })(last);
+        const start = e => {
+            if (done) return;
+            e.preventDefault(); holding = true;
+            wrap.classList.add('press', 'scanning');
+            txt.textContent = 'ĐANG QUÉT… GIỮ YÊN NGÓN TAY';
+            prewarmMusic();
+        };
+        const stop = () => {
+            if (done) return;
+            holding = false;
+            wrap.classList.remove('press', 'scanning');
+            txt.textContent = 'ĐẶT NGÓN TAY LÊN ĐỂ QUÉT';
+        };
+        scan.addEventListener('pointerdown', start);
+        scan.addEventListener('pointerup', stop);
+        scan.addEventListener('pointercancel', stop);
+        scan.addEventListener('pointerleave', stop);
+        scan.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !holding) { e.preventDefault(); start(e); } });
+        scan.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') stop(); });
+    }
+
+    // --- RIBBON · vuốt chéo "chém" đứt ruy băng kiểu game cắt trái cây ---
+    function initRibbon() {
+        const wrap = $('ribWrap'), hint = $('ribHint'), trail = $('ribTrail');
+        const SVGW = 330, SVGH = 300;                     // đúng viewBox của SVG hộp quà
+        let cut = false, down = false, pts = [], trailOn = false, lastP = null, tapN = 0, tapT = 0;
+        const ctx = trail.getContext('2d');
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        const sizeTrail = () => {
+            const r = wrap.getBoundingClientRect();
+            trail.width = (r.width + 120) * dpr; trail.height = (r.height + 120) * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        };
+        sizeTrail();
+        addEventListener('resize', sizeTrail);
+        const rel = e => {
+            const r = wrap.getBoundingClientRect();
+            return { x: e.clientX - r.left, y: e.clientY - r.top };
+        };
+        // dải ruy băng (theo tỉ lệ SVG 330×300): x 148–182, y 118–248
+        const band = () => {
+            const r = wrap.getBoundingClientRect();
+            return { x1: 148 * r.width / SVGW, x2: 182 * r.width / SVGW, y1: 118 * r.height / SVGH, y2: 248 * r.height / SVGH };
+        };
+        // Liang–Barsky: đoạn a→b có CẮT qua hình chữ nhật ruy băng? (bắt đủ mọi góc vuốt)
+        const segRect = (a, b, B) => {
+            let t0 = 0, t1 = 1;
+            const dx = b.x - a.x, dy = b.y - a.y;
+            const p = [-dx, dx, -dy, dy];
+            const q = [a.x - B.x1, B.x2 - a.x, a.y - B.y1, B.y2 - a.y];
+            for (let i = 0; i < 4; i++) {
+                if (p[i] === 0) { if (q[i] < 0) return false; continue; }
+                const r = q[i] / p[i];
+                if (p[i] < 0) { if (r > t1) return false; if (r > t0) t0 = r; }
+                else { if (r < t0) return false; if (r < t1) t1 = r; }
+            }
+            return true;
+        };
+        const cross = (a, b) => {                         // đoạn a→b có "chém" xuyên qua dải ruy băng?
+            if (!a || !b) return false;
+            if (Math.hypot(b.x - a.x, b.y - a.y) < 14) return false;   // nhích nhẹ không tính là chém
+            return segRect(a, b, band());
+        };
+        const drawLoop = () => {
+            const r = wrap.getBoundingClientRect();
+            ctx.clearRect(-60, -60, r.width + 120, r.height + 120);
+            if (!down && pts.length) pts.splice(0, 3);    // buông tay → vệt chém mờ dần từ đuôi
+            if (pts.length > 1) {
+                ctx.save(); ctx.translate(60, 60);        // canvas tràn 60px mỗi bên để vệt không bị cụt
+                ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+                ctx.strokeStyle = 'rgba(255,255,255,.92)'; ctx.lineWidth = 7;
+                ctx.beginPath();
+                pts.forEach((p, i) => i ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y));
+                ctx.stroke();
+                ctx.strokeStyle = cssVar('--glow') || '#fff'; ctx.lineWidth = 2.4;
+                ctx.stroke();
+                ctx.restore();
+            }
+            if (down || pts.length) requestAnimationFrame(drawLoop);
+            else trailOn = false;
+        };
+        const startTrail = () => { if (!trailOn) { trailOn = true; requestAnimationFrame(drawLoop); } };
+        const doCut = () => {
+            if (cut) return;
+            cut = true;
+            wrap.classList.add('cut');
+            buzz([18, 50, 18]);
+            burstConfetti();
+            hint.textContent = 'Chém đẹp! Hộp quà mở rồi 🎉';
+            setTimeout(() => finishOpen(350), 950);
+        };
+        wrap.addEventListener('pointerdown', e => {
+            if (cut) return;
+            e.preventDefault(); down = true;
+            pts = [rel(e)]; lastP = pts[0];
+            try { wrap.setPointerCapture(e.pointerId); } catch (err) {}
+            startTrail(); prewarmMusic();
+        });
+        wrap.addEventListener('pointermove', e => {
+            if (!down || cut) return;
+            const p = rel(e);
+            pts.push(p);
+            if (pts.length > 26) pts.shift();
+            if (cross(lastP, p)) doCut();
+            lastP = p;
+        });
+        wrap.addEventListener('pointerup', e => {
+            down = false;
+            if (cut) return;
+            const now = Date.now();                        // chạm lắt nhắt 3 lần → nhắc lại cách chơi
+            if (now - tapT < 900) tapN++; else tapN = 1;
+            tapT = now;
+            if (tapN >= 3) hint.textContent = 'Không phải chạm nhé — vuốt NGANG/CHÉO NHANH xuyên qua ruy băng ✂️';
+        });
+        wrap.addEventListener('pointercancel', () => { down = false; });
+    }
+
+    // --- BLOW · thổi tắt nến qua micro (hụt micro thì chạm vào nến) ---
+    let blowStream = null;
+    function initBlow() {
+        const stage = $('blowStage'), fill = $('blowFill'), micBtn = $('blowMic'), hint = $('blowHint');
+        let out = false, pressure = 0, raf = 0, actx2 = null, analyser2 = null, buf = null;
+        const NEED = .8;                                  // cần tích ~0.8 giây hơi thổi liên tục
+        const releaseMic = () => {
+            cancelAnimationFrame(raf);
+            if (blowStream) { try { blowStream.getTracks().forEach(t => t.stop()); } catch (e) {} blowStream = null; }
+            if (actx2) { try { actx2.close(); } catch (e) {} actx2 = null; }
+        };
+        gateCleanups.push(releaseMic);                    // mở thiệp xong chắc chắn nhả micro
+        const blowOut = () => {
+            if (out) return;
+            out = true;
+            stage.classList.add('out');
+            fill.style.width = '100%';
+            buzz([12, 60, 12]);
+            hint.textContent = 'Nến tắt rồi — điều ước sẽ thành hiện thực 🎂';
+            releaseMic();
+            setTimeout(() => finishOpen(400), 1100);      // chờ làn khói bay lên đã
+        };
+        stage.addEventListener('click', () => {           // phương án dự phòng: không có/không cho micro
+            prewarmMusic();
+            blowOut();
+        });
+        micBtn.addEventListener('click', async e => {
+            e.stopPropagation();
+            if (out || blowStream) return;
+            prewarmMusic();
+            micBtn.disabled = true; micBtn.textContent = '⏳ Đang xin quyền micro…';
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('Thiết bị không hỗ trợ micro');
+                blowStream = await navigator.mediaDevices.getUserMedia({
+                    audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+                });
+                const AC = window.AudioContext || window.webkitAudioContext;
+                actx2 = new AC();
+                if (actx2.state === 'suspended') await actx2.resume().catch(() => {});
+                const src = actx2.createMediaStreamSource(blowStream);
+                analyser2 = actx2.createAnalyser();
+                analyser2.fftSize = 512; analyser2.smoothingTimeConstant = .5;
+                src.connect(analyser2);                   // không nối destination → không lo hú/tiếp âm
+                buf = new Uint8Array(analyser2.fftSize);
+                micBtn.textContent = '💨 Đang lắng nghe…';
+                hint.textContent = 'Đưa miệng gần điện thoại và THỔI nhẹ 💨';
+                let last = performance.now();
+                (function loop(now) {
+                    if (out || !analyser2) return;
+                    raf = requestAnimationFrame(loop);
+                    const dt = Math.min(60, now - last); last = now;
+                    analyser2.getByteTimeDomainData(buf);
+                    let sum = 0;
+                    for (let i = 0; i < buf.length; i++) { const v = (buf[i] - 128) / 128; sum += v * v; }
+                    const rms = Math.sqrt(sum / buf.length);
+                    const blowing = rms > .09;            // hơi thổi = tiếng ồn đều và to đặc trưng
+                    pressure = Math.max(0, pressure + (blowing ? dt / 1000 : -dt / 1400));
+                    fill.style.width = Math.min(100, pressure / NEED * 100) + '%';
+                    if (pressure >= NEED) blowOut();
+                })(last);
+            } catch (err) {
+                micBtn.textContent = '🚫 Không bật được micro';
+                hint.textContent = 'Không có micro? Chạm vào NGỌN NẾN để thổi tắt nhé 👆';
+                dbg('blow: ' + (err && err.message || err));
+            }
+        });
+    }
+
+    // --- LEVER · kéo cần gạt xèng thập niên 90, quay trúng 3 🎁 là mở quà ---
+    function initLever() {
+        const wrap = $('slWrap'), lever = $('slLever'), arm = $('slArm');
+        const reels = [$('slR1'), $('slR2'), $('slR3')];
+        const SPIN = ['🎁', '🍒', '⭐', '💎', '7️⃣', '🍬', '🎀'];
+        let pulled = false, down = false, dy = 0, lastY = 0;
+        const timers = [];
+        gateCleanups.push(() => timers.forEach(id => { clearTimeout(id); clearInterval(id); }));
+        const pull = () => {
+            if (pulled) return;
+            pulled = true; down = false;
+            prewarmMusic();
+            wrap.classList.add('pull');
+            arm.style.transform = 'rotate(52deg)';        // cần gạt vỗ xuống
+            buzz([15, 30, 15]);
+            setTimeout(() => { wrap.classList.remove('pull'); arm.style.transform = ''; }, 200);
+            reels.forEach(r => { r.classList.remove('stop'); r.classList.add('spin'); });
+            const iv = setInterval(() => reels.forEach(r => { r.textContent = SPIN[Math.random() * SPIN.length | 0]; }), 70);
+            timers.push(iv);
+            [1050, 1600, 2200].forEach((t, i) => timers.push(setTimeout(() => {
+                reels[i].classList.remove('spin');
+                reels[i].classList.add('stop');
+                reels[i].textContent = '🎁';
+                buzz(18);
+                if (i === 2) {                            // ô cuối cùng dừng → trúng đủ bộ
+                    clearInterval(iv);
+                    wrap.classList.add('win');
+                    $('slMarquee').textContent = '🎉 TRÚNG QUÀ! MỞ NGAY 🎉';
+                    $('slHint').textContent = 'Trúng đủ 3 🎁 — quà mở nhé! 🎊';
+                    buzz([25, 50, 25, 50, 70]);
+                    burstConfetti();
+                    timers.push(setTimeout(() => finishOpen(350), 1000));
+                }
+            }, t)));
+        };
+        lever.addEventListener('pointerdown', e => {
+            if (pulled) return;
+            e.preventDefault(); down = true; dy = 0; lastY = e.clientY;
+            try { lever.setPointerCapture(e.pointerId); } catch (err) {}
+        });
+        lever.addEventListener('pointermove', e => {
+            if (!down || pulled) return;
+            dy = Math.max(0, Math.min(90, dy + (e.clientY - lastY)));
+            lastY = e.clientY;
+            arm.style.transform = 'rotate(' + (dy * .55).toFixed(1) + 'deg)';
+            if (dy > 52) pull();                          // kéo quá nửa hành trình là tự vỗ xuống
+        });
+        const up = () => { down = false; if (!pulled) arm.style.transform = ''; };
+        lever.addEventListener('pointerup', up);
+        lever.addEventListener('pointercancel', up);
+        lever.addEventListener('click', () => { if (!pulled) pull(); });   // chạm nhanh cũng tính là kéo cần
+    }
+
+    // =====================================================================
+    // V5 · HIỆU ỨNG NỀN THẾ HỆ MỚI (thay 5 hiệu ứng hạt cũ "sến" bằng 5 hiệu ứng trending):
+    //   spectrum 🎵 phổ âm nhún theo nhạc · caustics 🌊 gợn sóng chạm rải lan
+    //   gyro 💫 bụi sáng nghiêng theo cảm biến · kaleido 🔮 kính vạn hoa · glitch 👾 mưa dữ liệu cyber
+    // fireworks 🎆 giữ lại. Cùng dùng #fxcanvas; ?fx=0 tắt hết; máy yếu (LITE) tự giảm mật độ.
+    // =====================================================================
+    const FXVALS = ['galaxy', 'matrix', 'flipbook', 'fireworks', 'spectrum', 'caustics', 'gyro', 'kaleido', 'glitch'];
     const hexToRgb = h => {
         h = String(h || '').trim().replace('#', '');
         if (h.length === 3) h = h.split('').map(c => c + c).join('');
@@ -2397,7 +2965,11 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             if (f === 'galaxy') startGalaxy();
             else if (f === 'matrix') startMatrix();
             else if (f === 'fireworks') startFireworks();
-            else if (f === 'snow' || f === 'petals' || f === 'bubbles' || f === 'hearts' || f === 'meteor') startParticleFX(f);
+            else if (f === 'spectrum') startSpectrum();
+            else if (f === 'caustics') startCaustics();
+            else if (f === 'gyro') startGyro();
+            else if (f === 'kaleido') startKaleido();
+            else if (f === 'glitch') startGlitch();
         }
         buildSphere(d.photos);
     }
@@ -2579,9 +3151,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
 
     // =====================================================================
-    // V4.1 · 6 HIỆU ỨNG NỀN MỚI (canvas 2D siêu nhẹ, màu theo theme):
-    //   fireworks 🎆 pháo hoa     · snow ❄️ tuyết rơi      · petals 🌸 cánh hoa
-    //   bubbles  🫧 bong bóng bay · hearts 💖 tim bồng lềnh · meteor 🌠 sao băng
+    // V4.1→V5 · HIỆU ỨNG CANVAS 2D (siêu nhẹ, màu theo theme):
+    //   fireworks 🎆 giữ nguyên. 5 hiệu ứng hạt cũ (snow/petals/bubbles/
+    //   hearts/meteor) đã NGHỈ HƯU — thay bằng 5 hiệu ứng mới ở khối dưới.
     // Cùng dùng chung #fxcanvas; ?fx=0 vẫn tắt hết; máy yếu (LITE) tự giảm mật độ.
     // =====================================================================
     function fxSetup2d() {
@@ -2640,105 +3212,268 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         })();
     }
 
-    // --- ❄️🌸🫧💖🌠 Các hiệu ứng hạt rơi/bay: chung một engine, khác cấu hình ---
-    let pfxOn = '';
-    function startParticleFX(kind) {
-        if (pfxOn === kind) return;
-        pfxOn = kind;
+    // =====================================================================
+    // V5 · 5 HIỆU ỨNG NỀN MỚI thay cho 5 hiệu ứng hạt cũ (tuyết/cánh hoa/bong
+    // bóng/tim/sao băng đã quá phổ biến, bị đánh giá là "sến"):
+    //   spectrum 🎵 · caustics 🌊 · gyro 💫 · kaleido 🔮 · glitch 👾
+    // Cùng dùng #fxcanvas, màu theo theme, máy yếu (LITE) tự giảm mật độ.
+    // =====================================================================
+    const fxCol = (c, a) => { const r = hexToRgb(c); return 'rgba(' + r[0] + ',' + r[1] + ',' + r[2] + ',' + a + ')'; };
+
+    // --- 🎵 SPECTRUM · phổ âm thanh nhún đúng nhịp nhạc nền (chưa có nhạc → sóng chờ) ---
+    function startSpectrum() {
         const ctx = fxSetup2d();
-        const rnd = (a, b) => a + Math.random() * (b - a);
         const accent = cssVar('--accent') || '#A95C48';
-        const parts = [];
-        const RATE = { snow: 120, petals: 300, bubbles: 380, hearts: 650, meteor: 1500 };
-        const MAXN = { snow: 130, petals: 55, bubbles: 38, hearts: 26, meteor: 7 };
-        const spawn = {
-            snow: () => parts.push({ t: 'snow', x: rnd(0, innerWidth), y: -8, r: rnd(1.2, 3.2), vy: rnd(.5, 1.3), ph: rnd(0, 7), sw: rnd(.3, .9), o: rnd(.45, .9) }),
-            petals: () => parts.push({ t: 'petals', x: rnd(0, innerWidth), y: -14, s: rnd(5, 11), vy: rnd(.7, 1.5), ph: rnd(0, 7), rot: rnd(0, 7), vr: rnd(-.05, .05), c: ['#ffc0db', '#ffd7e6', '#ffb0cd', '#fff5f9', accent][Math.random() * 5 | 0] }),
-            bubbles: () => parts.push({ t: 'bubbles', x: rnd(0, innerWidth), y: innerHeight + 12, r: rnd(4, 15), vy: -rnd(.5, 1.5), ph: rnd(0, 7), sw: rnd(.2, .7) }),
-            hearts: () => parts.push({ t: 'hearts', x: rnd(0, innerWidth), y: innerHeight + 16, s: rnd(8, 20), vy: -rnd(.6, 1.3), ph: rnd(0, 7), sw: rnd(.2, .8), rot: rnd(-.35, .35), c: [accent, '#ff5a8a', '#ffa0c8', '#fff'][Math.random() * 4 | 0] }),
-            meteor: () => parts.push({ t: 'meteor', x: rnd(innerWidth * .25, innerWidth * 1.05), y: rnd(-30, innerHeight * .3), vx: -rnd(4.5, 8), vy: rnd(2.2, 4.2), len: rnd(80, 170), w: rnd(1.3, 2.4), life: 1 })
-        };
-        let last = 0;
+        const c1 = cssVar('--c1') || accent;
+        try { maybeHookVisualizer(); } catch (e) {}
+        const N = LITE ? 26 : 42;
         (function frame(t) {
             requestAnimationFrame(frame);
             const W = innerWidth, H = innerHeight;
             ctx.clearRect(0, 0, W, H);
-            if (t - last > (LITE ? RATE[kind] * 1.6 : RATE[kind])) {
-                last = t;
-                if (!document.hidden && parts.length < (LITE ? Math.ceil(MAXN[kind] * .6) : MAXN[kind])) spawn[kind]();
-            }
-            for (let i = parts.length - 1; i >= 0; i--) {
-                const p = parts[i];
-                if (p.t === 'snow') {
-                    p.y += p.vy; p.x += Math.sin(t / 900 + p.ph) * p.sw;
-                    if (p.y > H + 8) { parts.splice(i, 1); continue; }
-                    ctx.globalAlpha = p.o * (.7 + .3 * Math.sin(t / 500 + p.ph));
-                    ctx.fillStyle = '#fff';
-                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill();
-                } else if (p.t === 'petals') {
-                    p.y += p.vy; p.x += Math.sin(t / 800 + p.ph) * .8; p.rot += p.vr;
-                    if (p.y > H + 16) { parts.splice(i, 1); continue; }
-                    ctx.globalAlpha = .85;
-                    ctx.save();
-                    ctx.translate(p.x, p.y);
-                    ctx.rotate(p.rot + Math.sin(t / 700 + p.ph) * .5);
-                    ctx.fillStyle = p.c;
-                    ctx.beginPath(); ctx.ellipse(0, 0, p.s, p.s * .45, 0, 0, 7); ctx.fill();
-                    ctx.restore();
-                } else if (p.t === 'bubbles') {
-                    p.y += p.vy; p.x += Math.sin(t / 1000 + p.ph) * p.sw;
-                    if (p.y < -20) { parts.splice(i, 1); continue; }
-                    ctx.globalAlpha = .5;
-                    ctx.strokeStyle = 'rgba(255,255,255,.85)';
-                    ctx.lineWidth = 1.4;
-                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.stroke();
-                    ctx.globalAlpha = .35;
-                    ctx.fillStyle = 'rgba(255,255,255,.35)';
-                    ctx.beginPath(); ctx.arc(p.x - p.r * .3, p.y - p.r * .3, p.r * .3, 0, 7); ctx.fill();
-                } else if (p.t === 'hearts') {
-                    p.y += p.vy; p.x += Math.sin(t / 900 + p.ph) * p.sw;
-                    if (p.y < -24) { parts.splice(i, 1); continue; }
-                    ctx.globalAlpha = .9;
-                    ctx.fillStyle = p.c;
-                    drawHeart(ctx, p.x, p.y, p.s, p.rot + Math.sin(t / 800 + p.ph) * .12);
-                } else {                              // meteor
-                    p.x += p.vx; p.y += p.vy; p.life -= .006;
-                    if (p.life <= 0 || p.y > H + 60 || p.x < -p.len) { parts.splice(i, 1); continue; }
-                    const k = p.len / (Math.hypot(p.vx, p.vy) || 1);
-                    const g = ctx.createLinearGradient(p.x, p.y, p.x - p.vx * k, p.y - p.vy * k);
-                    g.addColorStop(0, 'rgba(255,255,255,' + (.9 * Math.min(1, p.life * 3)).toFixed(3) + ')');
-                    g.addColorStop(1, 'rgba(255,255,255,0)');
-                    ctx.globalAlpha = 1;
-                    ctx.strokeStyle = g;
-                    ctx.lineWidth = p.w;
-                    ctx.lineCap = 'round';
-                    ctx.beginPath();
-                    ctx.moveTo(p.x, p.y);
-                    ctx.lineTo(p.x - p.vx * k, p.y - p.vy * k);
-                    ctx.stroke();
-                    ctx.fillStyle = '#fff';
-                    ctx.beginPath(); ctx.arc(p.x, p.y, p.w * 1.1, 0, 7); ctx.fill();
+            const live = !!(srcHooked && analyser && freqData && bgm && !bgm.paused);
+            if (live) analyser.getByteFrequencyData(freqData);
+            else if (bgm && !bgm.paused && !vizBlocked) { try { maybeHookVisualizer(); } catch (e) {} }
+            const bw = W / N;
+            for (let i = 0; i < N; i++) {
+                let v;
+                if (live) {   // bass ở cột trái, tần số cao dần sang phải (thang mũ cho đều mắt)
+                    const bi = Math.min(freqData.length - 1, Math.round(Math.pow(i / N, 1.55) * (freqData.length - 1)));
+                    v = Math.max(freqData[bi], freqData[Math.max(0, bi - 1)] * .8) / 255;
+                } else {      // sóng chờ: nhịp nhẹ, không đứng im
+                    v = .16 + .13 * Math.sin(t / 620 + i * .52) + .08 * Math.sin(t / 310 - i * .21) + .05 * Math.sin(t / 900 + i);
                 }
+                const h = Math.max(3, v * H * .36);
+                const x = i * bw + bw * .12, w = bw * .76;
+                const g = ctx.createLinearGradient(0, H, 0, H - h);
+                g.addColorStop(0, fxCol(c1, .28));
+                g.addColorStop(.55, fxCol(accent, .78));
+                g.addColorStop(1, fxCol(accent, .95));
+                ctx.fillStyle = g;
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(x, H - h, w, h, w * .45); else ctx.rect(x, H - h, w, h);
+                ctx.fill();
+            }
+        })(0);
+    }
+
+    // --- 🌊 CAUSTICS · mặt hồ lặng: chạm đâu sóng lan tới đó, lắp lánh khúc xạ ---
+    function startCaustics() {
+        const ctx = fxSetup2d();
+        const accent = cssVar('--accent') || '#A95C48';
+        const rings = [];
+        const spawn = (x, y, big) => {
+            rings.push({ x, y, r: 4, v: big ? 2.6 : 1.7, a: big ? .55 : .4, w: big ? 2.2 : 1.4 });
+            if (rings.length > 34) rings.shift();
+        };
+        const blobs = Array.from({ length: LITE ? 5 : 8 }, () => ({
+            x: Math.random(), y: Math.random(), s: 90 + Math.random() * 170,
+            vx: (Math.random() - .5) * 12, vy: (Math.random() - .5) * 10, ph: Math.random() * 7
+        }));
+        const onDown = e => {
+            spawn(e.clientX, e.clientY, true);
+            setTimeout(() => spawn(e.clientX + 14, e.clientY + 10, false), 130);
+        };
+        addEventListener('pointerdown', onDown);
+        let auto = 0;
+        (function frame(t) {
+            requestAnimationFrame(frame);
+            const W = innerWidth, H = innerHeight;
+            ctx.clearRect(0, 0, W, H);
+            for (const b of blobs) {                       // vùng sáng trôi chậm làm nền hồ
+                b.x += b.vx / 100000; b.y += b.vy / 100000;
+                if (b.x < -.25 || b.x > 1.25) b.vx *= -1;
+                if (b.y < -.25 || b.y > 1.25) b.vy *= -1;
+                const x = b.x * W, y = b.y * H, s = b.s * (1 + .18 * Math.sin(t / 1700 + b.ph));
+                const g = ctx.createRadialGradient(x, y, 0, x, y, s);
+                g.addColorStop(0, fxCol(accent, .05));
+                g.addColorStop(1, fxCol(accent, 0));
+                ctx.fillStyle = g;
+                ctx.fillRect(x - s, y - s, s * 2, s * 2);
+            }
+            for (let i = rings.length - 1; i >= 0; i--) {
+                const p = rings[i];
+                p.r += p.v; p.v *= .988; p.a *= .972;
+                if (p.a < .01) { rings.splice(i, 1); continue; }
+                ctx.strokeStyle = 'rgba(255,255,255,' + p.a.toFixed(3) + ')';
+                ctx.lineWidth = p.w;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.stroke();
+                ctx.strokeStyle = fxCol(accent, (p.a * .8).toFixed(3));
+                ctx.lineWidth = p.w * .6;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.r * .62, 0, 7); ctx.stroke();
+                if (!LITE && p.r > 18) {                   // lắp lánh chạy trên vành sóng
+                    ctx.fillStyle = 'rgba(255,255,255,' + Math.min(1, p.a * 1.2).toFixed(3) + ')';
+                    for (let k = 0; k < 3; k++) {
+                        const ang = t / 500 + k * 2.1 + i;
+                        ctx.fillRect(p.x + Math.cos(ang) * p.r - 1, p.y + Math.sin(ang) * p.r - 1, 2, 2);
+                    }
+                }
+            }
+            if (t - auto > 2600) { auto = t; if (!document.hidden) spawn(Math.random() * W, Math.random() * H, false); }
+        })(0);
+    }
+
+    // --- 💫 GYRO · bụi sáng phản trọng lực — nghiêng điện thoại là bụi trượt theo ---
+    let gyroOn = false;
+    function startGyro() {
+        if (gyroOn) return;
+        gyroOn = true;
+        const ctx = fxSetup2d();
+        const accent = cssVar('--accent') || '#A95C48';
+        const N = LITE ? 60 : 130;
+        const dust = Array.from({ length: N }, () => ({
+            x: Math.random(), y: Math.random(), r: 1.1 + Math.random() * 2.8,
+            vx: 0, vy: 0, z: .35 + Math.random() * .65, ph: Math.random() * 7
+        }));
+        let gx = 0, gy = .3, hasGyro = false;              // mặc định bụi chảy xuống nhẹ như bụi trong nắng
+        addEventListener('deviceorientation', e => {
+            if (e.beta == null || e.gamma == null) return;
+            gx = Math.max(-1, Math.min(1, e.gamma / 45));
+            gy = Math.max(-1, Math.min(1, (e.beta - 40) / 45));
+            hasGyro = true;
+        });
+        addEventListener('pointerdown', () => {            // iOS 13+ phải xin quyền từ một cử chỉ chạm
+            try {
+                const DOE = window.DeviceOrientationEvent;
+                if (DOE && typeof DOE.requestPermission === 'function') DOE.requestPermission().catch(() => {});
+            } catch (e) {}
+        }, { once: true });
+        let px = .5, py = .5;                              // không cảm biến → bụi hút theo ngón tay/kéo chuột
+        addEventListener('pointermove', e => { px = e.clientX / innerWidth; py = e.clientY / innerHeight; });
+        (function frame(t) {
+            requestAnimationFrame(frame);
+            const W = innerWidth, H = innerHeight;
+            ctx.clearRect(0, 0, W, H);
+            for (const p of dust) {
+                const k = p.z;
+                if (hasGyro) { p.vx += gx * .05 * k; p.vy += gy * .05 * k; }
+                else { p.vx += (px - p.x) * .0007 * k; p.vy += (py - p.y) * .0007 * k; }
+                p.vx *= .965; p.vy *= .965;
+                p.x += p.vx * k / 100; p.y += p.vy * k / 100;
+                if (p.x < -.05) { p.x = 1.05; p.vx = 0; } else if (p.x > 1.05) { p.x = -.05; p.vx = 0; }
+                if (p.y < -.05) { p.y = 1.05; p.vy = 0; } else if (p.y > 1.05) { p.y = -.05; p.vy = 0; }
+                const tw = .55 + .45 * Math.sin(t / 700 + p.ph);
+                ctx.globalAlpha = Math.min(1, (hasGyro ? .9 : .7) * tw * k + .18);
+                ctx.fillStyle = k > .8 ? '#fff' : accent;
+                ctx.beginPath(); ctx.arc(p.x * W, p.y * H, p.r * k, 0, 7); ctx.fill();
             }
             ctx.globalAlpha = 1;
         })(0);
     }
-    function drawHeart(ctx, x, y, s, rot) {
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(rot || 0);
-        ctx.scale(s / 13, s / 13);
-        ctx.beginPath();
-        ctx.moveTo(0, 4);
-        ctx.bezierCurveTo(0, 2, -2, 0, -4, 0);
-        ctx.bezierCurveTo(-7.5, 0, -7.5, 4.5, -7.5, 4.5);
-        ctx.bezierCurveTo(-7.5, 7.5, -4.5, 10.5, 0, 14);
-        ctx.bezierCurveTo(4.5, 10.5, 7.5, 7.5, 7.5, 4.5);
-        ctx.bezierCurveTo(7.5, 4.5, 7.5, 0, 4, 0);
-        ctx.bezierCurveTo(2, 0, 0, 2, 0, 4);
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
+
+    // --- 🔮 KALEIDO · kính vạn hoa hình học biến đổi (hợp theme y2k / rave / brutal) ---
+    function startKaleido() {
+        const ctx = fxSetup2d();
+        const cols = [cssVar('--c1') || '#A95C48', cssVar('--c3') || '#D2A094', cssVar('--accent') || '#A95C48', '#ffffff'];
+        const SEG = LITE ? 6 : 8;
+        const shapes = Array.from({ length: LITE ? 3 : 5 }, (_, i) => ({
+            r: .16 + Math.random() * .3,
+            size: .05 + Math.random() * .09,
+            sides: 3 + (Math.random() * 4 | 0),
+            sp: (.15 + Math.random() * .5) * (Math.random() < .5 ? -1 : 1),
+            ph: Math.random() * 7,
+            c: cols[i % cols.length],
+            m: Math.random() * 7
+        }));
+        (function frame(t) {
+            requestAnimationFrame(frame);
+            const W = innerWidth, H = innerHeight;
+            ctx.clearRect(0, 0, W, H);
+            const cx = W / 2, cy = H * .44, R = Math.min(W, H) * .52;
+            ctx.save();
+            ctx.translate(cx, cy);
+            ctx.lineWidth = 1.6;
+            for (let s = 0; s < SEG; s++) {
+                ctx.save();
+                ctx.rotate(s / SEG * Math.PI * 2);
+                if (s % 2) ctx.scale(1, -1);               // gương xen kẽ — đúng chất kính vạn hoa
+                for (const sh of shapes) {
+                    const ang = t / 1000 * sh.sp + sh.ph;
+                    const rr = R * (sh.r + .05 * Math.sin(t / 1400 + sh.m));
+                    const x = Math.cos(ang) * rr, y = Math.sin(ang) * rr;
+                    const sz = R * sh.size * (1 + .3 * Math.sin(t / 900 + sh.m * 2));
+                    const sides = 3 + ((Math.sin(t / 1600 + sh.m) + 1) * 1.74 | 0);   // 3→6 cạnh biến đổi
+                    ctx.globalAlpha = .5;
+                    ctx.strokeStyle = sh.c;
+                    ctx.beginPath();
+                    for (let k = 0; k <= sides; k++) {
+                        const a = k / sides * Math.PI * 2 + t / 2400;
+                        const px2 = x + Math.cos(a) * sz, py2 = y + Math.sin(a) * sz;
+                        k ? ctx.lineTo(px2, py2) : ctx.moveTo(px2, py2);
+                    }
+                    ctx.stroke();
+                    ctx.globalAlpha = .18;
+                    ctx.fillStyle = sh.c;
+                    ctx.beginPath(); ctx.arc(x, y, 2.2, 0, 7); ctx.fill();
+                }
+                ctx.restore();
+            }
+            ctx.restore();
+            ctx.globalAlpha = 1;
+        })(0);
+    }
+
+    // --- 👾 GLITCH · mưa dữ liệu cyberpunk + vít ngang chịp nháy kiểu phim sci-fi ---
+    let glitchOn = false;
+    function startGlitch() {
+        if (glitchOn) return;
+        glitchOn = true;
+        document.body.classList.add('fxgli');
+        const cv = $('fxcanvas');
+        cv.classList.add('show');
+        const ctx = cv.getContext('2d');
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        const FONT = 13;
+        const CHARS = '01<>[]#$%*+=▓▒░アカサタナハマヤラ101101';
+        const accent = cssVar('--accent') || '#A95C48';
+        const CY = '#59F0FF', MG = '#FF5AD1';
+        let cols = 0, drops = [], nextGlitch = 0, bars = [];
+        const setup = () => {
+            cv.width = innerWidth * dpr; cv.height = innerHeight * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            ctx.fillStyle = 'rgba(6,10,18,.62)';
+            ctx.fillRect(0, 0, innerWidth, innerHeight);
+            cols = Math.ceil(innerWidth / (FONT * .62));
+            drops = Array.from({ length: cols }, () => Math.floor(Math.random() * -60));
+        };
+        setup();
+        addEventListener('resize', setup);
+        let last = 0;
+        (function frame(t) {
+            requestAnimationFrame(frame);
+            if (t - last < (LITE ? 80 : 45)) return;
+            last = t;
+            const W = innerWidth, H = innerHeight;
+            ctx.fillStyle = 'rgba(6,10,18,.16)';           // vệt cũ mờ dần — nền tối cyber
+            ctx.fillRect(0, 0, W, H);
+            ctx.font = FONT + 'px monospace';
+            for (let i = 0; i < cols; i++) {
+                const y = drops[i] * FONT;
+                const roll = Math.random();
+                ctx.globalAlpha = .78;
+                ctx.fillStyle = roll < .05 ? '#fff' : roll < .12 ? CY : roll < .17 ? MG : fxCol(accent, .9);
+                ctx.fillText(CHARS[Math.random() * CHARS.length | 0], i * FONT * .62, y);
+                ctx.globalAlpha = 1;
+                drops[i] = (y > H && Math.random() > .968) ? 0 : drops[i] + 1;
+            }
+            if (t > nextGlitch && !document.hidden) {      // từng đợt vít ngang barcode
+                nextGlitch = t + 700 + Math.random() * 1600;
+                bars = Array.from({ length: 2 + (Math.random() * 3 | 0) }, () => ({
+                    y: Math.random() * H, h: 3 + Math.random() * 12,
+                    dx: (Math.random() - .5) * 60, a: .12 + Math.random() * .3,
+                    c: Math.random() < .4 ? CY : Math.random() < .5 ? MG : '#fff', life: 1
+                }));
+            }
+            for (let i = bars.length - 1; i >= 0; i--) {
+                const b = bars[i];
+                b.life -= .07;
+                if (b.life <= 0) { bars.splice(i, 1); continue; }
+                ctx.globalAlpha = b.a * b.life;
+                ctx.fillStyle = b.c;
+                ctx.fillRect(b.dx * (1 - b.life), b.y, W, b.h);
+            }
+            ctx.globalAlpha = 1;
+        })(0);
     }
 
     // --- Sổ lật kỷ niệm · album giấy lật từng trang (fx=flipbook) ---
@@ -2752,7 +3487,14 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const d = cardData || {};
         const toName = d.to ? T.toFmt(d.to) : (d.title || T.title);
         const items = [{ cover: true }];
-        list.forEach(u => items.push({ src: mediaUrl(u, 'image') }));
+        list.forEach(u => {
+            const src = mediaUrl(u, 'image');
+            // FIX MOBILE: sổ lật nằm trong #card đang ẩn (display:none) — ảnh loading=lazy sẽ
+            // KHÔNG tải gì tới khi mở thiệp; mạng 4G chậm thì lật tới đâu trắng tới đó.
+            // Tải trước ngay lúc dựng sổ + buộc eager ở từng trang.
+            try { const warm = new Image(); warm.src = src; } catch (e) {}
+            items.push({ src });
+        });
         items.push({ end: true });
         const pages = [];
         for (let k = 0; k < items.length; k += 2) pages.push({ front: items[k], back: items[k + 1] || null });
@@ -2762,12 +3504,17 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             if (!it) { el.innerHTML = '<div class="pe">💞</div><div class="pt">Hết rồi!</div><div class="ps">Chạm nửa trái để xem lại</div>'; return el; }
             if (it.cover) { el.innerHTML = `<div class="pe">${T.seal || '📖'}</div><div class="pt">Sổ kỷ niệm</div><div class="ps">${esc(toName)}</div>`; return el; }
             if (it.end) { el.innerHTML = `<div class="pe">🕯️</div><div class="pt">Mãi nhớ</div><div class="ps">${esc(d.from || '')}</div>`; return el; }
-            return makeMedia(it.src, 'Ảnh kỷ niệm', e => {           // v4.1: video trên trang sổ cũng tự phát
+            const media = makeMedia(it.src, 'Ảnh kỷ niệm', e => {    // v4.1: video trên trang sổ cũng tự phát
                 const fb = document.createElement('div');
                 fb.className = 'pgface';
                 fb.innerHTML = '<div class="pe">🖼️</div>';
                 e.target.replaceWith(fb);
             });
+            if (media.tagName === 'IMG') {               // FIX MOBILE: ảnh tải ngay, không lazy
+                media.loading = 'eager';
+                media.decoding = 'async';
+            }
+            return media;
         };
         const els = pages.map((p, k) => {
             const pg = document.createElement('div');
