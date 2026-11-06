@@ -262,7 +262,7 @@
                 </select>
                 <button class="btn sm" id="btnAI">✨ AI viết lại</button>
             </div>
-            <p class="hint">AI viết lại giúp lời chúc mượt hơn. Nếu chưa cài key AI, hệ thống dùng bộ gợi ý có sẵn.</p>
+            <p class="hint">AI viết lại giúp lời chúc mượt hơn (chạy qua Pollinations miễn phí, không cần cài key gì cả). AI bận thì hệ thống tự dùng bộ gợi ý có sẵn.</p>
 
             <label>Ngày đặc biệt</label>
             <input id="fDate" type="date">
@@ -591,7 +591,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         }));
     }
 
-    // --- AI viết lại (có Gemini thì dùng Gemini, không thì gợi ý offline) ---
+    // --- AI viết lại (AI thật qua Pollinations — miễn phí không cần key; AI bận thì gợi ý offline) ---
     const BANK = {
         ngot: { pre: ['Gửi {to} đáng yêu 💌', 'Có một điều mình muốn nói với {to} 🤍', '{to} ơi, đọc dòng này nhé 🌷'],
                 post: ['Mãi đáng yêu nhé 💖', 'Cảm ơn vì đã luôn ở bên 🥰', 'Thương {to} thật nhiều! 💗'] },
@@ -625,11 +625,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             } else {
                 $('fContent').value = localRewrite(txt, $('aiTone').value);
                 updCnt();
-                if (e.code === 'no_key') toast('Chưa cài GEMINI_KEY → dùng bộ gợi ý offline. Cài key (xem README) để AI thật viết nhé');
-                else {
-                    const why = (e.message || 'lỗi mạng').replace('Failed to fetch', 'không gọi được máy chủ');
-                    toast('AI bận (' + why + ') → tạm dùng gợi ý offline, ý chính của bạn vẫn được giữ');
-                }
+                const why = (e.message || 'lỗi mạng').replace('Failed to fetch', 'không gọi được máy chủ');
+                toast('AI bận (' + why + ') → tạm dùng gợi ý offline, ý chính của bạn vẫn được giữ');
             }
         } finally {
             btn.disabled = false;
