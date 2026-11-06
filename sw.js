@@ -10,7 +10,7 @@
  * - Chỉ được đăng ký từ config.html (trang của chủ thiệp), người nhận thiệp
  *   không bao giờ nhận service worker này.
  */
-const VER = 'thiepnhale-v5.2';   // đổi version khi update file → máy chủ nhà tự tải lại bản mới
+const VER = 'thiepnhale-v6';   // đổi version khi update file → máy chủ nhà tự tải lại bản mới
 const CORE = ['./', './index.html', './config.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
