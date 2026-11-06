@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#F7F5F0">
+<meta name="theme-color" content="#FFE9F3">
 <!-- PWA: cho phép “Cài đặt ứng dụng” trên điện thoại (Android Chrome / iOS Safari) -->
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -422,9 +422,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         + '</g></svg>';
     const val = id => $(id).value.trim();
 
-    // ================== 13 MẪU THIỆP ==================
+    // ================== 14 MẪU THIỆP ==================
     const TPLS = [
-        { k: 'default',   n: 'Tổng hợp',   e: '💌', dark: 0, g: 'linear-gradient(135deg,#A95C48,#94A388)',
+        { k: 'default',   n: 'Candy GenZ',  e: '💌', dark: 1, g: 'linear-gradient(135deg,#FF9ED2,#B98BFF 55%,#6FD3FF)',
           sug: ['Chúc bạn một ngày thật rực rỡ,\nnụ cười tươi hơn cả hoa 🌸\nVà luôn nhớ rằng bạn rất được yêu thương 💖', 'Gửi bạn chút niềm vui giữa ngày bận rộn ✨\nMong mọi thứ hôm nay đều suôn sẻ,\ncòn tối nay thì thật ngọt ngào 🌙'] },
         { k: 'nhagiao',   n: 'Tri ân Thầy Cô', e: '🌻', dark: 0, g: 'linear-gradient(135deg,#0b1d19,#2e7d6b)',
           sug: ['Cảm ơn thầy/cô đã kiên nhẫn dẫn lối,\ndạy em không chỉ chữ mà cả cách làm người 🌻\nChúc thầy/cô luôn mạnh khỏe và nhiều niềm vui ạ!', 'Một bông hoa cho thầy/cô ngày 20/11 🌻\nCảm ơn vì mọi sự tận tâm của thầy/cô.\nHọc trò của thầy/cô luôn tự hào về cô!'] },
@@ -434,6 +434,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
           sug: ['THÔNG BÁO QUAN TRỌNG 🔥\nHôm nay được phép ăn kem, ngủ nướng và KHÔNG deadline.\nVi phạm sẽ bị… vui thêm 10 phút 💥', 'Mời cả hội đi tiệc! 🎉\nThứ 7 này, 19h, nhà mình.\nLý do vắng mặt: KHÔNG CÓ 💯'] },
         { k: 'coquette',  n: 'Coquette',   e: '🎀', dark: 1, g: 'linear-gradient(135deg,#fff8f3,#ffc0db 55%,#e35d8a)',
           sug: ['Gửi em một chút dịu dàng 🎀\nChúc em xinh như hoa, ngọt như kẹo,\nvà luôn được yêu thương như một nàng công chúa 🤍', 'Cảm ơn em đã đến bên anh 🎀\nMỗi ngày bên em đều dịu dàng hơn\nnhư một bản nhạc ewige nhỏ nhẹ 🎀'] },
+        { k: 'kawaii',    n: 'Bling Kawaii', e: '💗', dark: 1, g: 'linear-gradient(135deg,#FFDFF0,#B98BFF 55%,#6FD3FF)',
+          sug: ['Chúc cậu hôm nay lấp lánh như kim cương ✨\ndễ thương gấp một tỉ lần ngày thường,\nvà may mắn rơi đầy túi luôn nha 💗 Bling bling!', 'Gửi bestie một đóa mây kawaii 🎀\nChúc cậu cute overload, bling bling mỗi ngày,\nvà được yêu thương siêu siêu nhiều 💗'] },
         { k: 'rave',      n: 'Rave Party', e: '🌀', dark: 0, g: 'linear-gradient(135deg,#050505,#7b2eff 55%,#b4ff39)',
           sug: ['ĐÊM NAY: bass drop + đèn neon + bạn 🎧\nCửa mở 20:00 · Dress code: sáng nhất có thể.\nVắng mặt là phí cả một đêm đỉnh! ⚡', 'HAPPY BIRTHDAY DJ 🎉\nTuổi mới chỉ phát nhạc vui,\ncâm mics mọi điều không hay 🔥'] },
         { k: 'aero',      n: 'Bong Bóng',  e: '🫧', dark: 1, g: 'linear-gradient(135deg,#7ec8f5,#d9f4ff 60%,#b9e8a5)',
