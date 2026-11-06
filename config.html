@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Thiệp Nhà Lệ">
 <title>Thiệp Nhà Lệ · Tạo thiệp trong 3 bước</title>
-<!-- Trang quản trị của chủ nhà — đặt CÙNG THƯ MỤC với index.html. Cần Apps Script v4 (Code.gs có doPost). -->
+<!-- Trang quản trị của chủ nhà — đặt CÙNG THƯ MỤC với index.html. Cần Apps Script v4 (Code.gs có doPost). Khuyên dùng v4.5: thêm action 'get' để sửa được cả thiệp đang hẹn giờ. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Pacifico&display=swap" rel="stylesheet">
@@ -267,6 +267,10 @@
             <label>Ngày đặc biệt</label>
             <input id="fDate" type="date">
             <p class="hint">Có ngày → thiệp tự đếm ngược từng giây. Để trống nếu không cần.</p>
+
+            <label>⏰ Hẹn giờ mở thiệp (tùy chọn)</label>
+            <input id="fUnlock" type="datetime-local">
+            <p class="hint">Đặt giờ → người nhận chỉ thấy màn hình đếm ngược đến giờ mở rồi thiệp mới tự mở khóa (tính theo giờ Việt Nam). Để trống là mở luôn. Muốn sửa nội dung thiệp đang hẹn giờ: bấm ✏️ trong 🗂 Thiệp của tôi — cần Code.gs v4.5.</p>
 
             <div class="lblrow">
                 <label>Ảnh bìa (ảnh hoặc video)</label>
@@ -639,7 +643,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             id: state.editingId,
             to: val('fTo'), from: val('fFrom'), title: val('fTitle'),
             content: $('fContent').value.replace(/\r/g, ''),
-            date: val('fDate'),
+            date: val('fDate'), unlock: val('fUnlock'),
             image: val('fImage'),
             photos: $('fPhotos').value.replace(/\r/g, ''),
             audio: val('fAudio'), voice: val('fVoice'),
@@ -653,7 +657,13 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
 
     // ================== BƯỚC 3 · LINK & QR ==================
-    function qrLink(id) { return LINK_BASE + (LINK_BASE.includes('?') ? '&' : '?') + 'id=' + encodeURIComponent(id); }
+    // Link chia sẻ: ?id=… và kèm &theme=… để trang thiệp lên đúng màu ngay từ giây đầu
+    // (không nháy theme mặc định khi mạng chậm; in QR giấy cũng không lo mất theme)
+    function qrLink(id, theme) {
+        let u = LINK_BASE + (LINK_BASE.includes('?') ? '&' : '?') + 'id=' + encodeURIComponent(id);
+        if (theme) u += '&theme=' + encodeURIComponent(theme);
+        return u;
+    }
 
     function drawPrettyQR(canvas, text, cA, cB) {
         const qr = qrcode(0, 'M');
@@ -701,7 +711,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
 
     function showDone(id) {
         state.editingId = id;
-        state.lastLink = qrLink(id);
+        state.lastLink = qrLink(id, state.theme || '');
         $('doneLink').value = state.lastLink;
         const t = TPLS.find(x => x.k === state.theme) || TPLS[0];
         try {
@@ -734,7 +744,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
                 `<div class="citem">
                     <div class="ci">
                         <div class="ct">${esc(c.title || '(không tiêu đề)')}</div>
-                        <div class="cm">→ ${esc(c.to || '?')} · ${esc(c.theme)}${c.mode && c.mode !== 'envelope' ? ' · ' + esc(c.mode) : ''}${c.date ? ' · ' + esc(c.date) : ''}</div>
+                        <div class="cm">→ ${esc(c.to || '?')} · ${esc(c.theme)}${c.mode && c.mode !== 'envelope' ? ' · ' + esc(c.mode) : ''}${c.date ? ' · ' + esc(c.date) : ''}${c.unlock ? ' · ⏰ ' + esc(c.unlock) : ''}</div>
                     </div>
                     <div class="ca">
                         <button data-a="open" data-id="${esc(c.id)}" title="Mở">👁</button>
@@ -744,7 +754,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
                     </div>
                 </div>`).join('');
             $('listBody').querySelectorAll('button').forEach(b => b.addEventListener('click', async () => {
-                const id = b.dataset.id, link = qrLink(id);
+                const card = j.cards.find(x => x.id === b.dataset.id) || {};
+                const id = card.id || b.dataset.id, link = qrLink(id, card.theme);
                 if (b.dataset.a === 'open') window.open(link, '_blank', 'noopener');
                 if (b.dataset.a === 'copy') {
                     try { await navigator.clipboard.writeText(link); toast('✅ Đã chép link'); }
@@ -752,9 +763,22 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
                 }
                 if (b.dataset.a === 'edit') {
                     try {
-                        const res = await fetch(API + '?id=' + encodeURIComponent(id));
-                        const card = await res.json();
-                        if (card.status !== 'success') throw new Error('Không tải được thiệp');
+                        let card = null;
+                        try {
+                            // Ưu tiên kênh riêng của chủ nhà (Code.gs v4.5 thêm action 'get'):
+                            // nạp ĐỦ nội dung cả khi thiệp đang hẹn giờ, kèm giờ unlock cũ.
+                            card = await api({ action: 'get', token: token, id: id });
+                        } catch (eGet) {
+                            if (eGet.code === 'auth') throw eGet;   // hết phiên — api() đã tự đăng xuất
+                            // Code.gs cũ chưa có action get → rơi xuống kênh công khai.
+                            const res = await fetch(API + '?id=' + encodeURIComponent(id));
+                            card = await res.json();
+                            if (card.status === 'locked') {
+                                toast('⏰ Thiệp đang hẹn giờ nên kênh công khai giấu nội dung. Cập nhật Code.gs v4.5 lên Apps Script (Deploy → New version) là bấm ✏️ sửa được bình thường.');
+                                return;
+                            }
+                            if (card.status !== 'success') throw new Error('Không tải được thiệp');
+                        }
                         fillForm(card);
                         $('drawerList').classList.remove('show');
                         show('scrEdit');
@@ -777,8 +801,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         state.mode = MODES.some(m => m.k === d.mode) ? d.mode : 'envelope';
         state.fx = FXS.some(f => f.k === d.fx) ? d.fx : '';
         state.editingId = d.id || '';
-        $('fTo').value = d.to || ''; $('fTitle').value = d.title || '';
-        $('fContent').value = d.content || ''; $('fDate').value = d.date || '';
+        $('fTo').value = d.to || ''; $('fFrom').value = d.from || ''; $('fTitle').value = d.title || '';
+        $('fContent').value = d.content || ''; $('fDate').value = d.date || ''; $('fUnlock').value = d.unlock || '';
         $('fImage').value = d.image || ''; $('fPhotos').value = d.photos || '';
         $('fAudio').value = d.audio || ''; $('fVoice').value = d.voice || '';
         $('tplChip').textContent = TPLS.find(t => t.k === state.theme).e + ' ' + TPLS.find(t => t.k === state.theme).n;
@@ -946,7 +970,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     $('btnPreview').addEventListener('click', async () => {
         try {
             const id = await saveCard(true);
-            if (id) { toast('Đang mở bản xem thử…'); window.open(qrLink(id), '_blank', 'noopener'); }
+            if (id) { toast('Đang mở bản xem thử…'); window.open(qrLink(id, state.theme), '_blank', 'noopener'); }
         } catch (e) { toast(e.message || 'Lỗi lưu'); }
     });
     $('btnCreate').addEventListener('click', async () => {
@@ -978,7 +1002,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     $('btnEditMore').addEventListener('click', () => show('scrEdit'));
     $('btnNew').addEventListener('click', () => {
         state.editingId = '';
-        ['fTo', 'fFrom', 'fTitle', 'fContent', 'fDate', 'fImage', 'fPhotos', 'fAudio', 'fVoice'].forEach(id => $(id).value = '');
+        ['fTo', 'fFrom', 'fTitle', 'fContent', 'fDate', 'fUnlock', 'fImage', 'fPhotos', 'fAudio', 'fVoice'].forEach(id => $(id).value = '');
         document.querySelectorAll('.tpl').forEach(x => x.classList.remove('sel'));
         state.theme = '';
         const b = $('btnToEdit');
