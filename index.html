@@ -428,6 +428,16 @@
         cursor: pointer; animation: bob 3s ease-in-out infinite; perspective: 800px; outline: none; transition: opacity .5s;
     }
     .envelope.pending { opacity: 0; }
+    body.booting .stage, body.booting .topbar { visibility: hidden; }
+    body.booting::after { content:''; position:fixed; left:50%; top:50%; width:34px; height:34px; margin:-17px 0 0 -17px; border-radius:50%; border:3px solid rgba(128,128,128,.25); border-top-color: rgba(128,128,128,.8); animation: bootspin .8s linear infinite; }
+    @keyframes bootspin { to { transform: rotate(360deg); } }
+    #lockScreen { position:fixed; inset:0; z-index:9000; display:none; flex-direction:column; align-items:center; justify-content:center; gap:14px; padding:24px; text-align:center; background: var(--bg, #fff8f0); color: var(--text, #3a2a2a); }
+    #lockScreen.show { display:flex; }
+    #lockScreen .lk-ico { font-size:56px; animation: pulse 1.8s ease-in-out infinite; }
+    #lockScreen .lk-to { font-size:1.15rem; font-weight:700; }
+    #lockScreen .lk-msg { opacity:.8; max-width:28ch; }
+    #lockScreen .lk-cd { font-variant-numeric: tabular-nums; font-size:clamp(1.6rem,7vw,2.6rem); font-weight:800; letter-spacing:1px; }
+    #lockScreen .lk-at { opacity:.65; font-size:.9rem; }
     .envelope.disabled { cursor: not-allowed; animation: none; filter: grayscale(.6); }
     @keyframes bob { 50% { transform: translateY(-10px) rotate(-1deg); } }
     .env-back { position: absolute; inset: 0; border-radius: 12px; background: var(--env-back); border: var(--env-border); box-shadow: var(--env-shadow); }
@@ -484,12 +494,20 @@
     .counter.show { display: block; }
 
     .photo {
-        display: none; background: var(--photo-bg); padding: 8px 8px 28px; border-radius: 6px;
+        display: none; position: relative; background: var(--photo-bg); padding: 8px 8px 28px; border-radius: 6px;
         margin: 20px auto 6px; transform: rotate(-2.5deg); max-width: 85%;
         box-shadow: 0 12px 30px rgba(0,0,0,.35); transition: transform .3s;
     }
     .photo:hover { transform: rotate(0) scale(1.03); }
     .photo img, .photo video { width: 100%; display: block; border-radius: 3px; }
+    /* Nút bật/tắt tiếng cho video bìa (ngăn với nhạc nền — muốn nghe tiếng video thì bấm) */
+    .vidsound {
+        position: absolute; right: 16px; bottom: 34px; z-index: 6; display: none; align-items: center; gap: 6px;
+        padding: 7px 13px; border-radius: 999px; border: 1px solid rgba(29,42,58,.35);
+        background: rgba(29,42,58,.88); color: #fff; font: inherit; font-size: 12.5px; cursor: pointer;
+        backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); box-shadow: 0 4px 14px rgba(0,0,0,.3);
+    }
+    .vidsound.show { display: inline-flex; }
 
     .voice {
         display: none; align-items: center; gap: 12px; margin-top: 18px; padding: 10px 14px;
@@ -743,6 +761,7 @@
 </style>
 </head>
 <body>
+<div id="lockScreen" role="status" aria-live="polite"><div class="lk-ico">🔒</div><div class="lk-to" id="lkTo"></div><div class="lk-msg">Thiệp này được hẹn giờ — sẽ mở vào</div><div class="lk-cd" id="lkCd">--:--:--</div><div class="lk-at" id="lkAt"></div></div>
 
     <div class="aurora"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
     <div id="floaters"></div>
@@ -870,7 +889,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
 <script>
     // ================== CẤU HÌNH ==================
     // Muốn test với backend khác: localStorage.setItem('thiep-api', 'http://…/exec') rồi tải lại
-    const API_URL = localStorage.getItem('thiep-api') || "https://script.google.com/macros/s/AKfycbxkIv3VPOhbbfNDY4odmXZK8CvHeqh5_EnTZY-3Q5JK5Em9XVBmFasUTE6UBT9y7qoa/exec";
+    const API_URL = (location.search.indexOf('debug') >= 0 && localStorage.getItem('thiep-api')) || "https://script.google.com/macros/s/AKfycbxkIv3VPOhbbfNDY4odmXZK8CvHeqh5_EnTZY-3Q5JK5Em9XVBmFasUTE6UBT9y7qoa/exec";
     // Cột Google Sheet: id | title | content | date | image | audio | voice | from | to | theme | photos | mode | fx
     // Cột theme: default, nhagiao, y2k, brutal, coquette, rave, aero, phat, meo, xinloi, tet, giangsinh, kyniem
     // Cột mode (kiểu mở thiệp): envelope (mặc định) | hold | scratch | chat | stories
@@ -1026,15 +1045,17 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const urlParams = new URLSearchParams(location.search);
     const customerId = urlParams.get('id');
-    const themeParam = urlParams.get('theme');
+    const THEME_ALIAS = { gs:'giangsinh', ng:'nhagiao', ky:'kyniem', tet:'tet' };   // ?t= ngắn gọn cho link gửi khách
+    const themeParam = urlParams.get('theme') || (function () { const t = urlParams.get('t'); return t ? (THEME_ALIAS[t.toLowerCase()] || t) : null; })();
     const demoParam = urlParams.get('demo');
-    const DEBUG = urlParams.has('debug');        // ?debug=1 → hiện nhật ký chẩn đoán nhạc/hình
+    const DEBUG = urlParams.has('debug');
+    const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);        // ?debug=1 → hiện nhật ký chẩn đoán nhạc/hình
     if (DEBUG) $('dbgPanel').classList.add('show');
 
     let T = THEMES.default, themeKey = 'default';
     let cardData = null, bgm = null, voice = null, opened = false, typeTimer = null;
     const FX = !reduceMotion && urlParams.get('fx') !== '0';   // tổng công tắc hiệu ứng v3 (tắt bằng ?fx=0)
-    const LITE = (navigator.deviceMemory || 8) <= 4;           // máy yếu (RAM ≤ 4GB): giảm blur, tắt hue, bớt hạt pháo giấy
+    const LITE = (navigator.deviceMemory || 8) <= 4 || (navigator.hardwareConcurrency || 8) <= 4;           // máy yếu (RAM ≤ 4GB): giảm blur, tắt hue, bớt hạt pháo giấy
     if (LITE) document.body.classList.add('lite');
 
     // ================== THEME ==================
@@ -1092,6 +1113,52 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         if (onImgError) im.onerror = onImgError;
         im.src = src;
         return im;
+    }
+    // ---- v4.2 · TIẾNG CHO VIDEO BÌA ----
+    // Trình duyệt chỉ cho video phát CÓ TIẾNG sau một cử chỉ chạm. Vì vậy:
+    //  · Có nhạc nền  → video im lặng làm hình nền động, nút 🔊 cho phép nghe tiếng video (tạm dừng nhạc)
+    //  · Không có nhạc → khi mở thiệp (đang có cử chỉ) tự thử bật tiếng; nếu bị chặn thì hiện nút 🔊 để bấm
+    let coverVideo = null, videoSoundBtn = null, bgmPausedForVideo = false;
+    const hasBgmTracks = () => !!(cardData && String(cardData.audio || '').trim());
+    function updateSoundBtn() {
+        if (!videoSoundBtn) return;
+        videoSoundBtn.textContent = (coverVideo && !coverVideo.muted) ? '🔇 Tắt tiếng video' : '🔊 Bật tiếng video';
+    }
+    function ensureVideoSoundBtn(container) {
+        let b = container.querySelector('.vidsound');
+        if (!b) {
+            b = document.createElement('button');
+            b.className = 'vidsound'; b.type = 'button';
+            b.addEventListener('click', e => { e.stopPropagation(); toggleVideoSound(); });
+            container.appendChild(b);
+        }
+        b.classList.add('show');
+        return b;
+    }
+    function toggleVideoSound() {
+        if (!coverVideo) return;
+        if (coverVideo.muted) {
+            coverVideo.muted = false;
+            coverVideo.play().catch(() => {});
+            if (bgm && !bgm.paused) { bgm.pause(); bgmPausedForVideo = true; setMusicUI(false); }   // đừng để hai nguồn âm thanh cùng chạy
+        } else {
+            coverVideo.muted = true;
+            if (bgmPausedForVideo && bgm) { playTrack(); bgmPausedForVideo = false; }               // trả nhạc nền lại như cũ
+        }
+        updateSoundBtn();
+    }
+    function tryVideoSound() {
+        if (!coverVideo || !coverVideo.muted) return;
+        coverVideo.muted = false;
+        coverVideo.play().then(updateSoundBtn).catch(() => {
+            coverVideo.muted = true;          // trình duyệt chưa cho — giữ im lặng, người xem bấm nút 🔊 là được
+            updateSoundBtn();
+        });
+    }
+    function setupCoverVideo(v, container) {
+        coverVideo = v; bgmPausedForVideo = false;
+        videoSoundBtn = ensureVideoSoundBtn(container);
+        updateSoundBtn();
     }
     // Tự đổi link Google Drive sang link trực tiếp; link khác (hoặc đường dẫn trong repo) giữ nguyên
     function mediaUrl(u, kind) {
@@ -1181,6 +1248,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             try { cachedTheme = localStorage.getItem('thiep-theme:' + customerId); } catch (e) {}
         }
         applyTheme(demoParam || themeParam || cachedTheme);
+        if (!demoParam && !themeParam && !cachedTheme && customerId) document.body.classList.add('booting');   // chưa biết theme → màn trung tính, khỏi nháy theme mặc định
         if (demoParam) {                        // chế độ xem thử mẫu
             $('backLink').classList.add('show');
             const d = Object.assign({}, T.demo);
@@ -1196,6 +1264,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             const res = await fetch(`${API_URL}?id=${encodeURIComponent(customerId)}`, { signal: ctrl.signal });
             clearTimeout(t);
             const data = await res.json();
+            if (data.status === 'locked') { applyTheme(themeParam || data.theme); return showLocked(data); }
             if (data.status !== 'success') return fail('Không tìm thấy thiệp!');
             cardData = data;
             applyTheme(themeParam || data.theme);
@@ -1208,13 +1277,40 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             fail('Không tải được thiệp, vui lòng thử lại');
         }
     }
+    // ---- Thiệp hẹn giờ: server chưa gửi nội dung, chỉ có giờ mở ----
+    let lockTimer = null;
+    function showLocked(data) {
+        document.body.classList.remove('booting');
+        const skew = (data.now ? data.now - Date.now() : 0);          // bù lệch đồng hồ máy khách
+        const target = new Date(data.unlockAt).getTime();
+        $('lkTo').textContent = data.to ? T.toFmt(data.to) : '';
+        const p2 = n => String(n).padStart(2, '0');
+        try { $('lkAt').textContent = '📅 ' + new Intl.DateTimeFormat('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(target)).replace(',', ' ·'); } catch (e) {}
+        $('lockScreen').classList.add('show');
+        const tick = () => {
+            const left = target - (Date.now() + skew);
+            if (left <= 0) { clearInterval(lockTimer); location.reload(); return; }
+            const d = Math.floor(left / 864e5), h = Math.floor(left % 864e5 / 36e5), m = Math.floor(left % 36e5 / 6e4), sec = Math.floor(left % 6e4 / 1e3);
+            $('lkCd').textContent = (d ? d + ' ngày ' : '') + p2(h) + ':' + p2(m) + ':' + p2(sec);
+        };
+        tick(); lockTimer = setInterval(tick, 1000);
+    }
+    // ---- Báo cho chủ thiệp biết người nhận đã mở (1 lần / phiên trình duyệt) ----
+    function reportOpen() {
+        if (demoParam || DEBUG || !customerId) return;
+        const k = 'thiep-opened:' + customerId;
+        try { if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); } catch (e) {}
+        try { fetch(API_URL + '?act=open&id=' + encodeURIComponent(customerId), { keepalive: true }).catch(() => {}); } catch (e) {}
+    }
     function ready() {
+        document.body.classList.remove('booting');
         $('envelope').classList.remove('disabled', 'pending');
         $('hint').textContent = T.hint;
         $('hint').classList.remove('err');
         bootGate();                              // v4: chọn kiểu mở thiệp theo cột mode
     }
     function fail(msg) {
+        document.body.classList.remove('booting');
         $('envelope').classList.remove('pending');
         $('hint').textContent = msg;
         $('hint').classList.add('err');
@@ -1240,6 +1336,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             photo.appendChild(el);
             photo.style.display = 'block';
             if (FX && !isVideo(u)) photo.classList.add('kb');             // v3: ảnh "thở" chậm (Ken Burns)
+            if (isVideo(u)) setupCoverVideo(el, photo);                   // v4.2: quản lý tiếng cho video bìa
+            else { coverVideo = null; videoSoundBtn = null; }
             photo.onclick = () => openLightbox(u);                        // v4.1: video mở trình phát có nút, có tiếng
         }
         if (d.voice) $('voiceBox').classList.add('show');
@@ -1259,9 +1357,11 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     function finishOpen(flapDelay) {
         if (!cardData) return;
         opened = true;
+        reportOpen();
         burstConfetti();
-        if (musicPrewarmed && bgm) { bgm.volume = .6; setMusicUI(true); }   // nhạc đã bật sẵn lúc giữ/cào → chỉ trả âm lượng
+        if (musicPrewarmed && bgm) { bgm.muted = false; bgm.volume = .6; setMusicUI(true); }   // nhạc đã bật sẵn lúc giữ/cào → chỉ trả âm lượng
         else startMusic();                       // phải gọi ngay lúc chạm để trình duyệt cho phép phát nhạc
+        if (coverVideo && !hasBgmTracks()) tryVideoSound();   // v4.2: không có nhạc → tận dụng cử chỉ vừa rồi bật tiếng video
         hideGates();
         const showMain = () => {
             $('envelopeWrap').classList.add('gone');
@@ -1390,7 +1490,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         if (!bgm) {
             bgm = new Audio();
             bgm.addEventListener('ended', nextTrack);
-            if (FX && tracksSameOrigin) initAnalyser(bgm);   // visualizer chỉ bật khi nhạc cùng nguồn gốc (file trong dự án)
+            if (FX && tracksSameOrigin) bgm.addEventListener('playing', maybeHookVisualizer);   // v4.2: nối visualizer muộn — chỉ khi nhạc chạy thật
         }
         bgm.loop = playList.length < 2;
         bgm.volume = 0.6;
@@ -1422,12 +1522,12 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             voice.addEventListener('timeupdate', () => {
                 $('voiceProg').style.width = (voice.currentTime / (voice.duration || 1) * 100) + '%';
             });
-            const restore = () => { $('voiceBtn').textContent = '▶'; $('voiceBtn').classList.remove('beat'); if (bgm) bgm.volume = 0.6; };
+            const restore = () => { $('voiceBtn').textContent = '▶'; $('voiceBtn').classList.remove('beat'); if (bgm) { bgm.volume = 0.6; bgm.muted = false; } };
             voice.addEventListener('pause', restore);
             voice.addEventListener('ended', () => { restore(); $('voiceProg').style.width = '0'; });
         }
         if (voice.paused) {
-            if (bgm) bgm.volume = 0.15;   // hạ nhạc nền khi nghe lời nhắn
+            if (bgm) { bgm.volume = 0.15; if (IOS) bgm.muted = true; }   // iOS bỏ qua volume → tắt tiếng nhạc nền khi nghe lời nhắn
             ensureSrc(voice, audioCandidates(cardData.voice), 'Lời nhắn').then(ok => {
                 $('voiceBtn').textContent = ok ? '⏸' : '▶';
                 $('voiceBtn').classList.toggle('beat', ok);
@@ -1641,7 +1741,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const box = $('sphereBox'), ringEl = $('ring');
         const list = String(photosRaw || '').split(/[;\n]+/).map(s => s.trim()).filter(Boolean).slice(0, 10);
         if (list.length < 2) { box.classList.remove('show'); ringEl.innerHTML = ''; return; }
-        $('photo').style.display = 'none';           // có cầu xoay rồi thì ẩn khung ảnh đơn
+        // v4.2: có cầu xoay thì ẩn khung ảnh đơn — NHƯNG giữ lại nếu ảnh bìa là VIDEO
+        // (video là nội dung chính người gửi chủ động chèn, ẩn đi là mất hẳn tiếng với hình)
+        if (!coverVideo) $('photo').style.display = 'none';
         ringEl.innerHTML = '';
         const n = list.length, R = n <= 4 ? 95 : 108;
         list.forEach((u, i) => {
@@ -1763,7 +1865,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     function shareUrl() {
         if (demoParam) return location.origin + location.pathname + '?demo=' + encodeURIComponent(demoParam);
         const id = customerId || (cardData && cardData.id) || '';
-        return location.origin + location.pathname + '?id=' + encodeURIComponent(id);
+        const th = (themeKey && themeKey !== 'default') ? '&t=' + encodeURIComponent(themeKey) : '';
+        return location.origin + location.pathname + '?id=' + encodeURIComponent(id) + th;
     }
     const SHARE_MSG = 'Có một tấm thiệp dành cho bạn 💌';
     $('shNative').addEventListener('click', async () => {
@@ -1833,12 +1936,30 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
 
     // ================== V3 · VISUALIZER NHẠC (Web Audio — chỉ file cùng nguồn) ==================
-    let actx = null, analyser = null, freqData = null, vizRaf = 0, srcHooked = false;
-    function initAnalyser(a) {
+    // v4.2: KHÔNG nối bộ xử lý âm thanh ngay từ đầu. createMediaElementSource sẽ chuyển toàn bộ
+    // âm thanh của <audio> qua AudioContext — nếu context bị trình duyệt treo (iPhone/Android khi
+    // video khác chiếm phiên âm thanh) thì nhạc vẫn "phát" nhưng KHÔNG CÓ TIẾNG. Vì vậy:
+    //  1) nhạc luôn phát trực tiếp trước (nghe chắc chắn được),
+    //  2) visualizer chỉ được nối sau khi context chạy thật sự,
+    //  3) có giám sát: nếu nhạc đang phát mà câm quá ~2.5s → dựng lại <audio> thuần, bỏ Web Audio.
+    let actx = null, analyser = null, freqData = null, vizRaf = 0, srcHooked = false, vizBlocked = false, silentFrames = 0;
+    function maybeHookVisualizer() {
+        if (!FX || !tracksSameOrigin || srcHooked || vizBlocked || !bgm) return;
         try {
             const AC = window.AudioContext || window.webkitAudioContext;
-            actx = new AC();
-            const src = actx.createMediaElementSource(a);
+            if (!AC) { vizBlocked = true; return; }
+            if (!actx) actx = new AC();
+            if (actx.state === 'suspended') {
+                actx.resume().then(() => { if (actx.state === 'running') hookSourceNow(); else vizBlocked = true; }).catch(() => { vizBlocked = true; });
+            } else hookSourceNow();
+        } catch (e) {
+            vizBlocked = true;
+            dbg('Không bật được visualizer: ' + (e && e.message || e));
+        }
+    }
+    function hookSourceNow() {
+        try {
+            const src = actx.createMediaElementSource(bgm);
             analyser = actx.createAnalyser();
             analyser.fftSize = 64;
             analyser.smoothingTimeConstant = .82;
@@ -1846,10 +1967,29 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             analyser.connect(actx.destination);
             freqData = new Uint8Array(analyser.frequencyBinCount);
             srcHooked = true;
+            hookVisualizer();
         } catch (e) {
-            srcHooked = false;
+            vizBlocked = true;
             dbg('Không bật được visualizer: ' + (e && e.message || e));
         }
+    }
+    // Nhạc bị Web Audio "nuốt" (context treo không hồi phục) → dựng <audio> mới phát trực tiếp
+    function rebuildBgmPlain() {
+        try {
+            dbg('Âm thanh bị nuốt bởi Web Audio — dựng lại nhạc nền không qua bộ xử lý');
+            vizBlocked = true; srcHooked = false;
+            stopVisualizer();
+            const wasPlaying = bgm && !bgm.paused;
+            const src = bgm ? (bgm.currentSrc || bgm.src) : '';
+            const vol = bgm ? bgm.volume : .6;
+            if (bgm) { bgm.pause(); bgm.removeEventListener('ended', nextTrack); bgm.removeEventListener('playing', maybeHookVisualizer); }
+            bgm = new Audio();
+            bgm.loop = playList.length < 2;
+            bgm.volume = vol;
+            if (src) bgm.src = src;
+            bgm.addEventListener('ended', nextTrack);
+            if (wasPlaying && src) bgm.play().then(() => setMusicUI(true)).catch(() => {});
+        } catch (e) { dbg('Dựng lại nhạc lỗi: ' + (e && e.message || e)); }
     }
     function hookVisualizer() {
         if (!srcHooked || !analyser) return;
@@ -1860,6 +2000,12 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const blobs = document.querySelectorAll('.blob');
         (function frame() {
             if (!bgm || bgm.paused) { stopVisualizer(); return; }
+            // Giám sát âm thanh: context bị treo → thử hồi phục; câm quá lâu → dựng lại không qua Web Audio
+            if (!actx || actx.state !== 'running') {
+                silentFrames++;
+                if (actx) actx.resume().catch(() => {});
+                if (silentFrames > 150) { rebuildBgmPlain(); return; }
+            } else silentFrames = 0;
             analyser.getByteFrequencyData(freqData);
             let sum = 0;
             for (let i = 0; i < bars.length; i++) {
@@ -1978,9 +2124,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             $('musicBtn').classList.add('show');
             bgm = new Audio();
             bgm.addEventListener('ended', nextTrack);
-            if (FX && tracksSameOrigin) initAnalyser(bgm);
+            if (FX && tracksSameOrigin) bgm.addEventListener('playing', maybeHookVisualizer);   // v4.2: nối visualizer muộn — chỉ khi nhạc chạy thật
             bgm.loop = playList.length < 2;
-            bgm.volume = 0;
+            bgm.volume = 0; bgm.muted = true;     // iOS bỏ qua volume=0 nhưng tôn trọng muted
             playTrack();
         } catch (e) { dbg('prewarm nhạc lỗi: ' + (e && e.message || e)); }
     }
@@ -2239,14 +2385,17 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         }
         buildSphere(d.photos);
     }
-    function loadScriptOnce(src) {
+    function loadScriptOnce(src, integrity) {
         return new Promise((res, rej) => {
             const s = document.createElement('script');
+            let done = false;
+            const fin = fn => v => { if (done) return; done = true; clearTimeout(tm); fn(v); };
+            const tm = setTimeout(() => { if (done) return; done = true; s.remove(); rej(new Error('quá thời gian tải')); }, 9000);
             s.src = src;
-            s.onload = res;
-            s.onerror = () => rej(new Error('tải thất bại'));
+            if (integrity) { s.integrity = integrity; s.crossOrigin = 'anonymous'; }   // SRI: CDN bị thay file thì trình duyệt từ chối chạy
+            s.onload = fin(res);
+            s.onerror = fin(() => { s.remove(); rej(new Error('tải thất bại')); });
             document.head.appendChild(s);
-            setTimeout(() => rej(new Error('quá thời gian tải')), 9000);
         });
     }
 
@@ -2259,7 +2408,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
 
         dbg('galaxy: bat dau, THREE=' + typeof window.THREE);
         try {
-            if (!window.THREE) await loadScriptOnce('https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js');
+            if (LITE) throw new Error('máy yếu → dùng nền sao nhẹ');
+            if (!window.THREE) await loadScriptOnce('https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js', 'sha384-RRHfJ6w1mTlKUBMYT/hvnRiOzEB/vyRV3DrQOseb6oYfvaZSfdd0byS4bHps0k2R');
             dbg('galaxy: THREE san sang=' + typeof window.THREE);
             buildGalaxy(cv);
         } catch (e) {
@@ -2581,7 +2731,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const list = String(photosRaw || '').split(/[;\n]+/).map(s => s.trim()).filter(Boolean).slice(0, 8);
         if (list.length < 1) return false;
         $('sphereBox').classList.remove('show');
-        $('photo').style.display = 'none';
+        if (!coverVideo) $('photo').style.display = 'none';   // v4.2: giữ video bìa luôn hiển thị
         book.innerHTML = '';
         const d = cardData || {};
         const toName = d.to ? T.toFmt(d.to) : (d.title || T.title);
