@@ -1119,6 +1119,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     //  · Có nhạc nền  → video im lặng làm hình nền động, nút 🔊 cho phép nghe tiếng video (tạm dừng nhạc)
     //  · Không có nhạc → khi mở thiệp (đang có cử chỉ) tự thử bật tiếng; nếu bị chặn thì hiện nút 🔊 để bấm
     let coverVideo = null, videoSoundBtn = null, bgmPausedForVideo = false;
+    let lbBgmPaused = false, lbVideoPaused = false;   // lightbox mở video có tiếng → tạm dừng nhạc nền/video bìa rồi trả lại khi đóng
     const hasBgmTracks = () => !!(cardData && String(cardData.audio || '').trim());
     function updateSoundBtn() {
         if (!videoSoundBtn) return;
@@ -1512,7 +1513,11 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         if (!cardData.audio) return;
         if (!bgm) { startMusic(); return; }
         if (bgm.paused) {
+            bgm.muted = false; bgm.volume = .6;    // prewarm để muted=true — nếu chủ nhà thả tay giữ/cào sớm, nút này là chỗ trả tiếng lại
+            if (coverVideo && !coverVideo.muted) { coverVideo.muted = true; bgmPausedForVideo = false; updateSoundBtn(); }   // nhạc nền bật → video về im lặng, khỏi hai nguồn cùng chạy
             playTrack();
+        } else if (bgm.muted || !bgm.volume) {
+            bgm.muted = false; bgm.volume = .6; setMusicUI(true);   // đang phát câm (prewarm) → bấm 1 lần là trả tiếng, đừng tắt
         } else { bgm.pause(); setMusicUI(false); }
     });
 
@@ -1829,6 +1834,10 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             img.style.display = 'none';
             v.style.display = 'block';
             v.src = src;
+            // video trong lightbox phát CÓ TIẾNG → tạm dừng nhạc nền và video bìa (nếu đang có tiếng) đỡ chéo âm thanh
+            lbBgmPaused = false; lbVideoPaused = false;
+            if (bgm && !bgm.paused) { bgm.pause(); lbBgmPaused = true; setMusicUI(false); }
+            if (coverVideo && !coverVideo.muted && !coverVideo.paused) { coverVideo.pause(); lbVideoPaused = true; }
             v.play().catch(() => {});
         } else {
             if (v) { v.pause(); v.style.display = 'none'; v.removeAttribute('src'); }
@@ -1841,6 +1850,13 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     function closeLightbox() {
         const v = $('lbVid');
         if (v) { v.pause(); v.removeAttribute('src'); }
+        if (lbVideoPaused && coverVideo) coverVideo.play().catch(() => {});   // trả video bìa về như cũ
+        lbVideoPaused = false;
+        if (lbBgmPaused && bgm) {                                             // trả nhạc nền lại như cũ
+            if (coverVideo && !coverVideo.muted) { coverVideo.muted = true; bgmPausedForVideo = false; updateSoundBtn(); }
+            playTrack();
+        }
+        lbBgmPaused = false;
         $('lightbox').classList.remove('show');
         $('lbImg').src = '';
     }
