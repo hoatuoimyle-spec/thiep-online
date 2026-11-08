@@ -595,6 +595,12 @@
     .music.playing .eq i:nth-child(2) { animation-delay: -.3s; }
     .music.playing .eq i:nth-child(3) { animation-delay: -.6s; }
     @keyframes eq { 50% { height: 14px; } }
+    /* v6.2: nhạc lỗi → nút rung + tỏa hào quang hồng nhẹ, gợi người xem chạm để phát lại */
+    .music.attn { animation: musicAttn 1.5s ease-in-out infinite; }
+    @keyframes musicAttn {
+        0%, 100% { transform: scale(1); box-shadow: 0 4px 16px rgba(29,42,58,.12), 0 0 0 0 rgba(255,150,200,.5); }
+        50% { transform: scale(1.07); box-shadow: 0 4px 20px rgba(29,42,58,.16), 0 0 0 12px rgba(255,150,200,0); }
+    }
 
     .back {
         display: none; position: fixed; top: max(14px, env(safe-area-inset-top)); left: 14px; z-index: 60;
@@ -603,6 +609,15 @@
         border: 1px solid rgba(29,42,58,.16); box-shadow: 0 4px 16px rgba(29,42,58,.12);
     }
     .back.show { display: block; }
+
+    /* v6.3 · Nút “Sửa thiệp” khi mở từ nút Xem thử trong config.html — dẫn chủ thiệp về khu chỉnh sửa */
+    .editback {
+        display: none; position: fixed; top: max(14px, env(safe-area-inset-top)); left: 14px; z-index: 80;
+        padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; text-decoration: none;
+        color: #fff; background: linear-gradient(135deg, #F472B6, #8B5CF6); border: 0; cursor: pointer;
+        box-shadow: 0 4px 16px rgba(244,114,182,.35); font-family: inherit;
+    }
+    .editback.show { display: block; }
 
     /* Toast thông báo ngắn (lỗi nhạc, hướng dẫn) */
     .toast {
@@ -1129,6 +1144,7 @@
     <canvas id="confetti"></canvas>
 
     <a class="back" id="backLink" href="config.html">← Tạo thiệp mới</a>
+    <button class="editback" id="editBack" type="button">✏️ Sửa thiệp</button>
     <button class="music" id="musicBtn" aria-label="Bật/tắt nhạc">
         <span class="eq"><i></i><i></i><i></i></span><span id="musicTxt">Nhạc</span>
     </button>
@@ -1711,8 +1727,18 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     const themeParam = urlParams.get('theme') || (function () { const t = urlParams.get('t'); return t ? (THEME_ALIAS[t.toLowerCase()] || t) : null; })();
     const demoParam = urlParams.get('demo');
     const DEBUG = urlParams.has('debug');
+    const PREVIEW = urlParams.has('preview');   // v6.3: mở từ nút “Xem thử” (config.html) → hiện nút về khu chỉnh sửa
     const IOS = /iP(hone|ad|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);        // ?debug=1 → hiện nhật ký chẩn đoán nhạc/hình
     if (DEBUG) $('dbgPanel').classList.add('show');
+    // v6.3 · Xem thử: đóng tab (nếu trình duyệt cho) hoặc quay về config.html — luôn có lối về khu chỉnh sửa
+    if (PREVIEW) {
+        $('editBack').classList.add('show');
+        $('editBack').addEventListener('click', () => {
+            buzz(12);
+            try { window.close(); } catch (e) {}
+            setTimeout(() => { location.href = 'config.html'; }, 350);   // tab mở thẳng/không đóng được → về trang dựng thiệp
+        });
+    }
 
     let T = THEMES.default, themeKey = 'default';
     let cardData = null, bgm = null, voice = null, opened = false, typeTimer = null;
@@ -1838,17 +1864,18 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     // Danh sách nguồn audio thử lần lượt (Drive hay đổi cơ chế serving nên cần phương án dự phòng)
     function audioCandidates(u) {
         u = String(u || '').trim();
-        if (u.includes('drive.google.com')) {
+        if (u.includes('drive.google.com') || u.includes('docs.google.com')) {
             const id = driveId(u);
             if (id) return [
                 `https://drive.usercontent.google.com/download?id=${id}&export=download&confirm=t`,
-                `https://drive.google.com/uc?export=download&confirm=t&id=${id}`
+                `https://drive.google.com/uc?export=download&confirm=t&id=${id}`,
+                `https://docs.google.com/uc?export=download&confirm=t&id=${id}`   // v6.2: cửa thứ 3 cho khó tính
             ];
         }
-        // v3: file nhạc để trong dự án — nếu ghi "bai-hat.mp3" thì tự thử thêm "audio/bai-hat.mp3"
-        // (đường dẫn có thư mục như "assets/…" hoặc "music/…" giữ nguyên, không thêm tiền tố)
+        // v3: file nhạc để trong dự án — tên file trần ("bai-hat.mp3") tự thử "assets/" rồi "audio/"
+        // (đường dẫn có thư mục như "assets/…", "audio/…" giữ nguyên — khớp đúng chỗ file nằm trong repo)
         if (!u.includes('://') && !u.startsWith('/') && !u.startsWith('data:') && !u.includes('/'))
-            return ['audio/' + u, u];
+            return ['assets/' + u, 'audio/' + u, u];   // v6.3: assets/ trước — đúng quy ước repo
         return [u];
     }
     // Ghi log audio ra console + bảng debug khi mở ?debug=1
@@ -1960,7 +1987,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
     // ---- Báo cho chủ thiệp biết người nhận đã mở (1 lần / phiên trình duyệt) ----
     function reportOpen() {
-        if (demoParam || DEBUG || urlParams.has('p') || !customerId) return;   // ?p=1 = chủ nhà xem thử → không tính lượt mở
+        if (demoParam || DEBUG || !customerId) return;
         const k = 'thiep-opened:' + customerId;
         try { if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); } catch (e) {}
         try { fetch(API_URL + '?act=open&id=' + encodeURIComponent(customerId), { keepalive: true }).catch(() => {}); } catch (e) {}
@@ -2022,8 +2049,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         opened = true;
         reportOpen();
         burstConfetti();
-        if (musicPrewarmed && bgm) { bgm.muted = false; bgm.volume = .6; setMusicUI(true); }   // nhạc đã bật sẵn lúc giữ/cào → chỉ trả âm lượng
-        else startMusic();                       // phải gọi ngay lúc chạm để trình duyệt cho phép phát nhạc
+        if (musicPrewarmed && mediaAlive(bgm)) { bgm.muted = false; bgm.volume = .6; setMusicUI(true); }   // nhạc đang chạy câm sẵn → chỉ trả tiếng
+        else startMusic();                       // v6.2: prewarm chưa kịp chạy/thất bại → phát lại ngay (thất bại nữa thì tự thử theo chạm)
         if (coverVideo && !hasBgmTracks()) tryVideoSound();   // v4.2: không có nhạc → tận dụng cử chỉ vừa rồi bật tiếng video
         hideGates();
         const showMain = () => {
@@ -2092,53 +2119,105 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         else stopVisualizer();
     }
     const audioBlobs = {};                    // url → objectURL (tái dùng, lần sau phát tức thì)
-    async function blobFallback(a, urls, label) {
+    // v6.2: ghi nhớ lý do phát thất bại gần nhất để toast nói được "vì sao" thay vì chỉ báo lỗi chung chung
+    let lastAudioErr = '';
+    // v6.2: Chromium vẫn giữ paused=false cả khi play() đã từ chối vì nguồn chết → phải xem
+    // readyState/currentTime mới biết nhạc có CHẠY THẬT hay không, tránh hiện "Đang phát" ảo và tránh bỏ qua bước tự thử lại
+    const mediaAlive = a => !!(a && !a.paused && (a.readyState >= 3 || a.currentTime > 0));
+    const audioErrShort = e => {
+        const n = (e && e.name) || '';
+        if (n === 'NotAllowedError') return 'trình duyệt đang chờ bạn chạm';
+        if (n === 'NotSupportedError') return 'file nhạc không đọc được (sai tên file trong cột audio — ví dụ assets/nhac.mp3)';
+        const m = String((e && e.message) || e || 'lỗi không rõ');
+        return m.length > 70 ? m.slice(0, 70) + '…' : m;
+    };
+    // v6.3 · PLAY-GEN — nguyên nhân sâu xa khiến nhạc hay lỗi khi mở thiệp: prewarm (cú chạm giữ
+    // ở cổng mở) và lần phát khi mở thiệp chạy SONG SONG trên cùng một <audio>. Hai chuỗi cứ
+    // gán src/load liên tục → play() của nhau gục với "interrupted by a new load request" → cả hai
+    // cùng thất bại, nhạc im. Giờ mỗi lượt phát lấy một số thứ tự riêng; lượt cũ còn treo sẽ tự
+    // bỏ cuộc ngay khi thấy mình lạc hậu → không còn hai chuỗi cắn nhau nữa.
+    const bumpGen = a => (a._playGen = (a._playGen || 0) + 1);
+    const stale = (a, gen) => !a || a._playGen !== gen;
+    // v6.3 · PHÁN ĐỊNH 300ms: NotAllowedError/NotSupportedError gần như luôn ném ra NGAY (trước khi
+    // tải xong); mạng chậm thì promise chỉ treo → coi như ĐÃ ĐƯỢC CHẤP NHẬN, nhạc tự cất tiếng khi
+    // tải đủ. Cũ: chờ play() phát thật mới tính thành công → mp3 3-4MB trên 4G bị hiểu nhầm là lỗi.
+    function playVerdict(a, p) {
+        return new Promise(resolve => {
+            let done = false;
+            const finish = v => { if (done) return; done = true; clearTimeout(to); a.removeEventListener('error', onErr); resolve(v); };
+            const onErr = () => finish({ err: new DOMException('Nguồn chết khi tải (404/sai tên file)', 'NotSupportedError') });
+            const to = setTimeout(() => finish('pending'), 300);
+            a.addEventListener('error', onErr);
+            p.then(() => finish('ok')).catch(e => finish({ err: e }));
+        });
+    }
+    async function blobFallback(a, urls, label, gen) {
         for (const u of urls) {
+            if (stale(a, gen)) return false;                 // v6.3: có lệnh phát mới hơn → thôi
             try {
                 if (audioBlobs[u]) {
                     a.src = audioBlobs[u];
-                    try { await a.play(); a.dataset.ok = urls.join('|'); dbg(label + ': phát từ bộ nhớ đệm OK'); return true; } catch (e) { return false; }
+                    const v0 = await playVerdict(a, a.play());
+                    if (stale(a, gen)) return false;
+                    if (v0 === 'ok' || v0 === 'pending') { a.dataset.ok = urls.join('|'); dbg(label + ': phát từ bộ nhớ đệm OK'); return true; }
+                    return false;
                 }
                 dbg(label + ': stream trực tiếp thất bại, thử tải về rồi phát…');
                 const res = await fetch(u, { mode: 'cors' });
+                if (stale(a, gen)) return false;
                 if (!res.ok) throw new Error('HTTP ' + res.status);
                 const blob = await res.blob();
+                if (stale(a, gen)) return false;
                 const head = new Uint8Array(await blob.slice(0, 4).arrayBuffer());
                 if (head[0] === 0x3C)   // '<' → Drive trả về trang web (file bị khóa / hết hạn mức tải)
-                    throw new Error('Drive trả về trang thông báo thay vì file nhạc');
+                    throw new Error('Drive trả về trang chặn thay vì file nhạc (kiểm tra "Ai có đường link" = Bất kỳ ai)');
                 const obj = URL.createObjectURL(blob);
                 audioBlobs[u] = obj;
                 a.src = obj;
-                try { await a.play(); a.dataset.ok = urls.join('|'); dbg(label + ': phát qua blob OK'); return true; }
-                catch (e) { dbg(label + ': đã tải xong, chờ bạn chạm để phát'); return false; }
+                const v = await playVerdict(a, a.play());
+                if (stale(a, gen)) return false;
+                if (v === 'ok' || v === 'pending') { a.dataset.ok = urls.join('|'); dbg(label + ': phát qua blob OK'); return true; }
+                dbg(label + ': đã tải xong, chờ bạn chạm để phát'); lastAudioErr = audioErrShort(v.err); return false;
             } catch (e) {
+                if (stale(a, gen)) return false;
                 dbg(label + ': tải blob lỗi — ' + (e && e.message || e));
+                lastAudioErr = audioErrShort(e);
             }
         }
         return false;
     }
-    async function ensureSrc(a, urls, label) {
+    async function ensureSrc(a, urls, label, gen) {
         const key = urls.join('|');
-        if (a.dataset.ok === key) {                            // đúng nguồn đã xác nhận chạy tốt: chỉ cần play lại
-            try { await a.play(); return true; } catch (e) { return false; }
+        if (a.dataset.ok === key && !a.error) {                // đúng nguồn đã xác nhận chạy tốt: chỉ cần play lại
+            const v0 = await playVerdict(a, a.play());
+            if (stale(a, gen)) return false;
+            if (v0 === 'ok' || v0 === 'pending') return true;
+            delete a.dataset.ok;                               // v6.3: nguồn đã chết (đổi link/xoá file) → đi lại chuỗi ngay
+            lastAudioErr = audioErrShort(v0.err);
         }
         for (let i = 0; i < urls.length; i++) {
+            if (stale(a, gen)) return false;                   // v6.3: lượt cũ phải dừng, khỏi gán src giành quyền với lượt mới
             a.src = urls[i];
             a.load();
-            try {
-                await a.play();
+            const v = await playVerdict(a, a.play());
+            if (stale(a, gen)) return false;
+            if (v === 'ok' || v === 'pending') {
                 a.dataset.ok = key;
-                dbg(label + ': phát trực tiếp qua nguồn ' + (i + 1));
+                dbg(label + ': phát trực tiếp qua nguồn ' + (i + 1) + (v === 'pending' ? ' (đang tải — cất tiếng khi đủ dữ liệu)' : ''));
                 return true;
-            } catch (e) {
-                if (e && e.name === 'NotAllowedError') {        // trình duyệt chờ chạm — nguồn có thể vẫn ổn
-                    dbg(label + ': trình duyệt chờ người dùng chạm để phát');
-                    return false;
-                }
-                dbg(label + ': nguồn ' + (i + 1) + ' lỗi — ' + (e && e.message || e));
             }
+            const e = v.err;
+            if (e && e.name === 'NotAllowedError') {        // trình duyệt chờ chạm — nguồn có thể vẫn ổn
+                dbg(label + ': trình duyệt chờ người dùng chạm để phát');
+                lastAudioErr = audioErrShort(e);
+                return false;
+            }
+            if (e && e.name === 'NotSupportedError' && !/drive|docs\.google/.test(urls[i]) && !/\.(mp3|wav|ogg|m4a|aac|flac|opus|weba)([?#]|$)/i.test(urls[i]))
+                lastAudioErr = 'link không phải file nhạc (cần link .mp3 hoặc link Drive tới file)';   // v6.2
+            else lastAudioErr = audioErrShort(e);
+            dbg(label + ': nguồn ' + (i + 1) + ' lỗi — ' + (e && e.message || e));
         }
-        return blobFallback(a, urls, label);
+        return blobFallback(a, urls, label, gen);
     }
     // v3 · Playlist: cột audio chứa nhiều bài, ngăn cách bởi ; hoặc xuống dòng
     let playList = [], trackIdx = 0, tracksSameOrigin = false;
@@ -2151,20 +2230,78 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     function startMusic() {
         if (!cardData.audio) return;
         buildPlaylist();
+        if (!playList.length) {                  // v6.2: cột audio chỉ có dấu ";" / chữ vô nghĩa → khỏi báo lỗi nhạc ảo
+            dbg('Nhạc nền: cột audio không chứa link bài hát hợp lệ — bỏ qua');
+            return;
+        }
         $('musicBtn').classList.add('show');
         if (!bgm) {
             bgm = new Audio();
+            bgm.preload = 'auto';                // v6.3: tải chắc chắn và sớm
             bgm.addEventListener('ended', nextTrack);
             if (FX && tracksSameOrigin) bgm.addEventListener('playing', maybeHookVisualizer);   // v4.2: nối visualizer muộn — chỉ khi nhạc chạy thật
         }
         bgm.loop = playList.length < 2;
-        bgm.volume = 0.6;
+        bgm.muted = false; bgm.volume = 0.6;     // v6.2: phát THẬT có tiếng (prewarm câm đã hoàn thành việc mở khoá)
         playTrack();
     }
-    function playTrack() {
-        ensureSrc(bgm, audioCandidates(playList[trackIdx]), 'Nhạc nền').then(ok => {
+    // v6.2 · TỰ THỬ LẠI THEO CHẠM: lần phát đầu thất bại (mạng chậm, Drive phản hồi lỗi, trình duyệt
+    // chờ cử chỉ…) → bắt cú chạm kế tiếp ở BẤT KỲ đâu trên màn hình để phát lại đúng lúc trình duyệt cho phép.
+    let retryArmed = false, musicToasted = false;
+    function armMusicRetry() {
+        if (retryArmed || !bgm) return;
+        retryArmed = true;
+        const retry = () => {
+            removeEventListener('pointerdown', retry, true);
+            removeEventListener('touchend', retry, true);
+            removeEventListener('keydown', retry, true);
+            retryArmed = false;
+            if (bgm && !mediaAlive(bgm)) {
+                dbg('Nhạc nền: tự thử lại theo cú chạm của bạn…');
+                playTrack(true);
+            }
+        };
+        addEventListener('pointerdown', retry, true);
+        addEventListener('touchend', retry, true);
+        addEventListener('keydown', retry, true);
+        $('musicBtn').classList.add('attn');     // nút nhạc rung nhẹ gợi ý: chạm vào đây cũng được
+    }
+    // v6.3 · CANH 6s SAU KHI BÁO OK: bắt các nguồn "chết chậm" (404 trả sau ~1s, DNS chậm) mà cửa
+    // sổ 300ms chưa kịp thấy. Chết thật → tự đi lại chuỗi nguồn tối đa 2 lần; chỉ đang tải quá lâu →
+    // mời người xem chạm (nút nhạc rung nhẹ) như cũ.
+    let aliveChecks = 0;
+    function scheduleAliveCheck(a, gen) {
+        setTimeout(() => {
+            if (stale(a, gen)) return;                          // đã có lượt phát mới hơn
+            if (mediaAlive(a)) { aliveChecks = 0; return; }     // chạy thật rồi → thoả
+            if (a.error && aliveChecks < 2) {
+                aliveChecks++;
+                dbg('Nhạc nền: nguồn chết chậm (' + (a.error.code === 4 ? 'file không đọc được' : 'lỗi mạng') + ') — tự thử lại chuỗi nguồn lần ' + aliveChecks);
+                delete a.dataset.ok;
+                playTrack(true);
+                return;
+            }
+            armMusicRetry();
+        }, 6000);
+    }
+    function playTrack(silent) {
+        if (!playList.length) return;            // v6.2: không có bài hợp lệ thì thôi, đừng báo lỗi ảo
+        const a = bgm;                           // v6.3: giữ tham chiếu — bgm có thể bị dựng lại giữa chừng
+        const gen = bumpGen(a);                  // lượt mới huỷ lượt cũ còn treo
+        ensureSrc(a, audioCandidates(playList[trackIdx]), 'Nhạc nền', gen).then(ok => {
+            if (stale(a, gen)) return;           // có lệnh phát mới hơn → đừng đụng UI cho nhầm
             setMusicUI(ok);
-            if (!ok) toast('Không phát được nhạc — chạm lại một lần nữa, hoặc mở thiệp với ?debug=1 để xem lý do');
+            if (ok) {
+                musicToasted = false;
+                $('musicBtn').classList.remove('attn');
+                scheduleAliveCheck(a, gen);
+                return;
+            }
+            armMusicRetry();
+            if (!silent && !musicToasted) {      // chỉ báo lỗi 1 lần — các lần tự thử lại im lặng cho đỡ phiền
+                musicToasted = true;
+                toast('Không phát được nhạc (' + (lastAudioErr || 'nguồn lỗi') + '). Chạm màn hình để thử lại nhé!');
+            }
         });
     }
     function nextTrack() {
@@ -2176,7 +2313,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     $('musicBtn').addEventListener('click', () => {
         if (!cardData.audio) return;
         if (!bgm) { startMusic(); return; }
-        if (bgm.paused) {
+        if (!mediaAlive(bgm)) {                // v6.2: chết/chưa chạy thật → phát lại có tiếng (paused=false ảo không tính)
             bgm.muted = false; bgm.volume = .6;    // prewarm để muted=true — nếu chủ nhà thả tay giữ/cào sớm, nút này là chỗ trả tiếng lại
             if (coverVideo && !coverVideo.muted) { coverVideo.muted = true; bgmPausedForVideo = false; updateSoundBtn(); }   // nhạc nền bật → video về im lặng, khỏi hai nguồn cùng chạy
             playTrack();
@@ -2195,12 +2332,14 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             voice.addEventListener('pause', restore);
             voice.addEventListener('ended', () => { restore(); $('voiceProg').style.width = '0'; });
         }
-        if (voice.paused) {
+        if (!mediaAlive(voice)) {              // v6.2: dùng chuẩn "đang chạy thật" thay vì paused
             if (bgm) { bgm.volume = 0.15; if (IOS) bgm.muted = true; }   // iOS bỏ qua volume → tắt tiếng nhạc nền khi nghe lời nhắn
-            ensureSrc(voice, audioCandidates(cardData.voice), 'Lời nhắn').then(ok => {
+            const vgen = bumpGen(voice);         // v6.3: cùng cơ chế chống race với nhạc nền
+            ensureSrc(voice, audioCandidates(cardData.voice), 'Lời nhắn', vgen).then(ok => {
+                if (stale(voice, vgen)) return;
                 $('voiceBtn').textContent = ok ? '⏸' : '▶';
                 $('voiceBtn').classList.toggle('beat', ok);
-                if (!ok) toast('Không phát được lời nhắn — chạm lại một lần nữa, hoặc mở thiệp với ?debug=1 để xem lý do');
+                if (!ok) toast('Không phát được lời nhắn (' + (lastAudioErr || 'nguồn lỗi') + '). Chạm lại để thử nhé!');
             });
         } else voice.pause();
     });
@@ -2809,8 +2948,13 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         musicPrewarmed = true;
         try {
             buildPlaylist();
+            if (!playList.length) {              // v6.2: cột audio rỗng/rác → khỏi prewarm, khỏi báo lỗi ảo
+                dbg('Nhạc nền: cột audio không chứa link bài hát hợp lệ — bỏ qua');
+                return;
+            }
             $('musicBtn').classList.add('show');
             bgm = new Audio();
+            bgm.preload = 'auto';                // v6.3
             bgm.addEventListener('ended', nextTrack);
             if (FX && tracksSameOrigin) bgm.addEventListener('playing', maybeHookVisualizer);   // v4.2: nối visualizer muộn — chỉ khi nhạc chạy thật
             bgm.loop = playList.length < 2;
