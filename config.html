@@ -12,7 +12,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Thiệp Nhà Lệ">
 <title>Thiệp Nhà Lệ · Tạo thiệp trong 3 bước</title>
-<!-- Trang quản trị của chủ nhà — đặt CÙNG THƯ MỤC với index.html. Cần Apps Script v4 (Code.gs có doPost). Khuyên dùng v4.5: thêm action 'get' để sửa được cả thiệp đang hẹn giờ. -->
+<!-- Trang quản trị của chủ nhà — đặt CÙNG THƯ MỤC với index.html. Cần Apps Script v4 (Code.gs có doPost). Khuyên dùng v4.5: thêm action 'get' để sửa được cả thiệp đang hẹn giờ.
+     v6.4: ① Xem thử mở NGAY TRONG trang (iframe) — nút “← Sửa tiếp” ăn ý cả trên webview điện thoại, hết cảnh nút Sửa thiệp bị văng ra ngoài. ② QR in: màu phẳng đậm theo kiểu mở thiệp + khung chibi + sticker 4 góc. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700;800&family=Pacifico&display=swap" rel="stylesheet">
@@ -147,9 +148,33 @@
     .linkbox { display: flex; gap: 8px; margin: 0 0 6px; }
     .linkbox input { flex: 1; font-size: 13px; }
     .linkbox .btn.sm { flex: none; }
-    #qrCv { width: min(70vw, 280px); height: auto; border-radius: 28px; margin: 14px auto 4px; display: block;
+    #qrCv { width: min(76vw, 320px); height: auto; border-radius: 28px; margin: 14px auto 4px; display: block;
         box-shadow: 0 18px 44px rgba(29,42,58,.2); }
     .qrcap { font-size: 11.5px; color: var(--dim); margin: 6px 0 2px; }
+
+    /* ---- v6.4 · Xem thử NGAY TRONG trang (iframe) ----
+       Trước: “Xem thử” mở tab mới bằng window.open + nút Sửa thiệp gọi window.close().
+       Webview trên điện thoại (Zalo/Messenger/PWA) không cho đóng tab không phải con trực tiếp
+       → bấm Sửa thiệp bị “văng ra ngoài”. Giờ bản xem thử nằm luôn trong config.html,
+       nút “← Sửa tiếp” ở thanh trên cùng đóng lớp xem thử — ăn ý trên mọi máy. */
+    #pvOverlay { position: fixed; inset: 0; z-index: 90; display: none; background: #F7F5F0; }
+    #pvOverlay.show { display: block; }
+    .pv-bar { position: absolute; top: 0; left: 0; right: 0; z-index: 2;
+        height: calc(50px + env(safe-area-inset-top)); padding: env(safe-area-inset-top) 10px 0;
+        display: flex; align-items: center; gap: 8px;
+        background: linear-gradient(135deg, #F472B6, #8B5CF6); color: #fff;
+        box-shadow: 0 4px 14px rgba(29,42,58,.18); }
+    .pv-bar button, .pv-bar a { border: 0; border-radius: 999px; padding: 8px 13px;
+        font: 600 13px/1.2 inherit; font-family: inherit; cursor: pointer;
+        background: rgba(255,255,255,.22); color: #fff; text-decoration: none; }
+    .pv-bar button:active { transform: scale(.96); }
+    .pv-title { flex: 1; text-align: center; font-size: 13px; font-weight: 700; opacity: .95;
+        min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #pvFrameWrap { position: absolute; inset: 0; padding-top: calc(50px + env(safe-area-inset-top)); }
+    #pvFrame { width: 100%; height: 100%; border: 0; background: #F7F5F0; }
+    #pvLoad { position: absolute; left: 50%; top: 50%; margin: -16px 0 0 -16px; width: 32px; height: 32px;
+        z-index: 1; font-size: 30px; line-height: 32px; text-align: center; animation: pvspin 1.1s linear infinite; }
+    @keyframes pvspin { to { transform: rotate(360deg); } }
 
     /* ---- danh sách thiệp ---- */
     .drawer { position: fixed; inset: 0; z-index: 60; display: none; }
@@ -316,7 +341,7 @@
                 <button class="btn sm ghost" id="btnCopy">📋</button>
             </div>
             <canvas id="qrCv"></canvas>
-            <p class="qrcap">QR tự tạo trong trình duyệt — link không đi qua dịch vụ ngoài</p>
+            <p class="qrcap">QR tạo ngay trong trình duyệt · màu & icon theo <b>kiểu mở thiệp</b> · khung chibi in rất rõ</p>
             <button class="btn sm ghost" id="btnQrDl">⬇️ Tải mã QR (PNG)</button>
             <div class="row2">
                 <button class="btn ghost" id="btnOpen">💌 Mở thiệp</button>
@@ -380,6 +405,19 @@
                 <button class="btn" id="imageApply">Chọn xong</button>
             </div>
             <p class="hint">Chạm để chọn. Ảnh bìa chỉ nhận 1 file; ảnh kỷ niệm chọn được nhiều (thứ tự bằng thứ tự chạm). Thêm file mới: repo GitHub → Add file → Upload files → vào thư mục images.</p>
+        </div>
+    </div>
+
+    <!-- v6.4 · Xem thử ngay trong trang — nút quay lại hoạt động cả trên webview điện thoại -->
+    <div id="pvOverlay">
+        <div class="pv-bar">
+            <button id="pvBack" type="button">← Sửa tiếp</button>
+            <span class="pv-title">👁 Xem thử thiệp</span>
+            <a id="pvNewTab" title="Mở tab mới (dành cho máy tính)" target="_blank" rel="noopener">↗</a>
+        </div>
+        <div id="pvFrameWrap">
+            <div id="pvLoad">💌</div>
+            <iframe id="pvFrame" title="Xem thử thiệp" allow="autoplay; fullscreen; microphone"></iframe>
         </div>
     </div>
 
@@ -685,17 +723,44 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         return u;
     }
 
-    function drawPrettyQR(canvas, text, cA, cB) {
-        // v6.3 · QR BẢN IN: bản trước tô gradient pastel theo theme → in ra module quá nhạt, máy quét
-        // không nhận diện được. Giờ: màu gần-đen + chấm to hơn + mép trắng 4 module (chuẩn) + mức sửa
-        // lỗi H (30%) — in giấy vẫn quét ngon; màu theme chỉ giữ lại ở vành huy hiệu giữa cho dễ thương.
+    // v6.4 · QR theo “cách mở thiệp”: mỗi kiểu mở có 1 màu PHẲNG ĐỦ ĐẬM (in giấy vẫn quét tốt,
+    // không gradient) + khung viền chibi cùng tông + sticker mặt cười góc + huy hiệu giữa mang
+    // đúng icon kiểu mở. Toàn bộ vẽ trên canvas → tải PNG/in ấn đều giữ nguyên.
+    // Màu đã chọn đều tối (tương phản với trắng > 65%) nên máy quét nhận ngay.
+    const MODE_QR = {
+        envelope:  { c: '#8a3b2e', e: '✉️' },   // mở thư — nâu tem thư
+        hold:      { c: '#7a4a21', e: '✊' },   // nhấn giữ — caramel đậm
+        scratch:   { c: '#8a671c', e: '🪙' },   // cào quà — vàng đồng
+        chat:      { c: '#1f5fa8', e: '💬' },   // tin nhắn — xanh bong bóng chat
+        stories:   { c: '#8a2d8f', e: '📱' },   // stories — tím
+        pet:       { c: '#9c4a1f', e: '🐱' },   // vuốt mèo — cam mèo
+        bio:       { c: '#3e4a8c', e: '🔐' },   // vân tay — chàm
+        ribbon:    { c: '#b03a6b', e: '🎀' },   // cắt ruy băng — hồng dâu
+        blow:      { c: '#9c4a12', e: '🕯️' },  // thổi nến — cam nến
+        lever:     { c: '#6b4f1d', e: '🎰' },   // cần gạt — đồng thau
+        water:     { c: '#2f6b33', e: '🌱' },   // tưới mầm — xanh lá
+        petal:     { c: '#8a6a12', e: '🌼' },   // bói hoa — vàng cúc
+        bee:       { c: '#7a5a00', e: '🐝' },   // ong hút mật — mật ong
+        dandelion: { c: '#4a6b7a', e: '🌬️' },  // bồ công anh — xám gió
+        clay:      { c: '#8c5a3b', e: '🧶' },   // đất sét — nâu sét
+        jelly:     { c: '#b03a5b', e: '🍬' },   // kẹo dẻo — đỏ kẹo
+        fur:       { c: '#6b5a7a', e: '☁️' },   // lông xù — tím nhạt đậm
+        glass:     { c: '#3b6b7a', e: '🪟' }    // lau kính — xanh kính
+    };
+    function drawPrettyQR(canvas, text, modeKey) {
+        // Bản in phải: module màu PHẲNG theo kiểu mở (đậm, không gradient) + mép trắng chuẩn
+        // 4 module + sửa lỗi H (30%) + khung chibi nằm NGOÀI vùng trắng — không xâm phạm vùng quét.
         const qr = qrcode(0, 'H');                        // H = sửa lỗi cao nhất — quét chắc nhất khi in
         qr.addData(text);
         qr.make();
+        const mq = MODE_QR[modeKey] || MODE_QR.envelope;
+        const qc = mq.c, mem = mq.e;
         const n = qr.getModuleCount(), S = 21, quiet = 4;
-        const size = (n + quiet * 2) * S;
-        const dpr = Math.min(devicePixelRatio || 1, 3);   // v6.3: 3x — PNG tải về đủ nét để in
-        canvas.width = size * dpr; canvas.height = size * dpr;
+        const size = (n + quiet * 2) * S;                 // vùng QR + lề trắng chuẩn
+        const frame = 6.5 * S;                            // khung chibi nằm ngoài lề trắng
+        const total = size + frame * 2;
+        const dpr = Math.min(devicePixelRatio || 1, 3);   // 3x — PNG tải về đủ nét để in
+        canvas.width = total * dpr; canvas.height = total * dpr;
         const ctx = canvas.getContext('2d');
         ctx.scale(dpr, dpr);
         const rr = (x, y, w, h, r) => {
@@ -707,41 +772,65 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             ctx.arcTo(x, y, x + w, y, r);
             ctx.closePath();
         };
-        rr(0, 0, size, size, 34);
+        const dot = (x, y, r) => { ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill(); };
+        // nền trắng toàn khung
         ctx.fillStyle = '#ffffff';
+        rr(0, 0, total, total, 30);
         ctx.fill();
-        ctx.fillStyle = '#141821';                        // gần-đen: in ra trên giấy vẫn đậm rõ
+        // ---- khung chibi: viền dày bo tròn (viên kẹo) + chấm tròn dọc viền ----
+        const bo = 1.4 * S;                               // mép ngoài viền
+        const bw = 2.3 * S;                               // độ dày viền
+        ctx.strokeStyle = qc; ctx.lineWidth = bw; ctx.lineJoin = 'round';
+        rr(bo, bo, total - bo * 2, total - bo * 2, 4.2 * S);
+        ctx.stroke();
+        ctx.fillStyle = qc;                               // “vảy kẹo” chấm tròn dọc viền
+        const bm = bo + bw / 2, st = 3.3 * S, a0 = bm + 4.6 * S, a1 = total - bm - 4.6 * S;
+        for (let p = a0; p <= a1; p += st) {
+            dot(p, bm, bw * .52); dot(p, total - bm, bw * .52);
+            dot(bm, p, bw * .52); dot(total - bm, p, bw * .52);
+        }
+        // ---- sticker 4 góc kiểu chibi: tròn trắng, viền màu, mặt icon kiểu mở ----
+        const cs = 3.9 * S, cr = 3.3 * S;
+        [[cs, cs], [total - cs, cs], [cs, total - cs], [total - cs, total - cs]].forEach(([x, y]) => {
+            ctx.fillStyle = '#fff'; dot(x, y, cr);
+            ctx.strokeStyle = qc; ctx.lineWidth = Math.max(2.5, S * .18);
+            ctx.beginPath(); ctx.arc(x, y, cr - ctx.lineWidth / 2, 0, Math.PI * 2); ctx.stroke();
+            ctx.fillStyle = qc; ctx.font = Math.floor(cr * 1.25) + 'px serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(mem, x, y + cr * .06);
+        });
+        // ---- QR: vùng trắng lề 4 module chuẩn, module màu phẳng theo kiểu mở ----
+        ctx.fillStyle = qc;
+        const ox = frame, oy = frame;                     // dịch QR vào giữa khung
         const finder = (r, c) => (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
         for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
             if (!qr.isDark(r, c)) continue;
-            const x = (c + quiet) * S, y = (r + quiet) * S;
+            const x = ox + (c + quiet) * S, y = oy + (r + quiet) * S;
             if (finder(r, c)) ctx.fillRect(x, y, S, S);          // 3 góc vuông sắc nét — camera bắt nhanh
-            else { rr(x + 1, y + 1, S - 2, S - 2, (S - 2) * .26); ctx.fill(); }   // v6.3: chấm đậm hơn (bản cũ thu 3px nên mỏng, in nhạt)
+            else { rr(x + 1, y + 1, S - 2, S - 2, (S - 2) * .22); ctx.fill(); }   // chấm đầy đặn — in vẫn đậm
         }
-        // huy hiệu giữa — viền màu theo theme, vùng che nhỏ (~2% dữ liệu) nên không ảnh hưởng quét
+        // huy hiệu giữa — icon đúng kiểu mở, vùng che nhỏ (~2% dữ liệu, mức H tự sửa được)
         const lw = S * 5;
-        rr(size / 2 - lw / 2, size / 2 - lw / 2, lw, lw, lw * .3);
+        rr(ox + size / 2 - lw / 2, oy + size / 2 - lw / 2, lw, lw, lw * .3);
         ctx.fillStyle = '#fff';
         ctx.shadowColor = 'rgba(0,0,0,.25)'; ctx.shadowBlur = 12;
         ctx.fill();
         ctx.shadowBlur = 0;
-        ctx.strokeStyle = cA || '#A95C48'; ctx.lineWidth = Math.max(3, S * .22);
-        rr(size / 2 - lw / 2 + 5, size / 2 - lw / 2 + 5, lw - 10, lw - 10, lw * .28);
+        ctx.strokeStyle = qc; ctx.lineWidth = Math.max(3, S * .22);
+        rr(ox + size / 2 - lw / 2 + 5, oy + size / 2 - lw / 2 + 5, lw - 10, lw - 10, lw * .28);
         ctx.stroke();
         ctx.font = Math.floor(lw * .62) + 'px serif';
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('💌', size / 2, size / 2 + lw * .04);
+        ctx.fillText(mem, ox + size / 2, oy + size / 2 + lw * .04);
     }
 
     function showDone(id) {
         state.editingId = id;
         state.lastLink = qrLink(id, state.theme || '');
         $('doneLink').value = state.lastLink;
-        const t = TPLS.find(x => x.k === state.theme) || TPLS[0];
         try {
-            // màu QR theo 2 màu đầu của gradient mẫu
-            const m = t.g.match(/#[0-9a-f]{6}/gi) || ['#A95C48', '#94A388'];
-            drawPrettyQR($('qrCv'), state.lastLink, m[0], m[1] || m[0]);
+            // v6.4: màu + icon QR theo “cách mở thiệp” đang chọn
+            drawPrettyQR($('qrCv'), state.lastLink, state.mode || 'envelope');
         } catch (e) {
             toast('QR tạo lỗi — link vẫn dùng tốt nhé');
         }
@@ -994,10 +1083,25 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     $('btnPreview').addEventListener('click', async () => {
         try {
             const id = await saveCard(true);
-            // v6.3: &preview=1 → trang thiệp hiện nút “✏️ Sửa thiệp” để quay lại khu chỉnh sửa
-            if (id) { toast('Đang mở bản xem thử…'); window.open(qrLink(id, state.theme) + '&preview=1', '_blank', 'noopener'); }
+            if (!id) return;
+            // v6.4: mở bản xem thử NGAY TRONG trang bằng iframe. Trước đây mở tab mới bằng
+            // window.open — webview điện thoại (Zalo/PWA) không đóng lại được nên nút
+            // “✏️ Sửa thiệp” gây văng ra ngoài. Giờ bấm “← Sửa tiếp” trên thanh trên cùng
+            // là về khu chỉnh sửa ở MỌI máy; ↗ vẫn mở tab mới cho ai thích kiểu máy tính.
+            const url = qrLink(id, state.theme) + '&preview=1';
+            $('pvNewTab').href = url;
+            $('pvLoad').style.display = 'block';
+            $('pvFrame').src = url;
+            $('pvOverlay').classList.add('show');
         } catch (e) { toast(e.message || 'Lỗi lưu'); }
     });
+    $('pvFrame').addEventListener('load', () => { $('pvLoad').style.display = 'none'; });
+    function closePreview() {
+        $('pvOverlay').classList.remove('show');
+        $('pvFrame').src = 'about:blank';        // dừng nhạc/video của bản xem thử
+    }
+    $('pvBack').addEventListener('click', closePreview);
+    addEventListener('message', e => { if (e.data && e.data.type === 'close-preview') closePreview(); });
     $('btnCreate').addEventListener('click', async () => {
         const btn = $('btnCreate');
         btn.disabled = true;
