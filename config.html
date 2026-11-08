@@ -527,7 +527,6 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
 
     // ================== ĐĂNG NHẬP ==================
     function doLogout(msg) {
-        if (token) { try { fetch(API, { method: 'POST', body: JSON.stringify({ action: 'logout', token: token }), keepalive: true }).catch(() => {}); } catch (e) {} }
         token = ''; tokExp = 0;
         localStorage.removeItem('thiep-tok');
         localStorage.removeItem('thiep-tok-exp');
@@ -664,7 +663,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             id: state.editingId,
             to: val('fTo'), from: val('fFrom'), title: val('fTitle'),
             content: $('fContent').value.replace(/\r/g, ''),
-            date: val('fDate'), unlock: (m => m ? m[3] + '/' + m[2] + '/' + m[1] + ' ' + m[4] + ':' + m[5] : '')(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(val('fUnlock'))),
+            date: val('fDate'), unlock: val('fUnlock'),
             image: val('fImage'),
             photos: $('fPhotos').value.replace(/\r/g, ''),
             audio: val('fAudio'), voice: val('fVoice'),
@@ -680,20 +679,22 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     // ================== BƯỚC 3 · LINK & QR ==================
     // Link chia sẻ: ?id=… và kèm &theme=… để trang thiệp lên đúng màu ngay từ giây đầu
     // (không nháy theme mặc định khi mạng chậm; in QR giấy cũng không lo mất theme)
-    function qrLink(id, theme, preview) {
+    function qrLink(id, theme) {
         let u = LINK_BASE + (LINK_BASE.includes('?') ? '&' : '?') + 'id=' + encodeURIComponent(id);
         if (theme) u += '&theme=' + encodeURIComponent(theme);
-        if (preview) u += '&p=1';          // chủ nhà xem thử → trang thiệp không ghi lượt mở / không báo Telegram
         return u;
     }
 
     function drawPrettyQR(canvas, text, cA, cB) {
-        const qr = qrcode(0, 'M');
+        // v6.3 · QR BẢN IN: bản trước tô gradient pastel theo theme → in ra module quá nhạt, máy quét
+        // không nhận diện được. Giờ: màu gần-đen + chấm to hơn + mép trắng 4 module (chuẩn) + mức sửa
+        // lỗi H (30%) — in giấy vẫn quét ngon; màu theme chỉ giữ lại ở vành huy hiệu giữa cho dễ thương.
+        const qr = qrcode(0, 'H');                        // H = sửa lỗi cao nhất — quét chắc nhất khi in
         qr.addData(text);
         qr.make();
-        const n = qr.getModuleCount(), S = 21, quiet = 2;
+        const n = qr.getModuleCount(), S = 21, quiet = 4;
         const size = (n + quiet * 2) * S;
-        const dpr = Math.min(devicePixelRatio || 1, 2);
+        const dpr = Math.min(devicePixelRatio || 1, 3);   // v6.3: 3x — PNG tải về đủ nét để in
         canvas.width = size * dpr; canvas.height = size * dpr;
         const ctx = canvas.getContext('2d');
         ctx.scale(dpr, dpr);
@@ -709,23 +710,24 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         rr(0, 0, size, size, 34);
         ctx.fillStyle = '#ffffff';
         ctx.fill();
-        const g = ctx.createLinearGradient(0, 0, size, size);
-        g.addColorStop(0, cA); g.addColorStop(1, cB);
-        ctx.fillStyle = g;
+        ctx.fillStyle = '#141821';                        // gần-đen: in ra trên giấy vẫn đậm rõ
         const finder = (r, c) => (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
         for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) {
             if (!qr.isDark(r, c)) continue;
             const x = (c + quiet) * S, y = (r + quiet) * S;
             if (finder(r, c)) ctx.fillRect(x, y, S, S);          // 3 góc vuông sắc nét — camera bắt nhanh
-            else { rr(x + 1.5, y + 1.5, S - 3, S - 3, (S - 3) * .34); ctx.fill(); }   // chấm bo tròn mềm mại
+            else { rr(x + 1, y + 1, S - 2, S - 2, (S - 2) * .26); ctx.fill(); }   // v6.3: chấm đậm hơn (bản cũ thu 3px nên mỏng, in nhạt)
         }
-        // huy hiệu giữa
-        const lw = S * 5.4;
+        // huy hiệu giữa — viền màu theo theme, vùng che nhỏ (~2% dữ liệu) nên không ảnh hưởng quét
+        const lw = S * 5;
         rr(size / 2 - lw / 2, size / 2 - lw / 2, lw, lw, lw * .3);
         ctx.fillStyle = '#fff';
         ctx.shadowColor = 'rgba(0,0,0,.25)'; ctx.shadowBlur = 12;
         ctx.fill();
         ctx.shadowBlur = 0;
+        ctx.strokeStyle = cA || '#A95C48'; ctx.lineWidth = Math.max(3, S * .22);
+        rr(size / 2 - lw / 2 + 5, size / 2 - lw / 2 + 5, lw - 10, lw - 10, lw * .28);
+        ctx.stroke();
         ctx.font = Math.floor(lw * .62) + 'px serif';
         ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
         ctx.fillText('💌', size / 2, size / 2 + lw * .04);
@@ -778,7 +780,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             $('listBody').querySelectorAll('button').forEach(b => b.addEventListener('click', async () => {
                 const card = j.cards.find(x => x.id === b.dataset.id) || {};
                 const id = card.id || b.dataset.id, link = qrLink(id, card.theme);
-                if (b.dataset.a === 'open') window.open(qrLink(id, card.theme, true), '_blank', 'noopener');
+                if (b.dataset.a === 'open') window.open(link, '_blank', 'noopener');
                 if (b.dataset.a === 'copy') {
                     try { await navigator.clipboard.writeText(link); toast('✅ Đã chép link'); }
                     catch (e) { toast('Không chép được: ' + link); }
@@ -789,8 +791,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
                         try {
                             // Ưu tiên kênh riêng của chủ nhà (Code.gs v4.5 thêm action 'get'):
                             // nạp ĐỦ nội dung cả khi thiệp đang hẹn giờ, kèm giờ unlock cũ.
-                            const gj = await api({ action: 'get', token: token, id: id });
-                            card = gj.card || gj;
+                            card = await api({ action: 'get', token: token, id: id });
                         } catch (eGet) {
                             if (eGet.code === 'auth') throw eGet;   // hết phiên — api() đã tự đăng xuất
                             // Code.gs cũ chưa có action get → rơi xuống kênh công khai.
@@ -825,7 +826,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         state.fx = FXS.some(f => f.k === d.fx) ? d.fx : '';
         state.editingId = d.id || '';
         $('fTo').value = d.to || ''; $('fFrom').value = d.from || ''; $('fTitle').value = d.title || '';
-        $('fContent').value = d.content || ''; $('fDate').value = (v => { let m = /^(\d{4})-(\d{2})-(\d{2})/.exec(v); if (m) return m[1] + '-' + m[2] + '-' + m[3]; m = /^(\d{1,2})\/(\d{1,2})\/(\d{4})/.exec(String(v || '')); return m ? m[3] + '-' + m[2].padStart(2, '0') + '-' + m[1].padStart(2, '0') : ''; })(d.date); $('fUnlock').value = d.unlock || '';
+        $('fContent').value = d.content || ''; $('fDate').value = d.date || ''; $('fUnlock').value = d.unlock || '';
         $('fImage').value = d.image || ''; $('fPhotos').value = d.photos || '';
         $('fAudio').value = d.audio || ''; $('fVoice').value = d.voice || '';
         $('tplChip').textContent = TPLS.find(t => t.k === state.theme).e + ' ' + TPLS.find(t => t.k === state.theme).n;
@@ -993,7 +994,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     $('btnPreview').addEventListener('click', async () => {
         try {
             const id = await saveCard(true);
-            if (id) { toast('Đang mở bản xem thử…'); window.open(qrLink(id, state.theme, true), '_blank', 'noopener'); }
+            // v6.3: &preview=1 → trang thiệp hiện nút “✏️ Sửa thiệp” để quay lại khu chỉnh sửa
+            if (id) { toast('Đang mở bản xem thử…'); window.open(qrLink(id, state.theme) + '&preview=1', '_blank', 'noopener'); }
         } catch (e) { toast(e.message || 'Lỗi lưu'); }
     });
     $('btnCreate').addEventListener('click', async () => {
@@ -1009,7 +1011,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         try { await navigator.clipboard.writeText(state.lastLink); toast('✅ Đã chép link thiệp!'); }
         catch (e) { toast('Chép tay nhé: ' + state.lastLink); }
     });
-    $('btnOpen').addEventListener('click', () => window.open(state.lastLink + '&p=1', '_blank', 'noopener'));
+    $('btnOpen').addEventListener('click', () => window.open(state.lastLink, '_blank', 'noopener'));
     $('btnShare').addEventListener('click', async () => {
         try {
             if (navigator.share) await navigator.share({ title: 'Một tấm thiệp dành cho bạn 💌', url: state.lastLink });
