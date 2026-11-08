@@ -1,22 +1,17 @@
-/* Service worker — Thiệp Nhà Lệ (v4)
- * Mục đích: cài config.html như app trên điện thoại + mở nhanh nhờ cache file tĩnh.
+/* Service worker — Thiệp Nhà Lệ
+ * Nhiệm vụ: giúp trang config.html cài được như một app trên điện thoại
+ * (icon màn hình chính, mở dựng "standalone", vào nhanh hơn nhờ cache file tĩnh).
  *
  * An toàn theo thiết kế:
- * - Chỉ cache file tĩnh CÙNG NGUỒN. API Apps Script là cross-origin → luôn gọi mạng trực tiếp,
- *   nên dữ liệu thiệp luôn mới nhất (kể cả ?act=open, ?id=…).
- * - Chỉ được đăng ký từ config.html (máy của chủ nhà); người nhận thiệp không nhận SW này.
- *
- * Khác bản cũ:
- * - Không cache trang theo từng ?id=… (trước đây mỗi thiệp xem thử = 1 mục cache, phình dần).
- * - Bỏ qua mọi request Range / audio / video: Safari (iOS) không phát được media nếu SW trả
- *   về file đầy đủ cho request Range; và file mp3 nặng không nên nằm trong cache app.
- * - Ảnh: stale-while-revalidate → thay ảnh trùng tên trong images/ sẽ tự cập nhật ở lần mở sau
- *   (bản cũ cache-first nên ảnh cũ nằm lì tới khi đổi VER).
+ * - CHỈ cache file tĩnh cùng thư mục (html, css trong html, mp3, ảnh, icon…).
+ * - KHÔNG BAO GIỜ chạm vào dữ liệu thiệp: API Google Sheets/Apps Script là
+ *   cross-origin → fetch handler bỏ qua, luôn gọi mạng trực tiếp → khách luôn
+ *   thấy nội dung thiệp mới nhất.
+ * - Chỉ được đăng ký từ config.html (trang của chủ thiệp), người nhận thiệp
+ *   không bao giờ nhận service worker này.
  */
-const VER = 'thiepnhale-v6.2';   // đổi số này mỗi lần cập nhật file → máy chủ nhà tự tải lại
+const VER = 'thiepnhale-v6.4';   // đổi version khi update file → máy chủ nhà tự tải lại bản mới
 const CORE = ['./', './index.html', './config.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
-const MEDIA = /\.(mp3|m4a|aac|ogg|oga|wav|flac|opus|mp4|webm|mov|m4v|ogv)$/i;
-const IMG = /\.(jpe?g|png|webp|gif|avif|svg|ico)$/i;
 
 self.addEventListener('install', e => {
     e.waitUntil(
@@ -38,32 +33,30 @@ self.addEventListener('fetch', e => {
     const req = e.request;
     if (req.method !== 'GET') return;
     const url = new URL(req.url);
-    if (url.origin !== location.origin) return;                 // API Google, fonts CDN… → mạng trực tiếp
-    if (req.headers.has('range') || MEDIA.test(url.pathname) || req.destination === 'audio' || req.destination === 'video') return;   // media → để trình duyệt tự xử lý
+    if (url.origin !== location.origin) return;      // API Google, fonts CDN… → mạng trực tiếp
 
-    // Mở trang: mạng trước, mất mạng mới dùng cache. Chỉ lưu trang "gốc" (không kèm ?id=…)
+    // Mở trang (navigate): ưu tiên bản mới nhất trên mạng, mất mạng mới dùng cache
     if (req.mode === 'navigate') {
         e.respondWith(
             fetch(req)
                 .then(res => {
-                    if (res.ok && !url.search) { const cp = res.clone(); caches.open(VER).then(c => c.put(req, cp)).catch(() => {}); }
+                    const cp = res.clone();
+                    caches.open(VER).then(c => c.put(req, cp));
                     return res;
                 })
-                .catch(() => caches.match(req, { ignoreSearch: true }).then(r => r || caches.match('./config.html')))
+                .catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
         );
         return;
     }
 
-    // Ảnh / file tĩnh khác: dùng bản cache ngay, đồng thời tải bản mới ở nền
+    // File tĩnh (ảnh, nhạc trong assets…): cache-first, tải mới nền nếu chưa có
     e.respondWith(
-        caches.match(req).then(hit => {
-            const net = fetch(req).then(res => {
-                if (res && res.status === 200 && res.type === 'basic' && (IMG.test(url.pathname) || /\.(css|js|json|webmanifest)$/i.test(url.pathname))) {
-                    const cp = res.clone(); caches.open(VER).then(c => c.put(req, cp)).catch(() => {});
-                }
-                return res;
-            }).catch(() => hit);
-            return hit || net;
-        })
+        caches.match(req).then(r => r || fetch(req).then(res => {
+            if (res && res.ok && res.type === 'basic') {
+                const cp = res.clone();
+                caches.open(VER).then(c => c.put(req, cp));
+            }
+            return res;
+        }))
     );
 });
