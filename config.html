@@ -131,6 +131,13 @@
     .cnt { text-align: right; font-size: 11px; color: var(--dim); margin-top: 5px; }
     .optgrid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
     .optgrid.g4 { grid-template-columns: repeat(4, 1fr); }
+    .saorow { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .saorow .saonum { color: #E8365D; font-size: 15px; flex: none; width: 26px; }
+    .saorow input { flex: 1; margin: 0; }
+    .saorow2 { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+    .saorow2 input { flex: 1; margin: 0; }
+    .saorow2 .chip { margin: 0; flex: none; padding: 8px 12px; }
+    #saoFields input { margin: 4px 0 0; }
     .opt { border: 1.5px solid var(--line); background: var(--glass); border-radius: 16px; padding: 11px 4px 9px;
         text-align: center; cursor: pointer; transition: border-color .15s, transform .15s; }
     .opt:active { transform: scale(.93); }
@@ -302,12 +309,34 @@
                 <button class="chip" id="btnImgCover" type="button">🖼 Chọn từ images</button>
             </div>
             <input id="fImage" placeholder="https://… hoặc images/anh.jpg hoặc images/video.mp4" inputmode="url">
-            <div class="lblrow">
+            <div class="lblrow" id="photosWrap">
                 <label>Ảnh kỷ niệm — mỗi dòng 1 link (2–10 file)</label>
                 <button class="chip" id="btnImgPhotos" type="button">🖼 Chọn từ images</button>
             </div>
             <textarea id="fPhotos" style="min-height:84px" placeholder="https://i.imgur.com/a.jpg&#10;https://i.imgur.com/b.jpg&#10;images/ke-niem.jpg&#10;images/phim-nho.mp4"></textarea>
-            <p class="hint">≥2 ảnh có cầu xoay 3D / sổ lật. File .mp4/.webm → tự phát thành video (có tiếng khi bấm xem lớn). Link ngoài vẫn dùng tốt.</p>
+            <p class="hint" id="photosHint">≥2 ảnh có cầu xoay 3D / sổ lật. File .mp4/.webm → tự phát thành video (có tiếng khi bấm xem lớn). Link ngoài vẫn dùng tốt.</p>
+
+            <div id="saoFields" style="display:none">
+                <label>✨ Năm lời nhắn trên chòm sao</label>
+                <p class="hint">Mỗi ngôi sao giữ một ký ức: viết lời nhắn, dán ảnh polaroid (tùy chọn) và một dòng chú thích nhỏ. Người nhận nối đủ 8 sao vẽ tim xong sẽ chạm từng sao để mở.</p>
+                <div class="saorow"><span class="saonum">✦1</span><input id="fSaoQ1" placeholder="Lời nhắn sao 1…" maxlength="220"></div>
+                <div class="saorow2"><input id="fSaoI1" placeholder="Link ảnh polaroid 1 (tùy chọn)" inputmode="url"><button class="chip" type="button" data-saoimg="1">🖼</button></div>
+                <input id="fSaoC1" placeholder="Chú thích dưới ảnh 1 (VD: quán cà phê, buổi đầu gặp mặt)" maxlength="60">
+                <div class="saorow"><span class="saonum">✦2</span><input id="fSaoQ2" placeholder="Lời nhắn sao 2…" maxlength="220"></div>
+                <div class="saorow2"><input id="fSaoI2" placeholder="Link ảnh polaroid 2 (tùy chọn)" inputmode="url"><button class="chip" type="button" data-saoimg="2">🖼</button></div>
+                <input id="fSaoC2" placeholder="Chú thích dưới ảnh 2" maxlength="60">
+                <div class="saorow"><span class="saonum">✦3</span><input id="fSaoQ3" placeholder="Lời nhắn sao 3…" maxlength="220"></div>
+                <div class="saorow2"><input id="fSaoI3" placeholder="Link ảnh polaroid 3 (tùy chọn)" inputmode="url"><button class="chip" type="button" data-saoimg="3">🖼</button></div>
+                <input id="fSaoC3" placeholder="Chú thích dưới ảnh 3" maxlength="60">
+                <div class="saorow"><span class="saonum">✦4</span><input id="fSaoQ4" placeholder="Lời nhắn sao 4…" maxlength="220"></div>
+                <div class="saorow2"><input id="fSaoI4" placeholder="Link ảnh polaroid 4 (tùy chọn)" inputmode="url"><button class="chip" type="button" data-saoimg="4">🖼</button></div>
+                <input id="fSaoC4" placeholder="Chú thích dưới ảnh 4" maxlength="60">
+                <div class="saorow"><span class="saonum">✦5</span><input id="fSaoQ5" placeholder="Lời nhắn sao 5…" maxlength="220"></div>
+                <div class="saorow2"><input id="fSaoI5" placeholder="Link ảnh polaroid 5 (tùy chọn)" inputmode="url"><button class="chip" type="button" data-saoimg="5">🖼</button></div>
+                <input id="fSaoC5" placeholder="Chú thích dưới ảnh 5" maxlength="60">
+                <label>💌 Dòng bí mật — mở đủ 5 lời nhắn mới hiện</label>
+                <input id="fSaoSecret" placeholder="Để trống sẽ dùng câu mặc định dễ thương" maxlength="220">
+            </div>
 
             <div class="lblrow">
                 <label>Nhạc nền</label>
@@ -489,7 +518,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         { k: 'giangsinh', n: 'Giáng Sinh', e: '🎁', dark: 0, g: 'linear-gradient(135deg,#0a2a1f,#2e7d32 55%,#e53935)',
           sug: ['Giáng sinh này chúc bạn ấm áp,\ncó người cạnh bên và tuyết rơi đúng lúc 🎄\nHo ho ho! 🎅', 'Merry Christmas! ⭐\nChúc bạn đêm giáng sinh thật lung linh,\nvà năm mới thật nhiều điều an lành 🔔'] },
         { k: 'kyniem',    n: 'Kỷ Niệm',    e: '💞', dark: 0, g: 'linear-gradient(135deg,#2a0f1f,#9c2f5a 55%,#f0c987)',
-          sug: ['Cảm ơn em đã chọn ở lại,\nnắm tay anh qua cả ngày vui lẫn ngày mưa 🥂\nMong chúng mình còn thật nhiều kỷ niệm như thế.', 'Đã bên nhau X ngày — vẫn muốn bên nhau thêm X ngày nữa 💞\nCùng nhau viết tiếp cuốn sổ này nhé?'] }
+          sug: ['Cảm ơn em đã chọn ở lại,\nnắm tay anh qua cả ngày vui lẫn ngày mưa 🥂\nMong chúng mình còn thật nhiều kỷ niệm như thế.', 'Đã bên nhau X ngày — vẫn muốn bên nhau thêm X ngày nữa 💞\nCùng nhau viết tiếp cuốn sổ này nhé?'] },
+        { k: 'chomsao',   n: 'Chòm Sao Tự Vẽ', e: '✨', dark: 0, g: 'linear-gradient(135deg,#090E1F,#1C2750 55%,#FF5A76)',
+          sug: ['Có một bầu trời chỉ dành cho hai đứa mình ✨\nMỗi ngôi sao là một ký ức của chúng mình,\nnối đủ tám sao là tim mình thành hình.', 'Người ta bảo mỗi cặp đôi có một chòm sao riêng ⭐\nĐây là chòm sao của tụi mình —\nvà em là ngôi sao sáng nhất trong đó.'] }
     ];
     const MODES = [
         { k: 'envelope', e: '✉️', n: 'Mở thư' },
@@ -509,7 +540,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         { k: 'clay',       e: '🧶', n: 'Đất sét' },
         { k: 'jelly',      e: '🍬', n: 'Kẹo dẻo' },
         { k: 'fur',        e: '☁️', n: 'Lông xù' },
-        { k: 'glass',      e: '🪟', n: 'Lau kính' }
+        { k: 'glass',      e: '🪟', n: 'Lau kính' },
+        { k: 'chom',       e: '✨', n: 'Nối sao vẽ tim' }
     ];
     const FXS = [
         { k: '',           e: '✨', n: 'Theo mẫu' },
@@ -630,6 +662,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
                 updCnt();
             });
         });
+        syncSaoUI();
+        if (state.theme === 'chomsao' && !state.editingId && !state.modeTouched) state.mode = 'chom';   // mẫu sao → mặc định kiểu mở “nối sao”
+        renderOpts();
         show('scrEdit');
     });
 
@@ -637,11 +672,67 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     function updCnt() { $('cntC').textContent = $('fContent').value.length; }
     $('fContent').addEventListener('input', updCnt);
 
+    // --- v6.5 · Riêng mẫu “Chòm Sao Tự Vẽ”: 5 lời nhắn + 5 ảnh polaroid + dòng bí mật ---
+    // Dữ liệu gói vào cột photos (mỗi dòng “lời nhắn | ảnh | chú thích”, dòng cuối “secret: …”)
+    // nên KHÔNG phải đổi Apps Script hay thêm cột Google Sheets.
+    const SAO_DEFAULTS = [
+        'Hôm ấy anh nói chuyện hay lắm, mà em đã giả vờ không nghe để được nhìn anh dài hơn.',
+        'Lần đầu cùng nhau ngắm mưa, em hỏi "mưa lâu không?" — anh thì mong là mãi.',
+        'Chuyến xe 30 phút về quất nhưng hai đứa cười suốt cả đường.',
+        'Em ngủ gật trên vai anh, anh ngồi yên 40 phút vì sợ em tỉnh.',
+        'Không có dịp gì đặc biệt, chỉ là anh thương em nhiều quá nên phải nói ra.'
+    ];
+    function syncSaoUI() {
+        const on = state.theme === 'chomsao';
+        $('saoFields').style.display = on ? '' : 'none';
+        $('photosWrap').style.display = on ? 'none' : '';
+        $('fPhotos').style.display = on ? 'none' : '';
+        $('photosHint').style.display = on ? 'none' : '';
+        if (on && ![1, 2, 3, 4, 5].some(i => val('fSaoQ' + i))) {
+            for (let i = 1; i <= 5; i++) $('fSaoQ' + i).value = SAO_DEFAULTS[i - 1];   // prefill — người dùng chỉ cần sửa
+        }
+    }
+    function packSao() {
+        const lines = [];
+        for (let i = 1; i <= 5; i++) {
+            const q = val('fSaoQ' + i).replace(/[|\n]/g, ' ').trim();
+            const im = val('fSaoI' + i).trim();
+            const cp = val('fSaoC' + i).replace(/[|\n]/g, ' ').trim();
+            if (q || im) lines.push([q, im, cp].filter(Boolean).join(' | '));
+        }
+        const sec = val('fSaoSecret').replace(/[\n]/g, ' ').trim();
+        if (sec) lines.push('secret: ' + sec);
+        return lines.join('\n');
+    }
+    function unpackSao(raw) {
+        const isUrl = s => /^(https?:|images\/|assets\/|data:|\/)/i.test(s || '');
+        const stars = []; let secret = '';
+        String(raw || '').split(/\n+/).map(s => s.trim()).filter(Boolean).forEach(ln => {
+            if (/^secret\s*:/i.test(ln)) { secret = ln.replace(/^secret\s*:/i, '').trim(); return; }
+            if (stars.length >= 5) return;
+            const p = ln.split('|').map(s => s.trim());
+            let q = p[0] || '', im = '', cp = '';
+            if (isUrl(q)) { im = q; q = p[1] && !isUrl(p[1]) ? p[1] : ''; cp = p[2] || ''; }
+            else if (isUrl(p[1])) { im = p[1]; cp = p[2] || ''; }
+            else cp = p[1] || '';
+            stars.push([q, im, cp]);
+        });
+        for (let i = 1; i <= 5; i++) {
+            $('fSaoQ' + i).value = stars[i - 1] ? stars[i - 1][0] : '';
+            $('fSaoI' + i).value = stars[i - 1] ? stars[i - 1][1] : '';
+            $('fSaoC' + i).value = stars[i - 1] ? stars[i - 1][2] : '';
+        }
+        $('fSaoSecret').value = secret;
+    }
+    document.querySelectorAll('#saoFields [data-saoimg]').forEach(b =>
+        b.addEventListener('click', () => openImagePicker('sao' + b.dataset.saoimg)));
+
     function renderOpts() {
         $('modeGrid').innerHTML = MODES.map(m =>
             `<div class="opt ${m.k === state.mode ? 'sel' : ''}" data-k="${m.k}"><span class="oe">${m.e}</span><span class="on">${m.n}</span></div>`).join('');
         document.querySelectorAll('#modeGrid .opt').forEach(el => el.addEventListener('click', () => {
             state.mode = el.dataset.k;
+            state.modeTouched = true;
             renderOpts();
         }));
         $('fxGrid').innerHTML = FXS.map(m =>
@@ -697,7 +788,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
 
     // --- thu thập dữ liệu thành 1 thiệp ---
     function collectCard() {
-        return {
+        const d = {
             id: state.editingId,
             to: val('fTo'), from: val('fFrom'), title: val('fTitle'),
             content: $('fContent').value.replace(/\r/g, ''),
@@ -707,6 +798,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             audio: val('fAudio'), voice: val('fVoice'),
             theme: state.theme || 'default', mode: state.mode, fx: state.fx
         };
+        if (state.theme === 'chomsao') d.photos = packSao();   // 5 lời nhắn + ảnh polaroid + dòng bí mật gói vào photos
+        return d;
     }
     function validate(d) {
         if (!d.to) { toast('Thiếu "Gửi đến" — thiệp cần biết tặng ai chứ 💁'); $('fTo').focus(); return false; }
@@ -745,7 +838,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         clay:      { c: '#8c5a3b', e: '🧶' },   // đất sét — nâu sét
         jelly:     { c: '#b03a5b', e: '🍬' },   // kẹo dẻo — đỏ kẹo
         fur:       { c: '#6b5a7a', e: '☁️' },   // lông xù — tím nhạt đậm
-        glass:     { c: '#3b6b7a', e: '🪟' }    // lau kính — xanh kính
+        glass:     { c: '#3b6b7a', e: '🪟' },   // lau kính — xanh kính
+        chom:      { c: '#1c2750', e: '✨' }    // nối sao — xanh đêm thẫm
     };
     function drawPrettyQR(canvas, text, modeKey) {
         // Bản in phải: module màu PHẲNG theo kiểu mở (đậm, không gradient) + mép trắng chuẩn
@@ -918,6 +1012,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         $('fContent').value = d.content || ''; $('fDate').value = d.date || ''; $('fUnlock').value = d.unlock || '';
         $('fImage').value = d.image || ''; $('fPhotos').value = d.photos || '';
         $('fAudio').value = d.audio || ''; $('fVoice').value = d.voice || '';
+        if (state.theme === 'chomsao') unpackSao(d.photos || '');   // tách photos → 5 lời nhắn + ảnh + bí mật
+        else [1, 2, 3, 4, 5].forEach(i => { $('fSaoQ' + i).value = ''; $('fSaoI' + i).value = ''; $('fSaoC' + i).value = ''; });
+        if (state.theme !== 'chomsao') $('fSaoSecret').value = '';
         $('tplChip').textContent = TPLS.find(t => t.k === state.theme).e + ' ' + TPLS.find(t => t.k === state.theme).n;
         const t = TPLS.find(x => x.k === state.theme);
         $('sugChips').innerHTML = t.sug.map((s, i) => `<button class="chip" data-i="${i}">💡 Gợi ý ${i + 1}</button>`).join('');
@@ -928,6 +1025,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         }));
         updCnt();
         renderOpts();
+        syncSaoUI();
     }
 
     // --- chọn nhạc có sẵn trong thư mục assets (GitHub Pages) ---
@@ -997,8 +1095,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     let imgTarget = 'photos', pickedImages = [];
     async function openImagePicker(target) {
         imgTarget = target;
-        pickedImages = target === 'cover'
-            ? [val('fImage')].filter(Boolean)
+        pickedImages = target === 'cover' ? [val('fImage')].filter(Boolean)
+            : target.indexOf('sao') === 0 ? [val('fSaoI' + target.slice(3))].filter(Boolean)
             : $('fPhotos').value.split(/[;\n]+/).map(s => s.trim()).filter(Boolean);
         $('mImage').classList.add('show');
         const body = $('imageBody');
@@ -1051,6 +1149,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     function applyImages() {
         if (imgTarget === 'cover') {
             if (pickedImages.length) $('fImage').value = pickedImages[0];
+        } else if (imgTarget.indexOf('sao') === 0) {
+            if (pickedImages.length) $('fSaoI' + imgTarget.slice(3)).value = pickedImages[0];
         } else if (pickedImages.length) {
             // giữ lại link ngoài đã dán tay, nối tiếp theo ảnh trong thư mục (đúng thứ tự chạm)
             const manual = $('fPhotos').value.split(/[;\n]+/).map(s => s.trim()).filter(Boolean)
