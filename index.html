@@ -424,10 +424,101 @@
     }
 
     /* viền nét đứt bên trong thẻ cho các theme vàng-kim */
-    body[data-theme="nhagiao"] .card::after, body[data-theme="tet"] .card::after, body[data-theme="kyniem"] .card::after {
+    body[data-theme="nhagiao"] .card::after, body[data-theme="tet"] .card::after, body[data-theme="kyniem"] .card::after, body[data-theme="chomsao"] .card::after {
         content: ''; position: absolute; inset: 8px; border: 1px dashed var(--card-border);
         border-radius: calc(var(--card-radius) - 6px); pointer-events: none;
     }
+
+    /* ===================== CHÒM SAO TỰ VẼ ===================== */
+    body[data-theme="chomsao"] {
+        --bg: linear-gradient(180deg, #090E1F 0%, #0d1430 55%, #101731 100%);
+        --c1: #1C2750; --c2: #101731; --c3: #FFD98A; --blob-o: .22;
+        --accent: #FFD98A; --text: #F2EADA;
+        --env-back: linear-gradient(135deg, #232f5c, #101731);
+        --env-front: linear-gradient(160deg, #2a3766, #1a2447);
+        --env-flap: linear-gradient(180deg, #314070, #20294d);
+        --glow: rgba(255,217,138,.35);
+        --title-grad: linear-gradient(90deg, #F2EADA, #FFD98A, #F2EADA);
+        --title-font: 'Playfair Display', serif; --title-size: 30px; --title-weight: 700;
+        --card-bg: rgba(16,23,49,.72); --card-border: rgba(255,217,138,.35); --card-radius: 24px;
+        --btn: linear-gradient(135deg, #FF5A76, #E8365D); --btn-text: #fff;
+        --prog: linear-gradient(90deg, #FFD98A, #FF5A76);
+        --badge-bg: rgba(255,217,138,.12); --badge-border: rgba(255,217,138,.5);
+        --photo-bg: #101731;
+    }
+    body[data-theme="chomsao"] .card h3, body[data-theme="chomsao"] .from { font-style: italic; }
+    body.lite[data-theme="chomsao"] .aurora { display: none; }
+
+    /* --- hồi 1-2 · gate nối sao --- */
+    #mChom { padding: 0; overflow: hidden; }
+    .saosky { position: absolute; inset: 0; overflow: hidden; touch-action: none;
+        background:
+            radial-gradient(ellipse 140% 70% at 50% -10%, rgba(28,39,80,.85) 0%, rgba(28,39,80,0) 55%),
+            radial-gradient(ellipse 120% 60% at 50% 115%, rgba(16,23,49,.9) 0%, rgba(16,23,49,0) 60%),
+            #090E1F; }
+    #saoCv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .sao-label { position: absolute; top: calc(16px + env(safe-area-inset-top)); left: 20px; z-index: 3;
+        display: flex; align-items: center; gap: 9px; font-size: 14px; letter-spacing: 5px;
+        color: #F2EADA; font-weight: 500; text-transform: uppercase; pointer-events: none; }
+    .sao-label svg { display: block; animation: saoBeat 1.7s ease-in-out infinite; transform-origin: center; }
+    @keyframes saoBeat { 0%, 100% { transform: scale(1); } 12% { transform: scale(1.2); } 24% { transform: scale(1); } }
+    .sao-head { position: absolute; top: 17%; left: 7%; right: 7%; text-align: center;
+        transition: opacity .55s; pointer-events: none; }
+    .sao-head.off { opacity: 0; }
+    .sao-kicker { font-size: 12.5px; letter-spacing: 6px; color: #9AA7C7; text-transform: uppercase; font-weight: 500; }
+    .sao-serif { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700;
+        color: #F2EADA; font-size: clamp(29px, 9vw, 44px); line-height: 1.18; margin-top: 14px; }
+    .sao-sub { margin-top: 14px; font-size: 14.5px; color: #9AA7C7; font-weight: 300; line-height: 1.55; }
+    .sao-pill { display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(154,167,199,.45);
+        color: #F2EADA; border-radius: 999px; padding: 10px 22px; font-size: 15.5px; letter-spacing: 1.5px;
+        background: rgba(9,14,31,.55); pointer-events: auto; cursor: pointer; }
+    .sao-bottom { position: absolute; bottom: 13%; left: 0; right: 0; text-align: center; z-index: 3; }
+    .sao-bottom .sao-note { margin-top: 14px; font-size: 13.5px; color: #9AA7C7; font-weight: 300; }
+    .sao-done { position: absolute; bottom: 9%; left: 7%; right: 7%; text-align: center; z-index: 3;
+        opacity: 0; transform: translateY(16px); transition: opacity .7s, transform .7s; pointer-events: none; }
+    .sao-done.show { opacity: 1; transform: none; }
+    .sao-names { font-family: 'Playfair Display', serif; font-style: italic; font-weight: 700;
+        color: #F2EADA; font-size: clamp(28px, 8.2vw, 42px); line-height: 1.2; margin-top: 12px; }
+    .sao-date { margin: 16px auto 0; display: inline-block; padding: 9px 26px;
+        border-top: 1px solid rgba(255,217,138,.55); border-bottom: 1px solid rgba(255,217,138,.55);
+        color: #FFD98A; letter-spacing: 6px; font-size: 15px; font-weight: 500; }
+    .sao-sub2 { margin-top: 13px; font-size: 13.5px; color: #9AA7C7; font-weight: 300; }
+    .sao-skip, .sao-redraw { position: absolute; bottom: calc(13px + env(safe-area-inset-bottom)); z-index: 4;
+        background: rgba(9,14,31,.55); color: #9AA7C7; border: 1px solid rgba(154,167,199,.3);
+        border-radius: 999px; padding: 8px 15px; font-size: 12.5px; font-family: inherit; cursor: pointer; }
+    .sao-skip { right: 13px; }
+    .sao-redraw { left: 13px; }
+
+    /* --- hồi 3 · lời nhắn trên sao (trong thiệp) --- */
+    .saobox { display: none; margin-top: 24px; }
+    .saobox.show { display: block; }
+    .saob-stars { display: flex; justify-content: center; gap: 13px; margin: 14px 0 4px; flex-wrap: wrap; }
+    .saob-star { width: 46px; height: 46px; border-radius: 50%; border: 1px solid rgba(255,217,138,.42);
+        background: rgba(255,217,138,.08); color: #FFD98A; font-size: 19px; display: flex;
+        align-items: center; justify-content: center; cursor: pointer; font-family: inherit;
+        transition: transform .25s, background .25s, box-shadow .25s, border-color .25s; }
+    .saob-star:active { transform: scale(.88); }
+    .saob-star.open { background: rgba(255,90,118,.15); border-color: rgba(255,90,118,.6);
+        color: #FF5A76; box-shadow: 0 0 14px rgba(255,90,118,.35); }
+    .saob-bubble { background: rgba(20,27,51,.55); border: 1px solid rgba(255,217,138,.4);
+        border-radius: 20px; padding: 16px 20px 18px; margin-top: 14px; text-align: left;
+        animation: saoFadeUp .45s both; }
+    .sao-quote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 18.5px;
+        line-height: 1.55; color: #F2EADA; margin-top: 12px; }
+    .sao-polaroid { background: #FAF6EC; padding: 10px 10px 6px; border-radius: 6px;
+        transform: rotate(-1.6deg); margin: 12px auto 0; max-width: 250px;
+        box-shadow: 0 12px 30px rgba(0,0,0,.45); }
+    .sao-polaroid img { width: 100%; height: 150px; object-fit: cover; border-radius: 4px; display: block; }
+    .sao-polaroid .ph { height: 150px; border-radius: 4px; display: flex; align-items: center;
+        justify-content: center; font-size: 42px; background: linear-gradient(160deg, #3A1226, #24101F); }
+    .sao-polaroid .cap { font-family: 'Playfair Display', serif; font-style: italic; color: #7A2438;
+        font-size: 13.5px; text-align: center; padding: 8px 2px 6px; }
+    .sao-secret { margin-top: 16px; padding: 16px 18px; border: 1px dashed rgba(255,217,138,.5);
+        border-radius: 16px; background: rgba(255,217,138,.07); font-family: 'Playfair Display', serif;
+        font-style: italic; color: #FFD98A; font-size: 16.5px; line-height: 1.55; text-align: center;
+        animation: saoFadeUp .6s both; }
+    .sao-prog2 { margin-top: 12px; font-size: 13px; color: #9AA7C7; text-align: center; }
+    @keyframes saoFadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
     /* ===================== KHUNG CHUNG ===================== */
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -1519,6 +1610,29 @@
             </div>
             <p class="ghint" id="glsHint">Quẹt ngón tay lau lớp hơi nước trên kính — thiệp hiện dần 🪟</p>
         </div>
+        <div class="gate" id="mChom">
+            <div class="saosky" id="saoSky">
+                <canvas id="saoCv"></canvas>
+                <div class="sao-label" id="saoLabel"></div>
+                <div class="sao-head" id="saoHead">
+                    <div class="sao-kicker" id="saoKick">Thiệp Nhà Lệ</div>
+                    <div class="sao-serif">Có một bầu trời<br>chỉ dành cho hai đứa mình</div>
+                    <div class="sao-sub">Mỗi cặp đôi có một chòm sao riêng,<br>không ai giống ai.</div>
+                </div>
+                <div class="sao-done" id="saoDone">
+                    <div class="sao-kicker">Chòm sao đã thành hình</div>
+                    <div class="sao-names" id="saoNames">Chòm sao<br>Anh &amp; Em</div>
+                    <div class="sao-date" id="saoDate" hidden></div>
+                    <div class="sao-sub2">Ngày bầu trời này bắt đầu chỉ thuộc về hai đứa</div>
+                </div>
+                <div class="sao-bottom" id="saoBottom">
+                    <div class="sao-pill" id="saoPill" role="button" tabindex="0">✨ Chạm vào ngôi sao sáng nhất</div>
+                    <div class="sao-note" id="saoNote">Vuốt nhẹ để ngắm bầu trời · có sao băng đấy</div>
+                </div>
+                <button class="sao-redraw" id="saoRedraw" type="button" hidden>🪄 Vẽ lại</button>
+                <button class="sao-skip" id="saoSkip" type="button">Bỏ qua, mở thiệp luôn →</button>
+            </div>
+        </div>
 
         <section class="card" id="card">
             <div class="badge" id="badge"></div>
@@ -1528,6 +1642,18 @@
             <div class="counter" id="counter"></div>
 
             <div class="photo" id="photo"><img id="image" alt="Hình kỷ niệm"></div>
+
+            <div class="saobox" id="saoBox">
+                <div class="sao-kicker" style="text-align:center">Lời nhắn trên chòm sao</div>
+                <div class="saob-stars" id="saoStars"></div>
+                <div class="saob-bubble" id="saoBubble" hidden>
+                    <div class="sao-kicker" id="saoBk"></div>
+                    <div class="sao-polaroid" id="saoPolaroid"></div>
+                    <div class="sao-quote" id="saoQuote"></div>
+                </div>
+                <div class="sao-secret" id="saoSecret" hidden></div>
+                <div class="sao-prog2" id="saoProg2">Chạm từng ngôi sao để mở lời nhắn · mở đủ 5 sẽ có điều bất ngờ</div>
+            </div>
 
             <div class="sphereBox" id="sphereBox">
                 <div class="sphere3d" id="sphere3d"><div class="ring" id="ring"></div></div>
@@ -1696,6 +1822,22 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             },
             demo: { title: 'Một Năm Bên Nhau', to: 'em', from: 'Anh', date: '14/02/2025',
                 content: 'Cảm ơn em đã chọn ở lại, chọn nắm tay anh\nqua bao ngày vui và cả những ngày chưa vui.\nMong chúng mình sẽ còn nhiều kỷ niệm đẹp như thế.' }
+        },
+        chomsao: {
+            title: 'Chòm Sao Tự Vẽ', meta: '#090E1F', seal: '✨', hint: '✨ Chạm vào ngôi sao sáng nhất ✨',
+            fonts: ['Playfair+Display:ital,wght@0,700;1,700', 'Be+Vietnam+Pro:wght@300;400;500;600;700'],
+            icons: ['✨', '⭐', '💫', '🌠', '❤️'], rate: 1600, dur: [12, 20],
+            confetti: ['#FFD98A', '#FF5A76', '#F2EADA', '#9AA7C7', '#FFFFFF'], burst: ['✨', '⭐', '💫', '❤️'], count: 44, burstRate: .5,
+            badge: '✨ Chòm sao của chúng mình', toFmt: n => `Gửi ${n} ✨`, fromPrefix: '— ', reveal: 'lines',
+            defaultMode: 'chom',                       // mở thiệp bằng cách nối 8 sao vẽ tim
+            counter: {
+                past: n => `💞 Đã ${n} ngày bên nhau`,
+                future: n => `✨ Còn ${n} ngày nữa là đến ngày kỷ niệm`,
+                today: '🎉 Hôm nay là ngày kỷ niệm của chúng mình!'
+            },
+            demo: { title: 'Chòm Sao Của Chúng Mình', to: 'em', from: 'Anh', date: '18/11/2024',
+                photos: SAO_DEMO_PHOTOS(),
+                content: 'Có một bầu trời chỉ dành cho hai đứa mình ✨\nMỗi ngôi sao là một ký ức của chúng mình,\nnối đủ tám sao là tim mình thành hình.' }
         }
     };
 
@@ -1707,7 +1849,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         aero: ['aero', 'frutiger', 'bongbong'], phat: ['phat', 'tinhtam', 'hoasen'],
         meo: ['meo', 'mew', 'cat'], xinloi: ['xinloi', 'sorry', 'apology'],
         tet: ['tet', 'laxi', 'xuan'], giangsinh: ['giangsinh', 'noel', 'xmas', 'christmas'],
-        kyniem: ['kyniem', 'anniversary', 'tinhyeu', 'love']
+        kyniem: ['kyniem', 'anniversary', 'tinhyeu', 'love'],
+        chomsao: ['chomsao', 'ngoisao', 'constellation']
     };
 
     // v3 · Mưa lời chúc: thỉnh thoảng một "viên chữ" bay lên cùng icon
@@ -1725,10 +1868,11 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         xinloi: ['mong bạn thông cảm 🤍', 'mình trân trọng bạn 🌿', 'mình luôn ở đây 🕊️'],
         tet: ['phát tài phát lộc 🧧', 'an khang thịnh vượng 🏮', 'tiền vào như nước 💰', 'vạn sự như ý 🌼'],
         giangsinh: ['merry christmas 🎄', 'giáng sinh an lành ⭐', 'noel thật ấm áp 🎁'],
-        kyniem: ['mãi bên nhau 💞', 'thêm nhiều kỷ niệm 🥂', 'yêu nhau thật lâu ❤️']
+        kyniem: ['mãi bên nhau 💞', 'thêm nhiều kỷ niệm 🥂', 'yêu nhau thật lâu ❤️'],
+        chomsao: ['chòm sao của hai đứa ✨', 'mãi sáng bên nhau ⭐', 'yêu nhau thật lâu 💫']
     };
     // v3 · Tiền tố đồng hồ đếm ngược theo theme (dùng khi ngày đặc biệt chưa đến)
-    const CD_PREFIX = { tet: '🧧 Còn', giangsinh: '🎄 Còn', nhagiao: '🎓 Còn', kyniem: '✨ Còn' };
+    const CD_PREFIX = { tet: '🧧 Còn', giangsinh: '🎄 Còn', nhagiao: '🎓 Còn', kyniem: '✨ Còn', chomsao: '✨ Còn' };
 
     const $ = id => document.getElementById(id);
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1961,7 +2105,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             $('backLink').classList.add('show');
             const d = Object.assign({}, T.demo);
             if (d.date === 'today') d.date = new Date().toISOString();
-            if (!d.photos) d.photos = DEMO_PHOTOS();                  // xem thử luôn có cầu xoay kỷ niệm
+            if (!d.photos) d.photos = T.demo.photos || DEMO_PHOTOS();   // xem thử luôn có cầu xoay kỷ niệm (chomsao có sẵn sao demo)
             const au = urlParams.get('audio'); if (au) d.audio = au;  // ?audio=audio/bai-1.mp3;audio/bai-2.mp3
             cardData = d; fillCard(d); return ready();
         }
@@ -2078,7 +2222,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         };
         setTimeout(() => {
             const txt = introText();
-            if (FX && txt && !cardData._introDone) {              // v3: hạt bay xếp thành tên người nhận
+            if (FX && txt && !cardData._introDone && themeKey !== 'chomsao') {    // v3: hạt bay xếp thành tên người nhận (chomsao đã có khoảnh khắc tim riêng)
                 cardData._introDone = true;
                 particleIntro(txt).then(afterOpen).catch(afterOpen);
             } else afterOpen();
@@ -2800,6 +2944,22 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
 
     // ================== V3 · ẢNH XEM THỬ (SVG tự dựng, không cần mạng) ==================
+    // Demo sao cho theme chomsao: mỗi dòng "lời nhắn | ảnh (SVG data-uri) | chú thích",
+    // dòng cuối "secret: ..." là dòng bí mật mở đủ 5 sao mới hiện
+    function SAO_DEMO_PHOTOS() {
+        const mk = (h1, h2, e) => 'data:image/svg+xml,' + encodeURIComponent(
+            `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${h1}"/><stop offset="1" stop-color="${h2}"/></linearGradient></defs><rect width="300" height="300" fill="url(#g)"/>` +
+            [0, 1, 2, 3, 4, 5, 6, 7, 8].map(i => `<circle cx="${20 + (i * 67) % 260}" cy="${20 + (i * 113) % 260}" r="${1.4 + (i % 3) * .8}" fill="rgba(255,246,227,.8)"/>`).join('') +
+            `<text x="150" y="172" font-size="64" text-anchor="middle">${e}</text></svg>`);
+        return [
+            'Hôm ấy anh nói chuyện hay lắm, mà em đã giả vờ không nghe để được nhìn anh dài hơn. | ' + mk('#3A1226', '#B3143C', '☕') + ' | quán cà phê, buổi đầu gặp mặt',
+            'Lần đầu cùng nhau ngắm mưa, em hỏi "mưa lâu không?" — anh thì mong là mãi. | ' + mk('#24101F', '#C81E45', '🌧️') + ' | trận mưa tháng Sáu',
+            'Chuyến xe 30 phút về quất nhưng hai đứa cười suốt cả đường. | ' + mk('#2A0F1F', '#E8365D', '🛵') + ' | chuyến xe về quất',
+            'Em ngủ gật trên vai anh, anh ngồi yên 40 phút vì sợ em tỉnh. | ' + mk('#1C2750', '#620E19', '🚆') + ' | chuyến tàu cuối năm',
+            'Không có dịp gì đặc biệt, chỉ là anh thương em nhiều quá nên phải nói ra. | ' + mk('#3A1226', '#FF5A76', '💌') + ' | bức ảnh chưa kịp chụp',
+            'secret: Chòm sao này được vẽ ra từ một điều anh chưa nói — muốn đi cùng em thật lâu, thật lâu nữa. 💫'
+        ].join('\n');
+    }
     function DEMO_PHOTOS() {
         const mk = (h1, h2, e, t) => 'data:image/svg+xml,' + encodeURIComponent(
             `<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${h1}"/><stop offset="1" stop-color="${h2}"/></linearGradient></defs><rect width="300" height="300" fill="url(#g)"/><text x="150" y="140" font-size="90" text-anchor="middle">${e}</text><text x="150" y="252" font-size="26" text-anchor="middle" fill="rgba(255,255,255,.92)" font-family="sans-serif" font-weight="700">${t}</text></svg>`);
@@ -2973,13 +3133,15 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     // finishOpen(). Màu lấy theo biến theme nên 14 mẫu × 18 kiểu đều tự hòa hợp.
     // =====================================================================
     const MODES = ['envelope', 'hold', 'scratch', 'chat', 'stories', 'pet', 'bio', 'ribbon', 'blow', 'lever',
-        'water', 'petal', 'bee', 'dandelion', 'clay', 'jelly', 'fur', 'glass'];
+        'water', 'petal', 'bee', 'dandelion', 'clay', 'jelly', 'fur', 'glass', 'chom'];
     const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let gateBooted = false, musicPrewarmed = false;
     const gateCleanups = [];                            // v5: dọn micro/timer khi gate đóng
     function modeOf(d) {
         const m = String(urlParams.get('mode') || (d && d.mode) || '').toLowerCase().trim();
-        return MODES.includes(m) ? m : 'envelope';
+        if (MODES.includes(m)) return m;
+        if (T.defaultMode && MODES.includes(T.defaultMode)) return T.defaultMode;   // theme có kiểu mở riêng (chomsao → nối sao vẽ tim)
+        return 'envelope';
     }
     function bootGate() {
         if (gateBooted) return;
@@ -2990,14 +3152,14 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const map = { hold: 'mHold', scratch: 'mScratch', chat: 'mChat', stories: 'mStories',
             pet: 'mPet', bio: 'mBio', ribbon: 'mRibbon', blow: 'mBlow', lever: 'mLever',
             water: 'mWater', petal: 'mPetal', bee: 'mBee', dandelion: 'mDandelion',
-            clay: 'mClay', jelly: 'mJelly', fur: 'mFur', glass: 'mGlass' };
+            clay: 'mClay', jelly: 'mJelly', fur: 'mFur', glass: 'mGlass', chom: 'mChom' };
         const gate = $(map[m]);
         if (!gate) return;
         gate.classList.add('show');
         const boot = { hold: initHold, scratch: initScratch, chat: initChat, stories: initStories,
             pet: initPet, bio: initBio, ribbon: initRibbon, blow: initBlow, lever: initLever,
             water: initWater, petal: initPetal, bee: initBee, dandelion: initDandelion,
-            clay: initClay, jelly: initJelly, fur: initFur, glass: initGlass };
+            clay: initClay, jelly: initJelly, fur: initFur, glass: initGlass, chom: initChom };
         if (boot[m]) boot[m]();
     }
     // iOS/Safari chỉ cho phát nhạc trong sự kiện chạm → bật sẵn (âm lượng 0) ngay
@@ -4145,6 +4307,410 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const n = parseInt(h || 'ffffff', 16) || 0xffffff;
         return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
     };
+    // ================== CHOM · CHÒM SAO TỰ VẼ ==================
+    // v6.5 · Concept đã duyệt: người nhận TỰ nối 8 sao thành trái tim. Sao nền sinh từ
+    // seed theo id thiệp → mỗi cặp đôi một bầu trời riêng, mở lại vẫn y hệt. Toàn bộ
+    // hồi 1-2 chỉ dùng 1 canvas + 1 rAF; máy yếu (LITE) vào "đêm yên tĩnh": ít sao,
+    // tắt twinkle/sao băng, chốt DPR thấp, burst ít hạt.
+    function saoHash(s) {
+        let h = 2166136261;
+        for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+        return h >>> 0;
+    }
+    function saoRng(seed) {
+        let a = seed || 1;
+        return function () {
+            a |= 0; a = a + 0x6D2B79F5 | 0;
+            let t = Math.imul(a ^ a >>> 15, 1 | a);
+            t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+            return ((t ^ t >>> 14) >>> 0) / 4294967296;
+        };
+    }
+    function saoRead(id) { try { return JSON.parse(localStorage.getItem('thiep-sao:' + (id || 'demo')) || 'null') || {}; } catch (e) { return {}; } }
+    function saoWrite(id, obj) { try { localStorage.setItem('thiep-sao:' + (id || 'demo'), JSON.stringify(obj)); } catch (e) {} }
+    // 8 đỉnh tim — toạ độ chuẩn hoá trong khung chòm sao (0..1), theo đúng mockup đã duyệt
+    const SAO_STARS = [[.5, 1], [0, .342], [.123, .101], [.322, .029], [.5, .163], [.67, .029], [.877, .101], [1, .342]];
+    // Đường tim trơn (6 cung bezier chuẩn hoá 0..1) — vẽ dần trong khoảnh khắc ký
+    const SAO_PATH = [
+        [[.5, 1], [.5, 1], [0, .616], [0, .342]],
+        [[0, .342], [0, .147], [.167, .029], [.326, .029]],
+        [[.326, .029], [.435, .029], [.5, .107], [.5, .166]],
+        [[.5, .166], [.5, .107], [.565, .029], [.674, .029]],
+        [[.674, .029], [.833, .029], [1, .147], [1, .342]],
+        [[1, .342], [1, .616], [.5, 1], [.5, 1]]
+    ];
+    function initChom() {
+        const sky = $('saoSky'), cv = $('saoCv'), ctx = cv.getContext('2d');
+        const d = cardData || {};
+        const quiet = LITE;                                    // đêm yên tĩnh — máy yếu
+        const CFG = quiet
+            ? { bg: 45, twinkle: false, meteor: 0, dpr: 1.5, burst: 18, dust: 6 }
+            : { bg: 120, twinkle: true, meteor: 9000, dpr: 2, burst: 40, dust: 12 };
+        // ---- seed theo id thiệp: bầu trời bất biến của riêng cặp đôi ----
+        const rng = saoRng(saoHash(String(customerId || 'demo') + ':chomsao'));
+        // ---- glow sprite vẽ sẵn offscreen — không blur runtime ----
+        function mkGlow(r, g, b) {
+            const s = 64, c = document.createElement('canvas');
+            c.width = c.height = s;
+            const x = c.getContext('2d'), gr = x.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+            gr.addColorStop(0, 'rgba(' + r + ',' + g + ',' + b + ',1)');
+            gr.addColorStop(.28, 'rgba(' + r + ',' + g + ',' + b + ',.5)');
+            gr.addColorStop(1, 'rgba(' + r + ',' + g + ',' + b + ',0)');
+            x.fillStyle = gr; x.fillRect(0, 0, s, s);
+            return c;
+        }
+        const spWhite = mkGlow(255, 246, 227), spGold = mkGlow(255, 217, 138), spRed = mkGlow(232, 54, 93);
+        let W = 1, H = 1, bgStars = [], pts = [], bx = 0, by = 0, bw = 0, bh = 0, heartPts = [], heartLen = 0;
+        function resize() {
+            const r = sky.getBoundingClientRect();
+            const dpr = Math.min(devicePixelRatio || 1, CFG.dpr);
+            W = Math.max(1, r.width); H = Math.max(1, r.height);
+            cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            bgStars = [];
+            for (let i = 0; i < CFG.bg; i++) bgStars.push({
+                x: rng() * W, y: rng() * H, r: .6 + rng() * 1.5, ph: rng() * 6.28, sp: .3 + rng() * .9, a: .3 + rng() * .55
+            });
+            bw = Math.min(W * .74, 430); bh = bw * (307 / 276);
+            bx = (W - bw) / 2; by = H * .36 - bh / 2;
+            pts = SAO_STARS.map(p => ({ x: bx + p[0] * bw, y: by + p[1] * bh }));
+            // mẫu đường tim thành polyline (kèm chiều dài cộng dồn) để vẽ dần theo tiến độ
+            heartPts = []; heartLen = 0;
+            let prev = null;
+            SAO_PATH.forEach(seg => {
+                const p0 = [bx + seg[0][0] * bw, by + seg[0][1] * bh], p1 = [bx + seg[1][0] * bw, by + seg[1][1] * bh],
+                      p2 = [bx + seg[2][0] * bw, by + seg[2][1] * bh], p3 = [bx + seg[3][0] * bw, by + seg[3][1] * bh];
+                const N = 16;
+                for (let i = (prev ? 1 : 0); i <= N; i++) {
+                    const t = i / N, mt = 1 - t;
+                    const x = mt * mt * mt * p0[0] + 3 * mt * mt * t * p1[0] + 3 * mt * t * t * p2[0] + t * t * t * p3[0];
+                    const y = mt * mt * mt * p0[1] + 3 * mt * mt * t * p1[1] + 3 * mt * t * t * p2[1] + t * t * t * p3[1];
+                    if (prev) heartLen += Math.hypot(x - prev[0], y - prev[1]);
+                    heartPts.push([x, y, heartLen]);
+                    prev = [x, y];
+                }
+            });
+        }
+        // ---- trạng thái + nhớ localStorage (lần sau mở lại đúng như lúc rời đi) ----
+        let phase = 'draw', order = [], drag = null, burst = [], meteors = [];
+        let heartProg = 0, lastMeteor = 0, last = performance.now(), running = false, raf = 0, actxA = null, finished = false;
+        const saved = saoRead(customerId);
+        if (saved.done) { order = [0, 1, 2, 3, 4, 5, 6, 7]; phase = 'done'; }
+        else if (Array.isArray(saved.order)) order = saved.order.filter(i => i >= 0 && i < 8);
+        function saveState() { saoWrite(customerId, Object.assign({}, saoRead(customerId), { order: order.slice(), done: phase === 'done' })); }
+        // ---- các lớp chữ theo pha ----
+        const pill = $('saoPill'), note = $('saoNote'), head = $('saoHead'), doneEl = $('saoDone'),
+              redrawB = $('saoRedraw'), bottom = $('saoBottom');
+        const nm = s => String(s || '').trim();
+        const cap1 = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+        $('saoLabel').innerHTML = esc(nm(d.from).toUpperCase() || 'Thiệp Nhà Lệ') +
+            ' <svg width="17" height="16" viewBox="0 0 24 22"><path d="M12 21 C7 16 1 11.5 1 6.5 C1 3 3.6 1 6.5 1 C8.8 1 10.9 2.4 12 4.4 C13.1 2.4 15.2 1 17.5 1 C20.4 1 23 3 23 6.5 C23 11.5 17 16 12 21Z" fill="#E8365D"/></svg>';
+        $('saoKick').textContent = nm(d.to) ? 'Thiệp Nhà Lệ · gửi ' + nm(d.to) : 'Thiệp Nhà Lệ · kỷ niệm yêu đương';
+        const names = [nm(d.from), nm(d.to)].filter(Boolean).map(cap1);
+        $('saoNames').innerHTML = 'Chòm sao<br>' + esc(names.length ? names.join(' & ') : 'Anh & Em');
+        if (demoParam) $('saoLabel').style.top = 'calc(62px + env(safe-area-inset-top))';   // demo có nút "← Tạo thiệp mới" ở góc — đẩy nhãn xuống dưới khỏi đè nhau
+        if (d.date) { try { $('saoDate').textContent = formatDate(d.date).replace(/\//g, ' · '); $('saoDate').hidden = false; } catch (e) {} }
+        function syncPanels() {
+            if (phase === 'done') {
+                head.classList.add('off');
+                bottom.style.display = 'none';
+                redrawB.hidden = true;
+                doneEl.classList.add('show');
+            } else if (order.length) {
+                head.classList.add('off');
+                bottom.style.display = '';
+                pill.textContent = order.length + ' / 8 sao';
+                note.textContent = 'Nối đủ 8 sao sẽ nở ra một điều bất ngờ';
+                redrawB.hidden = false;
+                doneEl.classList.remove('show');
+            } else {
+                head.classList.remove('off');
+                bottom.style.display = '';
+                pill.textContent = '✨ Chạm vào ngôi sao sáng nhất';
+                note.textContent = 'Vuốt nhẹ để ngắm bầu trời · có sao băng đấy';
+                redrawB.hidden = true;
+                doneEl.classList.remove('show');
+            }
+        }
+        // ---- tiếng tick 30 ms bằng WebAudio oscillator — không cần file âm thanh ----
+        function tickSnd() {
+            try {
+                actxA = actxA || new (window.AudioContext || window.webkitAudioContext)();
+                if (actxA.state === 'suspended') actxA.resume();
+                const o = actxA.createOscillator(), g = actxA.createGain();
+                o.type = 'sine'; o.frequency.value = 1320;
+                g.gain.setValueAtTime(.0001, actxA.currentTime);
+                g.gain.exponentialRampToValueAtTime(.12, actxA.currentTime + .008);
+                g.gain.exponentialRampToValueAtTime(.0001, actxA.currentTime + .05);
+                o.connect(g); g.connect(actxA.destination);
+                o.start(); o.stop(actxA.currentTime + .06);
+            } catch (e) {}
+        }
+        function connect(i) {
+            if (order.includes(i) || phase === 'done' || opened) return;
+            order.push(i);
+            buzz(10); tickSnd();
+            const p = pts[i];
+            for (let k = 0; k < CFG.dust; k++) {                     // bụi nhỏ khi chạm trúng sao
+                const a = Math.random() * 6.28, sp = 20 + Math.random() * 70;
+                burst.push({ x: p.x, y: p.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, life: 1, r: 1 + Math.random() * 2, sp: spGold });
+            }
+            syncPanels(); saveState();
+            if (order.length >= 8) bloom();
+        }
+        function bloom() {
+            phase = 'done'; syncPanels(); saveState();
+            heartProg = .001;                                        // khởi động nhịp vẽ tim (nở dần 1,3 s trong vòng rAF)
+            buzz([18, 40, 18]);
+            const tip = pts[0];                                      // đáy tim
+            for (let k = 0; k < CFG.burst; k++) {
+                const a = Math.random() * 6.28, sp = 50 + Math.random() * 170;
+                burst.push({ x: tip.x, y: tip.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 40, life: 1, r: 1.5 + Math.random() * 2.6, sp: Math.random() < .5 ? spRed : spGold });
+            }
+            setTimeout(() => { if (!finished && !opened) { finished = true; finishOpen(500); } }, 2700);
+        }
+        // ---- chạm / kéo nối sao: snap 48 px ----
+        function evPos(e) { const r = cv.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+        function starAt(x, y, rad) {
+            let best = -1, bd = rad || 48;
+            for (let i = 0; i < pts.length; i++) {
+                if (order.includes(i)) continue;
+                const dd = Math.hypot(pts[i].x - x, pts[i].y - y);
+                if (dd < bd) { bd = dd; best = i; }
+            }
+            return best;
+        }
+        function pDown(e) { if (phase === 'done' || opened) return; prewarmMusic(); drag = evPos(e); }
+        function pMove(e) { if (drag) { const p = evPos(e); drag.x = p.x; drag.y = p.y; } }
+        function pUp(e) {
+            if (!drag) return;
+            const p = evPos(e);
+            drag = null;
+            const i = starAt(p.x, p.y);
+            if (i >= 0) connect(i);
+        }
+        sky.addEventListener('pointerdown', pDown);
+        sky.addEventListener('pointermove', pMove);
+        sky.addEventListener('pointerup', pUp);
+        sky.addEventListener('pointercancel', () => { drag = null; });
+        const brightTap = () => {
+            if (phase === 'done' || opened) return;
+            buzz(8);
+            const i = order.includes(1) ? starAt(pts[1].x, pts[1].y, 1e9) : 1;
+            if (i >= 0) connect(i);
+        };
+        pill.addEventListener('click', brightTap);
+        pill.addEventListener('keydown', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); brightTap(); } });
+        $('saoSkip').addEventListener('click', () => { buzz(8); if (!opened) { finished = true; finishOpen(400); } });
+        redrawB.addEventListener('click', () => {
+            buzz(8);
+            order = []; heartProg = 0; phase = 'draw'; burst = []; meteors = [];
+            syncPanels(); saveState();
+        });
+        // ---- vẽ tim dần theo tiến độ + vùng sáng đỏ ----
+        function strokeHeartLen(len) {
+            ctx.beginPath();
+            let prev = null, stop = false;
+            for (const p of heartPts) {
+                if (!stop && p[2] > len) {
+                    const seg = p[2] - (prev ? prev[2] : 0);
+                    const f = seg > 0 ? (len - (prev ? prev[2] : 0)) / seg : 0;
+                    if (prev) ctx.lineTo(prev[0] + (p[0] - prev[0]) * f, prev[1] + (p[1] - prev[1]) * f);
+                    stop = true;
+                    continue;
+                }
+                if (!prev) ctx.moveTo(p[0], p[1]); else ctx.lineTo(p[0], p[1]);
+                prev = p;
+            }
+            ctx.stroke();
+        }
+        function drawHeart(k, t) {
+            const cx = bx + bw / 2, cy = by + bh * .4, rad = bw * .72;
+            const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+            g.addColorStop(0, 'rgba(232,54,93,' + (.2 * k) + ')');
+            g.addColorStop(.55, 'rgba(232,54,93,' + (.08 * k) + ')');
+            g.addColorStop(1, 'rgba(232,54,93,0)');
+            ctx.fillStyle = g;
+            ctx.fillRect(cx - rad, cy - rad, rad * 2, rad * 2);
+            ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+            ctx.strokeStyle = 'rgba(255,90,118,' + (.92 * k) + ')';
+            strokeHeartLen(k * heartLen);
+            if (k >= 1) {                                            // lớp sao vàng nét đứt chạy nhẹ quanh tim
+                ctx.lineWidth = 1.1;
+                ctx.strokeStyle = 'rgba(255,217,138,.55)';
+                ctx.setLineDash([2, 9]);
+                ctx.lineDashOffset = -(t * 14) % 11;
+                strokeHeartLen(heartLen);
+                ctx.setLineDash([]);
+            }
+        }
+        // ---- vòng rAF duy nhất ----
+        function frame(now) {
+            if (!running) return;
+            raf = requestAnimationFrame(frame);
+            const dt = Math.min(.05, (now - last) / 1000); last = now;
+            ctx.clearRect(0, 0, W, H);
+            const t = now / 1000;
+            for (const s of bgStars) {                               // sao nền
+                const a = CFG.twinkle ? s.a * (.45 + .55 * Math.abs(Math.sin(t * s.sp + s.ph))) : s.a * .7;
+                ctx.globalAlpha = a;
+                ctx.drawImage(spWhite, s.x - s.r * 2.4, s.y - s.r * 2.4, s.r * 4.8, s.r * 4.8);
+            }
+            ctx.globalAlpha = 1;
+            if (CFG.meteor) {                                        // sao băng — chỉ máy mạnh
+                if (now - lastMeteor > CFG.meteor + rng() * 3000) {
+                    lastMeteor = now;
+                    meteors.push({ x: W * (.25 + rng() * .6), y: H * (.05 + rng() * .25), vx: -(200 + rng() * 180), vy: 110 + rng() * 90, life: 1 });
+                }
+                meteors = meteors.filter(m => m.life > 0);
+                for (const m of meteors) {
+                    m.x += m.vx * dt; m.y += m.vy * dt; m.life -= dt * .9;
+                    const g = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * .3, m.y - m.vy * .3);
+                    g.addColorStop(0, 'rgba(242,234,218,' + Math.max(0, m.life) * .9 + ')');
+                    g.addColorStop(1, 'rgba(242,234,218,0)');
+                    ctx.strokeStyle = g; ctx.lineWidth = 1.6;
+                    ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - m.vx * .3, m.y - m.vy * .3); ctx.stroke();
+                }
+            }
+            if (heartProg > 0) { heartProg = Math.min(1, heartProg + dt / 1.3); drawHeart(1 - Math.pow(1 - heartProg, 3), t); }
+            if (phase !== 'done' || heartProg < 1) {                 // vệt đã nối + vệt đang kéo (mờ dần khi tim bắt đầu nở)
+                const fade = heartProg > 0 ? Math.max(0, 1 - heartProg * 1.25) : 1;
+                if (fade > 0) {
+                    ctx.lineCap = 'round';
+                    ctx.lineWidth = 2.4;
+                    ctx.strokeStyle = 'rgba(255,217,138,' + (.85 * fade) + ')';
+                    for (let i = 1; i < order.length; i++) {
+                        const a = pts[order[i - 1]], b = pts[order[i]];
+                        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+                    }
+                    if (drag && order.length < 8) {
+                        const lp = order.length ? pts[order[order.length - 1]] : pts[1];
+                        ctx.strokeStyle = 'rgba(255,90,118,' + (.8 * fade) + ')'; ctx.lineWidth = 2;
+                        ctx.setLineDash([3, 8]);
+                        ctx.beginPath(); ctx.moveTo(lp.x, lp.y); ctx.lineTo(drag.x, drag.y); ctx.stroke();
+                        ctx.setLineDash([]);
+                    }
+                }
+            }
+            pts.forEach((p, i) => {                                  // 8 sao chòm
+                const done = order.includes(i);
+                const col = done ? spRed : (i === 1 || i === 3 || i === 5 ? spGold : spWhite);
+                const r = i === 1 ? 7 : (i === 0 ? 9 : 5.5);
+                let a = done ? .95 : .8;
+                if (i === 1 && !order.length && phase !== 'done') a = .55 + .45 * Math.abs(Math.sin(t * 2.2));   // sao dẫn đường nhấp nháy
+                ctx.globalAlpha = a;
+                ctx.drawImage(col, p.x - r * 2.6, p.y - r * 2.6, r * 5.2, r * 5.2);
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = done ? '#FFB3C2' : '#FFF6E3';
+                ctx.beginPath(); ctx.arc(p.x, p.y, i === 0 ? 3.4 : 2.4, 0, 6.28); ctx.fill();
+            });
+            burst = burst.filter(p => p.life > 0);                   // bụi sáng
+            for (const p of burst) {
+                p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 60 * dt; p.life -= dt * .8;
+                ctx.globalAlpha = Math.max(0, p.life);
+                ctx.drawImage(p.sp, p.x - p.r * 3, p.y - p.r * 3, p.r * 6, p.r * 6);
+            }
+            ctx.globalAlpha = 1;
+        }
+        function start() { if (running) return; running = true; last = performance.now(); raf = requestAnimationFrame(frame); }
+        function stop() { running = false; cancelAnimationFrame(raf); }
+        const io = new IntersectionObserver(en => { en[0].isIntersecting ? start() : stop(); });
+        io.observe(sky);
+        const onVis = () => { document.hidden ? stop() : start(); };
+        document.addEventListener('visibilitychange', onVis);
+        window.addEventListener('resize', resize);
+        gateCleanups.push(() => {
+            stop();
+            try { io.disconnect(); } catch (e) {}
+            document.removeEventListener('visibilitychange', onVis);
+            window.removeEventListener('resize', resize);
+            try { if (actxA) actxA.close(); } catch (e) {}
+        });
+        syncPanels();
+        if (phase === 'done' && saved.done) heartProg = .35;         // nở lại nhanh khi mở lần sau
+        resize();
+        start();
+        if (phase === 'done' && saved.done) setTimeout(() => { if (!finished && !opened) { finished = true; finishOpen(600); } }, 2100);
+    }
+
+    // ---- Hồi 3: lời nhắn ẩn trong từng ngôi sao (trong thiệp) ----
+    // Cột photos của chomsao chứa tối đa 5 dòng "lời nhắn | link ảnh | chú thích"
+    // và một dòng "secret: ..." → KHÔNG phải đổi Apps Script, dữ liệu vẫn 1 ô photos.
+    function parseSao(photosRaw) {
+        const stars = []; let secret = '';
+        const isUrl = s => /^(https?:|images\/|assets\/|data:|\/)/i.test(s || '');
+        String(photosRaw || '').split(/\n+/).map(s => s.trim()).filter(Boolean).forEach(ln => {
+            if (/^secret\s*:/i.test(ln)) { secret = ln.replace(/^secret\s*:/i, '').trim(); return; }
+            if (stars.length >= 5) return;
+            const p = ln.split('|').map(s => s.trim());
+            let quote = p[0] || '', url = '', cap = '';
+            if (isUrl(quote)) { url = quote; quote = p[1] && !isUrl(p[1]) ? p[1] : ''; cap = p[2] || ''; }
+            else if (isUrl(p[1])) { url = p[1]; cap = p[2] || ''; }
+            else cap = p[1] || '';
+            stars.push({ quote, url, cap });
+        });
+        return { stars, secret };
+    }
+    function buildSaoBox(d) {
+        const box = $('saoBox');
+        const parsed = parseSao(d && d.photos);
+        const stars = parsed.stars;
+        if (!stars.length) { box.classList.remove('show'); return; }
+        box.classList.add('show');
+        const id = customerId || 'demo';
+        const st = saoRead(id);
+        const opened = Array.isArray(st.opened) ? st.opened.slice(0, stars.length) : stars.map(() => false);
+        while (opened.length < stars.length) opened.push(false);
+        const wrap = $('saoStars'), prog = $('saoProg2'), bubble = $('saoBubble');
+        const showBubble = i => {
+            const s = stars[i];
+            $('saoBk').textContent = 'Lời nhắn ' + (i + 1) + ' / ' + stars.length;
+            const pol = $('saoPolaroid');
+            pol.innerHTML = '';
+            if (s.url) {
+                const im = document.createElement('img');
+                im.loading = 'lazy'; im.alt = 'Ký ức ' + (i + 1);
+                im.onerror = () => { pol.innerHTML = '<div class="ph">✨</div>'; };
+                im.src = mediaUrl(s.url, 'image');
+                pol.appendChild(im);
+            } else pol.innerHTML = '<div class="ph">✨</div>';
+            if (s.cap) { const c = document.createElement('div'); c.className = 'cap'; c.textContent = s.cap; pol.appendChild(c); }
+            $('saoQuote').textContent = s.quote ? '\u201C' + s.quote + '\u201D' : '…';
+            bubble.hidden = false;
+        };
+        const syncProg = () => {
+            const n = opened.filter(Boolean).length;
+            prog.textContent = n >= stars.length
+                ? 'Đủ rồi — điều bất ngờ đang hiện ngay bên dưới ✨'
+                : 'Đã mở ' + n + ' / ' + stars.length + ' lời nhắn · mở đủ sẽ có điều bất ngờ';
+        };
+        const showSecret = () => {
+            $('saoSecret').textContent = parsed.secret || 'Cảm ơn vì đã mở đủ từng ngôi sao — mỗi ngôi sao là một ngày mình thương bạn. 💫';
+            $('saoSecret').hidden = false;
+        };
+        stars.forEach((s, i) => {
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'saob-star' + (opened[i] ? ' open' : '');
+            b.setAttribute('aria-label', 'Lời nhắn ' + (i + 1));
+            b.textContent = opened[i] ? '★' : '✦';
+            b.addEventListener('click', e => {
+                if (!opened[i]) {
+                    opened[i] = true;
+                    b.classList.add('open'); b.textContent = '★';
+                    buzz(10);
+                    try { miniBurst(e.clientX || 0, e.clientY || 0); } catch (err) {}
+                    saoWrite(id, Object.assign({}, saoRead(id), { opened: opened.slice() }));
+                }
+                showBubble(i); syncProg();
+                if (opened.every(Boolean)) showSecret();
+            });
+            wrap.appendChild(b);
+        });
+        if (opened.every(Boolean)) { showSecret(); bubble.hidden = true; }
+        syncProg();
+    }
+
     function fxOf(d) {
         const p = String(urlParams.get('fx') || '').toLowerCase().trim();
         if (FXVALS.includes(p)) return p;                // ?fx=galaxy|matrix|flipbook (?fx=0 vẫn tắt hết hiệu ứng)
@@ -4176,6 +4742,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
     function applyFX(d) {
         const f = fxOf(d);
+        if (themeKey === 'chomsao') { buildSaoBox(d); pendingFx = f; return; }   // hồi 3: lời nhắn trên sao thay cầu xoay/sổ lật
         if (f === 'flipbook' && buildFlipbook(d.photos)) return;   // sổ lật thay thế cầu xoay (CSS 3D, không tốn canvas)
         pendingFx = f;                                   // chờ mở thiệp xong mới chạy (startCanvasFx gọi trong finishOpen)
         buildSphere(d.photos);
