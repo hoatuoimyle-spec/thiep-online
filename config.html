@@ -520,7 +520,9 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         { k: 'kyniem',    n: 'Kỷ Niệm',    e: '💞', dark: 0, g: 'linear-gradient(135deg,#2a0f1f,#9c2f5a 55%,#f0c987)',
           sug: ['Cảm ơn em đã chọn ở lại,\nnắm tay anh qua cả ngày vui lẫn ngày mưa 🥂\nMong chúng mình còn thật nhiều kỷ niệm như thế.', 'Đã bên nhau X ngày — vẫn muốn bên nhau thêm X ngày nữa 💞\nCùng nhau viết tiếp cuốn sổ này nhé?'] },
         { k: 'chomsao',   n: 'Chòm Sao Tự Vẽ', e: '✨', dark: 0, g: 'linear-gradient(135deg,#090E1F,#1C2750 55%,#FF5A76)',
-          sug: ['Có một bầu trời chỉ dành cho hai đứa mình ✨\nMỗi ngôi sao là một ký ức của chúng mình,\nnối đủ tám sao là tim mình thành hình.', 'Người ta bảo mỗi cặp đôi có một chòm sao riêng ⭐\nĐây là chòm sao của tụi mình —\nvà em là ngôi sao sáng nhất trong đó.'] }
+          sug: ['Có một bầu trời chỉ dành cho hai đứa mình ✨\nMỗi ngôi sao là một ký ức của chúng mình,\nnối đủ tám sao là tim mình thành hình.', 'Người ta bảo mỗi cặp đôi có một chòm sao riêng ⭐\nĐây là chòm sao của tụi mình —\nvà em là ngôi sao sáng nhất trong đó.'] },
+        { k: 'valentine', n: 'Valentine', e: '💗', dark: 0, g: 'linear-gradient(135deg,#2E1028,#A8668A 55%,#FFD3E0)',
+          sug: ['Có một vũ trụ lời yêu thương chỉ gửi riêng em 💗\nCảm ơn em vì đã ở bên — vì mỗi ngày có em\nđều ngọt ngào hơn cả hộp chocolate.\nValentine năm nay, anh vẫn chọn em, như mọi năm.', 'Đã yêu nhau X ngày — vẫn muốn yêu thêm X ngày nữa 💗\nValentine này, anh gửi em\nmột bầu trời toàn chữ yêu thương nhé 💌'] }
     ];
     const MODES = [
         { k: 'envelope', e: '✉️', n: 'Mở thư' },
@@ -541,7 +543,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         { k: 'jelly',      e: '🍬', n: 'Kẹo dẻo' },
         { k: 'fur',        e: '☁️', n: 'Lông xù' },
         { k: 'glass',      e: '🪟', n: 'Lau kính' },
-        { k: 'chom',       e: '✨', n: 'Nối sao vẽ tim' }
+        { k: 'chom',       e: '✨', n: 'Nối sao vẽ tim' },
+        { k: 'wish',       e: '💗', n: 'Vũ trụ lời chúc' }
     ];
     const FXS = [
         { k: '',           e: '✨', n: 'Theo mẫu' },
@@ -664,6 +667,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         });
         syncSaoUI();
         if (state.theme === 'chomsao' && !state.editingId && !state.modeTouched) state.mode = 'chom';   // mẫu sao → mặc định kiểu mở “nối sao”
+        if (state.theme === 'valentine' && !state.editingId && !state.modeTouched) state.mode = 'wish';   // Valentine → mặc định “vũ trụ lời chúc”
         renderOpts();
         show('scrEdit');
     });
