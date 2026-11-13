@@ -424,7 +424,7 @@
     }
 
     /* viền nét đứt bên trong thẻ cho các theme vàng-kim */
-    body[data-theme="nhagiao"] .card::after, body[data-theme="tet"] .card::after, body[data-theme="kyniem"] .card::after, body[data-theme="chomsao"] .card::after {
+    body[data-theme="nhagiao"] .card::after, body[data-theme="tet"] .card::after, body[data-theme="kyniem"] .card::after, body[data-theme="chomsao"] .card::after, body[data-theme="valentine"] .card::after {
         content: ''; position: absolute; inset: 8px; border: 1px dashed var(--card-border);
         border-radius: calc(var(--card-radius) - 6px); pointer-events: none;
     }
@@ -448,6 +448,27 @@
     }
     body[data-theme="chomsao"] .card h3, body[data-theme="chomsao"] .from { font-style: italic; }
     body.lite[data-theme="chomsao"] .aurora { display: none; }
+
+    /* ===================== VALENTINE · VŨ TRỤ YÊU THƯƠNG ===================== */
+    /* Concept theo video tham chiếu: cảnh đích là bầu trời tím hồng, tim hồng phát sáng
+       ở giữa, chữ viết thư pháp, cánh hoa/bướm bay nhẹ. Bìa mở là mode “wish”. */
+    body[data-theme="valentine"] {
+        --bg: radial-gradient(130% 85% at 50% 22%, #A8668A 0%, #7A3F68 42%, #45183E 78%, #2E1028 100%);
+        --c1: #A8668A; --c2: #5A2B52; --c3: #FFD3E0; --blob-o: .25;
+        --accent: #FF9DB8; --text: #FFF5F8;
+        --env-back: linear-gradient(135deg, #D9739A, #9C3E68);
+        --env-front: linear-gradient(160deg, #E88BAC, #B4547E);
+        --env-flap: linear-gradient(180deg, #F2A0BC, #C76890);
+        --glow: rgba(255,157,184,.5);
+        --title-grad: linear-gradient(90deg, #FFF5F8, #FFD3E0, #FF9DB8, #FFF5F8);
+        --title-font: 'Great Vibes', cursive; --title-size: 40px; --title-weight: 400;
+        --card-bg: rgba(58,22,56,.55); --card-border: rgba(255,211,224,.45); --card-radius: 26px;
+        --btn: linear-gradient(135deg, #FF9DB8, #D95580); --btn-text: #fff;
+        --prog: linear-gradient(90deg, #FFD3E0, #FF9DB8);
+        --badge-bg: rgba(255,211,224,.14); --badge-border: rgba(255,211,224,.5);
+        --photo-bg: #45183E;
+    }
+    body[data-theme="valentine"] .card h3 { font-weight: 400; }
 
     /* --- hồi 1-2 · gate nối sao --- */
     #mChom { padding: 0; overflow: hidden; }
@@ -488,6 +509,25 @@
         border-radius: 999px; padding: 8px 15px; font-size: 12.5px; font-family: inherit; cursor: pointer; }
     .sao-skip { right: 13px; }
     .sao-redraw { left: 13px; }
+
+    /* --- mode wish · vũ trụ lời chúc (Valentine): chữ bay → hội tụ tim → chạm nổ --- */
+    #mWish { padding: 0; overflow: hidden; }
+    .wishsky { position: absolute; inset: 0; overflow: hidden; touch-action: none;
+        background:
+            radial-gradient(ellipse 130% 55% at 50% -8%, rgba(122,46,66,.75) 0%, rgba(122,46,66,0) 55%),
+            radial-gradient(ellipse 140% 65% at 50% 112%, rgba(43,6,15,.92) 0%, rgba(43,6,15,0) 62%),
+            #3A0A14; }
+    #wishCv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+    .wish-head { position: absolute; top: 15%; left: 7%; right: 7%; text-align: center;
+        transition: opacity .6s; pointer-events: none; }
+    .wish-head.off { opacity: 0; }
+    .wish-serif { font-family: 'Great Vibes', cursive; font-weight: 400; color: #FFF3F7;
+        font-size: clamp(40px, 13vw, 62px); line-height: 1.12; margin-top: 14px;
+        text-shadow: 0 0 26px rgba(255,157,184,.5); }
+    #mWish .sao-kicker { color: #E9B9CE; }
+    #mWish .sao-pill { opacity: 0; pointer-events: none; transition: opacity .5s;
+        border-color: rgba(255,157,184,.55); background: rgba(58,10,30,.6); color: #FFD3E0; }
+    #mWish .sao-skip { background: rgba(58,10,30,.6); border-color: rgba(255,157,184,.3); color: #E9B9CE; }
 
     /* --- hồi 3 · lời nhắn trên sao (trong thiệp) --- */
     .saobox { display: none; margin-top: 24px; }
@@ -1633,6 +1673,19 @@
                 <button class="sao-skip" id="saoSkip" type="button">Bỏ qua, mở thiệp luôn →</button>
             </div>
         </div>
+        <div class="gate" id="mWish">
+            <div class="wishsky" id="wishSky">
+                <canvas id="wishCv"></canvas>
+                <div class="wish-head" id="wishHead">
+                    <div class="sao-kicker">Thiệp Nhà Lệ</div>
+                    <div class="wish-serif" id="wishSerif">Gửi bạn</div>
+                </div>
+                <div class="sao-bottom" id="wishBottom">
+                    <div class="sao-pill" id="wishPill" role="button" tabindex="0">💗 Chạm vào trái tim</div>
+                </div>
+                <button class="sao-skip" id="wishSkip" type="button">Bỏ qua, mở thiệp luôn →</button>
+            </div>
+        </div>
 
         <section class="card" id="card">
             <div class="badge" id="badge"></div>
@@ -1838,6 +1891,24 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             demo: { title: 'Chòm Sao Của Chúng Mình', to: 'em', from: 'Anh', date: '18/11/2024',
                 photos: SAO_DEMO_PHOTOS(),
                 content: 'Có một bầu trời chỉ dành cho hai đứa mình ✨\nMỗi ngôi sao là một ký ức của chúng mình,\nnối đủ tám sao là tim mình thành hình.' }
+        },
+        valentine: {
+            title: 'Thiệp Valentine', meta: '#2E1028', seal: '💗', hint: '💗 Chạm để mở vũ trụ yêu thương 💗',
+            fonts: ['Great+Vibes', 'Playfair+Display:ital,wght@0,700;1,700', 'Be+Vietnam+Pro:wght@300;400;500;600;700'],
+            icons: ['💗', '💌', '🦋', '🌹', '✨', '💝'], fall: true, rate: 800, dur: [9, 15],
+            confetti: ['#FF9DB8', '#FFD3E0', '#FFFFFF', '#D95580', '#F2C063'], burst: ['💗', '💌', '🦋', '🌹', '✨'],
+            badge: '💗 14.02 · Valentine', toFmt: n => `Gửi ${n} 💗`, fromPrefix: '— ', reveal: 'lines',
+            defaultMode: 'wish',                       // mở thiệp bằng vũ trụ lời chúc hội tụ thành tim
+            wishWords: ['Hạnh phúc', 'Luôn được yêu thương', 'Yêu thương ngập tràn', 'Mãi mãi bên nhau',
+                'Ngọt ngào mỗi ngày', 'Thương nhớ đong đầy', 'Valentine an yên', 'Chỉ riêng mình ta',
+                'Nắm tay nhau thật chặt', 'Hạnh phúc ngập tràn', 'Cùng nhau về già', 'Yêu nhiều hơn hôm qua'],
+            counter: {
+                past: n => `💗 Đã yêu nhau ${n} ngày`,
+                future: n => `💗 Còn ${n} ngày nữa là đến Valentine`,
+                today: '💗 Hôm nay là Valentine — yêu nhau nhiều hơn mỗi ngày!'
+            },
+            demo: { title: 'Gửi Em', to: 'em', from: 'Anh', date: '14/02/2027',
+                content: 'Có một vũ trụ lời yêu thương chỉ gửi riêng em 💗\nCảm ơn em vì đã ở bên — vì mỗi ngày có em\nđều ngọt ngào hơn cả hộp chocolate.\nValentine năm nay, anh vẫn chọn em, như mọi năm.' }
         }
     };
 
@@ -1850,7 +1921,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         meo: ['meo', 'mew', 'cat'], xinloi: ['xinloi', 'sorry', 'apology'],
         tet: ['tet', 'laxi', 'xuan'], giangsinh: ['giangsinh', 'noel', 'xmas', 'christmas'],
         kyniem: ['kyniem', 'anniversary', 'tinhyeu', 'love'],
-        chomsao: ['chomsao', 'ngoisao', 'constellation']
+        chomsao: ['chomsao', 'ngoisao', 'constellation'],
+        valentine: ['valentine', 'valentin', 'tinhnhan', '1402', 'le14']
     };
 
     // v3 · Mưa lời chúc: thỉnh thoảng một "viên chữ" bay lên cùng icon
@@ -1869,10 +1941,11 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         tet: ['phát tài phát lộc 🧧', 'an khang thịnh vượng 🏮', 'tiền vào như nước 💰', 'vạn sự như ý 🌼'],
         giangsinh: ['merry christmas 🎄', 'giáng sinh an lành ⭐', 'noel thật ấm áp 🎁'],
         kyniem: ['mãi bên nhau 💞', 'thêm nhiều kỷ niệm 🥂', 'yêu nhau thật lâu ❤️'],
-        chomsao: ['chòm sao của hai đứa ✨', 'mãi sáng bên nhau ⭐', 'yêu nhau thật lâu 💫']
+        chomsao: ['chòm sao của hai đứa ✨', 'mãi sáng bên nhau ⭐', 'yêu nhau thật lâu 💫'],
+        valentine: ['yêu thương đong đầy 💗', 'mãi mãi bên nhau 🌹', 'valentine ngọt ngào 💗']
     };
     // v3 · Tiền tố đồng hồ đếm ngược theo theme (dùng khi ngày đặc biệt chưa đến)
-    const CD_PREFIX = { tet: '🧧 Còn', giangsinh: '🎄 Còn', nhagiao: '🎓 Còn', kyniem: '✨ Còn', chomsao: '✨ Còn' };
+    const CD_PREFIX = { tet: '🧧 Còn', giangsinh: '🎄 Còn', nhagiao: '🎓 Còn', kyniem: '✨ Còn', chomsao: '✨ Còn', valentine: '💗 Còn' };
 
     const $ = id => document.getElementById(id);
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -2149,7 +2222,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     }
     // ---- Báo cho chủ thiệp biết người nhận đã mở (1 lần / phiên trình duyệt) ----
     function reportOpen() {
-        if (demoParam || DEBUG || !customerId) return;
+        if (demoParam || DEBUG || PREVIEW || !customerId) return;   // v6.6: “Xem thử” không tính lượt mở → không bắn Telegram
         const k = 'thiep-opened:' + customerId;
         try { if (sessionStorage.getItem(k)) return; sessionStorage.setItem(k, '1'); } catch (e) {}
         try { fetch(API_URL + '?act=open&id=' + encodeURIComponent(customerId), { keepalive: true }).catch(() => {}); } catch (e) {}
@@ -3129,11 +3202,12 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     // V4→V5 · KIỂU MỞ THIỆP (mode: hold / scratch / chat / stories)
     //         + V5 thêm 5 kiểu xu hướng: pet · bio · ribbon · blow · lever
     //         + V6 thêm 8 kiểu kawaii: water · petal · bee · dandelion · clay · jelly · fur · glass
+    //         + V6.6 thêm wish 💗: vũ trụ lời chúc (Valentine)
     // Mỗi mode là một "cửa" (gate) hiện trước khi vào thiệp; hoàn tất thì gọi
-    // finishOpen(). Màu lấy theo biến theme nên 14 mẫu × 18 kiểu đều tự hòa hợp.
+    // finishOpen(). Màu lấy theo biến theme nên 16 mẫu × 20 kiểu đều tự hòa hợp.
     // =====================================================================
     const MODES = ['envelope', 'hold', 'scratch', 'chat', 'stories', 'pet', 'bio', 'ribbon', 'blow', 'lever',
-        'water', 'petal', 'bee', 'dandelion', 'clay', 'jelly', 'fur', 'glass', 'chom'];
+        'water', 'petal', 'bee', 'dandelion', 'clay', 'jelly', 'fur', 'glass', 'chom', 'wish'];
     const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let gateBooted = false, musicPrewarmed = false;
     const gateCleanups = [];                            // v5: dọn micro/timer khi gate đóng
@@ -3152,14 +3226,14 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const map = { hold: 'mHold', scratch: 'mScratch', chat: 'mChat', stories: 'mStories',
             pet: 'mPet', bio: 'mBio', ribbon: 'mRibbon', blow: 'mBlow', lever: 'mLever',
             water: 'mWater', petal: 'mPetal', bee: 'mBee', dandelion: 'mDandelion',
-            clay: 'mClay', jelly: 'mJelly', fur: 'mFur', glass: 'mGlass', chom: 'mChom' };
+            clay: 'mClay', jelly: 'mJelly', fur: 'mFur', glass: 'mGlass', chom: 'mChom', wish: 'mWish' };
         const gate = $(map[m]);
         if (!gate) return;
         gate.classList.add('show');
         const boot = { hold: initHold, scratch: initScratch, chat: initChat, stories: initStories,
             pet: initPet, bio: initBio, ribbon: initRibbon, blow: initBlow, lever: initLever,
             water: initWater, petal: initPetal, bee: initBee, dandelion: initDandelion,
-            clay: initClay, jelly: initJelly, fur: initFur, glass: initGlass, chom: initChom };
+            clay: initClay, jelly: initJelly, fur: initFur, glass: initGlass, chom: initChom, wish: initWish };
         if (boot[m]) boot[m]();
     }
     // iOS/Safari chỉ cho phát nhạc trong sự kiện chạm → bật sẵn (âm lượng 0) ngay
@@ -3213,6 +3287,156 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         wrap.addEventListener('pointerleave', stop);
         wrap.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !holding) { e.preventDefault(); start(e); } });
         wrap.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') stop(); });
+    }
+
+    // --- WISH · vũ trụ lời chúc (Valentine): chữ chúc bay lơ lửng → bụi sáng hội tụ thành tim
+    //      lấp lánh → chạm vào tim là NỔ TUNG thành bụi hồng rồi mở thiệp. Máy yếu: bớt chữ/bụi, bỏ glow.
+    function initWish() {
+        const wrap = $('mWish'), cv = $('wishCv'), head = $('wishHead'), serif = $('wishSerif'),
+            pill = $('wishPill'), skip = $('wishSkip');
+        const d = cardData || {};
+        serif.textContent = 'Gửi ' + (d.to || 'bạn');
+        pill.style.opacity = 0; pill.style.pointerEvents = 'none';
+        const ctx = cv.getContext('2d');
+        let W = 0, H = 0, done = false, raf = 0;
+        const fit = () => {
+            const r = wrap.getBoundingClientRect(), dpr = pxDpr();
+            W = r.width; H = r.height;
+            cv.width = Math.max(1, Math.round(W * dpr)); cv.height = Math.max(1, Math.round(H * dpr));
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        };
+        fit();
+        addEventListener('resize', fit);
+        gateCleanups.push(() => { removeEventListener('resize', fit); cancelAnimationFrame(raf); });
+
+        const HEART = [];                               // đường tim parametric chuẩn hoá [-1..1]
+        for (let i = 0; i < 56; i++) {
+            const t = i / 56 * Math.PI * 2;
+            HEART.push([16 * Math.pow(Math.sin(t), 3) / 17,
+                -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) / 17]);
+        }
+        const WORDS = (T.wishWords && T.wishWords.length) ? T.wishWords :
+            ['Hạnh phúc', 'Yêu thương', 'Luôn bên nhau', 'Ngọt ngào', 'Mãi mãi của nhau', 'Thương nhớ', 'Bình yên'];
+        const rnd = (a, b) => a + Math.random() * (b - a);
+        const words = [], hearts = [], dust = [], burst = [];
+        const NW = LITE ? 24 : 46, NH = LITE ? 7 : 12, ND = LITE ? 64 : 120;
+        for (let i = 0; i < NW; i++) words.push({ x: rnd(.04, .96), y: rnd(.06, .9), z: rnd(.35, 1),
+            dx: rnd(-.7, .7), dy: rnd(-1.2, -.3), w: WORDS[i % WORDS.length], tw: rnd(0, Math.PI * 2), g: 0 });
+        for (let i = 0; i < NH; i++) hearts.push({ x: rnd(0, 1), y: rnd(0, 1), v: rnd(1.2, 3),
+            s: rnd(13, 26), ph: rnd(0, Math.PI * 2), e: ['💗', '❤️', '💌', '🦋'][i % 4] });
+        for (let i = 0; i < ND; i++) {
+            const p = HEART[i % HEART.length];
+            dust.push({ tx: p[0], ty: p[1], x: rnd(-1.6, 1.6), y: rnd(-2.2, 2.2), g: rnd(0, .6),
+                tw: rnd(0, Math.PI * 2), s: rnd(.9, 2.4) });
+        }
+
+        const glow = document.createElement('canvas');  // sprite quầng sáng vẽ 1 lần — dán nhiều lần, nhẹ GPU
+        glow.width = glow.height = 64;
+        const g2 = glow.getContext('2d'), gr = g2.createRadialGradient(32, 32, 0, 32, 32, 32);
+        gr.addColorStop(0, 'rgba(255,157,184,.85)'); gr.addColorStop(.4, 'rgba(255,157,184,.28)'); gr.addColorStop(1, 'rgba(255,157,184,0)');
+        g2.fillStyle = gr; g2.fillRect(0, 0, 64, 64);
+
+        const T0 = performance.now(), GATHER = 2400, FORMED = 3800;
+        let phase = 'drift', tHeart = 0;
+        const heartBox = () => { const bw = Math.min(W * .74, 400); return { cx: W / 2, cy: H * .44, s: bw / 2 }; };
+        const finish = () => { if (done) return; done = true; cancelAnimationFrame(raf); finishOpen(420); };
+        skip.addEventListener('click', () => { buzz(8); finish(); });
+        const toGather = () => { if (phase === 'drift') { phase = 'gather'; head.classList.add('off'); buzz(8); } };
+        wrap.addEventListener('pointerdown', e => {
+            if (done || e.target === pill || e.target === skip) return;
+            prewarmMusic();
+            if (phase === 'drift') toGather();
+            else if (phase === 'gather') { phase = 'heart'; tHeart = performance.now(); buzz(10); }  // chạm lần nữa → tim thành hình ngay
+        });
+        pill.addEventListener('click', () => {          // chạm tim → NỔ TUNG
+            if (done || phase !== 'heart') return;
+            phase = 'burst';
+            buzz([14, 46, 14]);
+            const { cx, cy, s } = heartBox();
+            for (const p of dust) {
+                const hx = cx + p.tx * s, hy = cy + p.ty * s;
+                const ang = Math.atan2(hy - cy, hx - cx) + rnd(-.4, .4);
+                burst.push({ x: hx, y: hy, vx: Math.cos(ang) * rnd(2.2, 5.5), vy: Math.sin(ang) * rnd(2.2, 5.5) - rnd(1, 2.2), s: p.s });
+            }
+            pill.style.opacity = 0; pill.style.pointerEvents = 'none';
+            head.classList.add('off');
+            setTimeout(finish, 900);
+        });
+
+        const loop = now => {
+            if (done) return;
+            raf = requestAnimationFrame(loop);
+            const el = now - T0;
+            ctx.clearRect(0, 0, W, H);
+            const { cx, cy, s } = heartBox();
+
+            if (phase === 'drift' && el >= GATHER) toGather();
+
+            if (phase !== 'burst') {
+                const formP = Math.min(1, Math.max(0, (el - GATHER) / (FORMED - GATHER)));
+                for (const p of dust) {                 // bụi sáng bay vào ghép tim
+                    const g = Math.min(1, p.g + formP * 1.5);
+                    const px = cx + (p.x + (p.tx - p.x) * g) * s;
+                    const py = cy + (p.y + (p.ty - p.y) * g) * s;
+                    const tw = .55 + .45 * Math.sin(now / 320 + p.tw);
+                    ctx.globalAlpha = (phase === 'drift' ? .14 : .3 + .5 * g) * tw;
+                    const sz = p.s * (1 + .7 * g);
+                    ctx.drawImage(glow, px - sz * 2.2, py - sz * 2.2, sz * 4.4, sz * 4.4);
+                }
+                ctx.globalAlpha = 1;
+                if (phase === 'heart') {                // tim nở sáng + viền tim mảnh
+                    const pulse = 1 + .05 * Math.sin((now - tHeart) / 260);
+                    ctx.globalAlpha = .45 + .2 * Math.sin((now - tHeart) / 420);
+                    ctx.drawImage(glow, cx - s * pulse, cy - s * pulse, s * 2 * pulse, s * 2 * pulse);
+                    ctx.globalAlpha = 1;
+                    ctx.strokeStyle = 'rgba(255,157,184,.4)'; ctx.lineWidth = 1.2;
+                    ctx.beginPath();
+                    HEART.forEach((p, i) => { const px = cx + p[0] * s * pulse, py = cy + p[1] * s * pulse; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); });
+                    ctx.closePath(); ctx.stroke();
+                    if (pill.style.opacity == '0') {
+                        pill.textContent = '💗 Chạm vào trái tim';
+                        pill.style.opacity = 1; pill.style.pointerEvents = 'auto';
+                    }
+                }
+                for (const w of words) {                // chữ chúc bay → hội tụ vào tâm rồi tan
+                    if (phase === 'drift') {
+                        w.x += w.dx / 600; w.y += w.dy / 600;
+                        if (w.y < -.06) { w.y = 1.06; w.x = rnd(.04, .96); }
+                        if (w.x < -.02 || w.x > 1.02) w.dx *= -1;
+                    } else {
+                        w.g = Math.min(1, w.g + .02);
+                        w.x += (cx / W - w.x) * .045; w.y += (cy / H - w.y) * .045;
+                    }
+                    const fade = phase === 'drift' ? 1 : 1 - w.g;
+                    if (fade <= 0) continue;
+                    const size = (10 + 17 * w.z) * (W / 390);
+                    const tw = phase === 'drift' ? .6 + .4 * Math.sin(now / 900 + w.tw) : 1;
+                    ctx.globalAlpha = Math.max(0, (.22 + .6 * w.z) * tw * fade);
+                    if (!LITE) { ctx.shadowColor = 'rgba(255,157,184,.75)'; ctx.shadowBlur = 9 * w.z; }
+                    ctx.font = '500 ' + size.toFixed(1) + 'px "Be Vietnam Pro", sans-serif';
+                    ctx.fillStyle = w.z > .78 ? '#FFF3F7' : '#EDBFD2';
+                    ctx.fillText(w.w, w.x * W, w.y * H);
+                    ctx.shadowBlur = 0;
+                }
+                ctx.globalAlpha = 1;
+                for (const h of hearts) {               // tim / thư / bướm rơi nhẹ
+                    if (phase === 'drift') {
+                        h.y += h.v / 600; h.ph += .012;
+                        if (h.y > 1.08) { h.y = -.08; h.x = Math.random(); }
+                    } else { h.y -= .012; h.ph += .05; }
+                    ctx.font = (h.s * W / 390).toFixed(0) + 'px sans-serif';
+                    ctx.fillText(h.e, h.x * W + Math.sin(h.ph) * 14, h.y * H);
+                }
+            } else {                                    // burst: bụi tim bay tung tóe
+                for (const b of burst) {
+                    b.x += b.vx; b.y += b.vy; b.vy += .05; b.vx *= .985;
+                    ctx.globalAlpha = Math.max(0, 1 - Math.abs(b.y - cy) / (H * .75));
+                    ctx.drawImage(glow, b.x - b.s * 2.4, b.y - b.s * 2.4, b.s * 4.8, b.s * 4.8);
+                }
+                ctx.globalAlpha = 1;
+            }
+        };
+        raf = requestAnimationFrame(loop);
     }
 
     // --- SCRATCH · cào lớp bạc ---
