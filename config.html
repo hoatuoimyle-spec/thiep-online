@@ -970,7 +970,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             $('listBody').querySelectorAll('button').forEach(b => b.addEventListener('click', async () => {
                 const card = j.cards.find(x => x.id === b.dataset.id) || {};
                 const id = card.id || b.dataset.id, link = qrLink(id, card.theme);
-                if (b.dataset.a === 'open') window.open(link, '_blank', 'noopener');
+                if (b.dataset.a === 'open') window.open(link + '&preview=1', '_blank', 'noopener');   // xem thử: không tính lượt mở
                 if (b.dataset.a === 'copy') {
                     try { await navigator.clipboard.writeText(link); toast('✅ Đã chép link'); }
                     catch (e) { toast('Không chép được: ' + link); }
@@ -1222,7 +1222,7 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         try { await navigator.clipboard.writeText(state.lastLink); toast('✅ Đã chép link thiệp!'); }
         catch (e) { toast('Chép tay nhé: ' + state.lastLink); }
     });
-    $('btnOpen').addEventListener('click', () => window.open(state.lastLink, '_blank', 'noopener'));
+    $('btnOpen').addEventListener('click', () => window.open(state.lastLink + '&preview=1', '_blank', 'noopener'));   // xem thử: không tính lượt mở
     $('btnShare').addEventListener('click', async () => {
         try {
             if (navigator.share) await navigator.share({ title: 'Một tấm thiệp dành cho bạn 💌', url: state.lastLink });
