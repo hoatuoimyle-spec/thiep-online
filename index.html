@@ -424,7 +424,7 @@
     }
 
     /* viền nét đứt bên trong thẻ cho các theme vàng-kim */
-    body[data-theme="nhagiao"] .card::after, body[data-theme="tet"] .card::after, body[data-theme="kyniem"] .card::after, body[data-theme="chomsao"] .card::after, body[data-theme="valentine"] .card::after {
+    body[data-theme="nhagiao"] .card::after, body[data-theme="tet"] .card::after, body[data-theme="kyniem"] .card::after, body[data-theme="chomsao"] .card::after, body[data-theme="valentine"] .card::after, body[data-theme="sinhnhat"] .card::after {
         content: ''; position: absolute; inset: 8px; border: 1px dashed var(--card-border);
         border-radius: calc(var(--card-radius) - 6px); pointer-events: none;
     }
@@ -1275,6 +1275,108 @@
     @media (prefers-reduced-motion: reduce) {
         *, *::before, *::after { animation: none !important; transition: none !important; }
     }
+    /* ===================== SINH NHẬT · THỔI NẾN ĐIỀU ƯỚC (v6.7) ===================== */
+    /* Concept C1: tiệc nửa đêm ấm áp — nền cacao đêm, ánh nến vàng cam, bóng bay lơ lửng.
+       Mặc định mở bằng mode blow (thổi nến thật); thổi xong dàn thú cưng chibi hát chúc mừng. */
+    body[data-theme="sinhnhat"] {
+        --bg: radial-gradient(120% 90% at 50% 10%, #4a3216 0%, #2a1a0a 48%, #170e06 100%);
+        --c1: #6b4a22; --c2: #3a270f; --c3: #FFC94A; --blob-o: .24;
+        --accent: #FFC94A; --text: #FFF4E0;
+        --env-back: linear-gradient(135deg, #9c6a2e, #5a3a12);
+        --env-front: linear-gradient(160deg, #b87c38, #7e5220);
+        --env-flap: linear-gradient(180deg, #d18d42, #94602a);
+        --glow: rgba(255,201,74,.5);
+        --title-grad: linear-gradient(90deg, #FFF4E0, #FFC94A, #FFB6C1, #FFF4E0);
+        --title-font: 'Fredoka', sans-serif; --title-size: 34px; --title-weight: 600;
+        --card-bg: rgba(38,24,10,.62); --card-border: rgba(255,201,74,.42); --card-radius: 26px;
+        --btn: linear-gradient(135deg, #FFC94A, #FF9E5A); --btn-text: #3a2a1a;
+        --prog: linear-gradient(90deg, #FFC94A, #FFB6C1);
+        --badge-bg: rgba(255,201,74,.14); --badge-border: rgba(255,201,74,.5);
+        --photo-bg: #2a1a0a;
+    }
+    body[data-theme="sinhnhat"] .card h3 { font-weight: 600; }
+
+    /* --- C2 · Vegas retro — skin cho mode lever khi dùng theme sinh nhật --- */
+    body[data-theme="sinhnhat"] .slcab {
+        position: relative;
+        background: linear-gradient(165deg, #8a2334 0%, #5c1424 55%, #3d0c18 100%);
+        border: 3px solid #FFC94A;
+        box-shadow: 0 0 0 4px #2b090f, 0 16px 44px rgba(255,178,64,.28), inset 0 0 26px rgba(0,0,0,.4);
+    }
+    body[data-theme="sinhnhat"] .slmarquee {
+        background: #1c0b0e; color: #FFC94A; border-color: #FFC94A; letter-spacing: 2px;
+        text-shadow: 0 0 10px rgba(255,201,74,.85), 0 0 24px rgba(255,120,60,.45);
+        box-shadow: inset 0 0 16px rgba(255,201,74,.22);
+    }
+    body[data-theme="sinhnhat"] .slcab::after {
+        content: ''; position: absolute; inset: 5px; border-radius: inherit; pointer-events: none;
+        border: 3px dotted rgba(255,201,74,.85);
+        animation: slLights 1.2s steps(2, jump-none) infinite;
+    }
+    @keyframes slLights { 50% { border-color: rgba(255,110,110,.85); } }
+
+    /* --- C3 · Vé may mắn — skin cho mode scratch khi dùng theme sinh nhật --- */
+    body[data-theme="sinhnhat"] #mScratch {
+        background:
+            radial-gradient(80% 50% at 50% 100%, rgba(255,178,64,.12), rgba(255,178,64,0) 70%),
+            linear-gradient(160deg, #efe0bd, #e2cca0 60%, #d3b984);
+    }
+    body[data-theme="sinhnhat"] .scrbox {
+        border-radius: 6px;
+        box-shadow: 0 0 0 5px #f7ecd0, 0 0 0 7px #b98a3a, 0 18px 44px rgba(60,32,4,.4);
+        outline: 2px dashed #b98a3a; outline-offset: -12px;
+    }
+
+    /* --- C4 · Kraft pastel — skin cho mode ribbon khi dùng theme sinh nhật --- */
+    body[data-theme="sinhnhat"] #mRibbon {
+        background:
+            radial-gradient(80% 50% at 50% 100%, rgba(255,178,64,.14), rgba(255,178,64,0) 70%),
+            linear-gradient(160deg, #ece0c6, #dccba4 60%, #cbb68e);
+    }
+
+    /* --- dàn thú cưng chibi hát Happy Birthday (xuất hiện sau khi thổi tắt nến) --- */
+    .troupe { position: absolute; inset: 0; z-index: 30; display: none; flex-direction: column;
+        align-items: center; justify-content: center; gap: 16px; padding: 24px; text-align: center;
+        background: rgba(20,11,4,.84); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+    .troupe.show { display: flex; animation: tFade .45s ease both; }
+    @keyframes tFade { from { opacity: 0; } to { opacity: 1; } }
+    .troupe-pets { display: flex; align-items: flex-end; justify-content: center; gap: 4px; }
+    .tpet { width: 104px; max-width: 30vw; position: relative; animation: tBob 1.5s ease-in-out infinite; }
+    .tpet:nth-child(2) { animation-delay: .18s; }
+    .tpet:nth-child(3) { animation-delay: .36s; }
+    @keyframes tBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+    .tpet svg { display: block; width: 100%; height: auto; transform-origin: 50% 100%; }
+    .tpet.sing svg { animation: tPop .3s ease-in-out infinite alternate; }
+    @keyframes tPop { from { transform: scale(1); } to { transform: scale(1.12); } }
+    .tpet .mouth { transform-box: fill-box; transform-origin: center; transition: transform .15s ease; }
+    .tpet.sing .mouth { transform: scaleY(2.1) scaleX(1.25); }
+    .tpet::after { content: '♪'; position: absolute; top: -4px; right: 4px; font-size: 18px; color: #FFC94A;
+        opacity: 0; transition: opacity .2s; }
+    .tpet.sing::after { opacity: 1; animation: tRise 1.1s linear infinite; }
+    @keyframes tRise { from { transform: translateY(6px); opacity: 1; } to { transform: translateY(-16px); opacity: 0; } }
+    .troupe-cap { font-size: 19px; font-weight: 600; color: #FFE9B0; letter-spacing: .4px; min-height: 26px;
+        text-shadow: 0 2px 14px rgba(255,178,64,.45); animation: tCap .4s ease both; }
+    @keyframes tCap { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    .troupe-skip { font-size: 12.5px; color: rgba(255,244,224,.6); }
+
+    /* --- C5 · Nổ bóng bay — mode balloon mới --- */
+    #mBalloon { padding: 0; }
+    .bawrap { width: min(92vw, 420px); display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .bacnt { font-size: 14px; font-weight: 600; letter-spacing: .6px; color: var(--text);
+        background: var(--badge-bg); border: 1px solid var(--badge-border); border-radius: 999px;
+        padding: 8px 18px; }
+    .bastage { position: relative; width: 100%; height: min(56vh, 380px); touch-action: manipulation; }
+    .balloon { position: absolute; width: 66px; height: 96px; margin: -48px 0 0 -33px; cursor: pointer;
+        animation: baBob 1.8s ease-in-out infinite alternate;
+        filter: drop-shadow(0 10px 14px rgba(0,0,0,.25)); }
+    .balloon svg { display: block; width: 100%; height: 100%; }
+    .balloon.pop { animation: none; }
+    .balloon.pop svg { animation: baPop .3s ease-out forwards; }
+    @keyframes baBob { from { transform: translateY(0) rotate(-4deg); } to { transform: translateY(-16px) rotate(5deg); } }
+    @keyframes baPop { 0% { transform: scale(1); opacity: 1; } 55% { transform: scale(1.3); opacity: 1; } 100% { transform: scale(1.7); opacity: 0; } }
+    @media (prefers-reduced-motion: reduce) {
+        .tpet, .balloon { animation-duration: .01s !important; animation-iteration-count: 1 !important; }
+    }
 </style>
 </head>
 <body>
@@ -1453,7 +1555,66 @@
                 <div class="blowlvl"><i id="blowFill"></i></div>
                 <div class="blowmic"><button class="stbtn" id="blowMic">🎤 Bật micro để thổi</button></div>
             </div>
+            <!-- v6.7 · dàn thú cưng chibi hát Happy Birthday (chủ đề sinh nhật) -->
+            <div class="troupe" id="troupe">
+                <div class="troupe-pets">
+                    <div class="tpet" id="tpet0">
+                        <svg viewBox="0 0 140 150" aria-hidden="true">
+                            <path d="M70 6 L89 44 L51 44 Z" fill="#FF8FA3"/><circle cx="70" cy="7" r="6" fill="#FFC94A"/><rect x="51" y="40" width="38" height="7" rx="3.5" fill="#FFC94A"/>
+                            <path d="M40 60 L32 32 L60 47 Z" fill="#F7E7D0"/><path d="M100 60 L108 32 L80 47 Z" fill="#F7E7D0"/>
+                            <path d="M42 55 L37 40 L54 48 Z" fill="#F2B8AC"/><path d="M98 55 L103 40 L86 48 Z" fill="#F2B8AC"/>
+                            <circle cx="70" cy="85" r="40" fill="#F7E7D0"/>
+                            <circle cx="55" cy="82" r="7" fill="#2E1F1A"/><circle cx="85" cy="82" r="7" fill="#2E1F1A"/>
+                            <circle cx="57.5" cy="79.5" r="2.3" fill="#fff"/><circle cx="87.5" cy="79.5" r="2.3" fill="#fff"/>
+                            <ellipse cx="43" cy="94" rx="7" ry="4" fill="#F2B8AC" opacity=".9"/><ellipse cx="97" cy="94" rx="7" ry="4" fill="#F2B8AC" opacity=".9"/>
+                            <ellipse class="mouth" cx="70" cy="99" rx="5" ry="3" fill="#8C4A3F"/>
+                            <g stroke="rgba(46,31,26,.4)" stroke-width="2" stroke-linecap="round"><path d="M28 88 L14 84"/><path d="M28 94 L14 98"/><path d="M112 88 L126 84"/><path d="M112 94 L126 98"/></g>
+                            <ellipse cx="70" cy="139" rx="27" ry="11" fill="#FFD9A8"/>
+                        </svg>
+                    </div>
+                    <div class="tpet" id="tpet1">
+                        <svg viewBox="0 0 140 150" aria-hidden="true">
+                            <path d="M70 6 L89 44 L51 44 Z" fill="#8FD3C7"/><circle cx="70" cy="7" r="6" fill="#FFF4E0"/><rect x="51" y="40" width="38" height="7" rx="3.5" fill="#FFF4E0"/>
+                            <path d="M38 58 Q22 44 30 78 Q34 92 48 84 Z" fill="#A9764C"/>
+                            <path d="M102 58 Q118 44 110 78 Q106 92 92 84 Z" fill="#A9764C"/>
+                            <circle cx="70" cy="85" r="40" fill="#EAD7BC"/>
+                            <circle cx="55" cy="80" r="7" fill="#33251B"/><circle cx="85" cy="80" r="7" fill="#33251B"/>
+                            <circle cx="57.5" cy="77.5" r="2.3" fill="#fff"/><circle cx="87.5" cy="77.5" r="2.3" fill="#fff"/>
+                            <ellipse cx="70" cy="100" rx="16" ry="12" fill="#F6EBD9"/>
+                            <ellipse cx="70" cy="96" rx="6.5" ry="5" fill="#33251B"/>
+                            <path class="mouth" d="M62 106 Q70 113 78 106" stroke="#8C4A3F" stroke-width="3" fill="none" stroke-linecap="round"/>
+                            <ellipse cx="70" cy="115" rx="5" ry="6" fill="#F2707F"/>
+                            <ellipse cx="42" cy="93" rx="7" ry="4" fill="#D9A47E" opacity=".8"/><ellipse cx="98" cy="93" rx="7" ry="4" fill="#D9A47E" opacity=".8"/>
+                            <ellipse cx="70" cy="139" rx="27" ry="11" fill="#D9A47E"/>
+                        </svg>
+                    </div>
+                    <div class="tpet" id="tpet2">
+                        <svg viewBox="0 0 140 150" aria-hidden="true">
+                            <path d="M70 6 L89 44 L51 44 Z" fill="#B490F5"/><circle cx="70" cy="7" r="6" fill="#FFF4E0"/><rect x="51" y="40" width="38" height="7" rx="3.5" fill="#FFF4E0"/>
+                            <path d="M40 62 L34 38 L58 50 Z" fill="#F9C6D0"/><path d="M100 62 L106 38 L82 50 Z" fill="#F9C6D0"/>
+                            <circle cx="70" cy="86" r="40" fill="#F9C6D0"/>
+                            <circle cx="55" cy="80" r="7" fill="#3A2430"/><circle cx="85" cy="80" r="7" fill="#3A2430"/>
+                            <circle cx="57.5" cy="77.5" r="2.3" fill="#fff"/><circle cx="87.5" cy="77.5" r="2.3" fill="#fff"/>
+                            <ellipse cx="70" cy="99" rx="13" ry="9" fill="#F2A5B8"/>
+                            <circle cx="65" cy="99" r="2.6" fill="#B26579"/><circle cx="75" cy="99" r="2.6" fill="#B26579"/>
+                            <ellipse class="mouth" cx="70" cy="113" rx="5" ry="3" fill="#8C4A3F"/>
+                            <ellipse cx="41" cy="93" rx="7" ry="4" fill="#F2A5B8" opacity=".9"/><ellipse cx="99" cy="93" rx="7" ry="4" fill="#F2A5B8" opacity=".9"/>
+                            <ellipse cx="70" cy="139" rx="28" ry="11" fill="#F2A5B8"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="troupe-cap" id="troupeCap">♪ Happy birthday to you…</div>
+                <div class="troupe-skip">Chạm bất kỳ để mở thiệp luôn</div>
+            </div>
             <p class="ghint" id="blowHint">Thổi nhẹ vào điện thoại để tắt nến — thiệp sẽ mở ngay 🕯️</p>
+        </div>
+        <!-- v6.7 · C5 · NỔ BÓNG BAY: chạm nổ 5 quả bóng để mở thiệp -->
+        <div class="gate" id="mBalloon">
+            <div class="bawrap" id="baWrap">
+                <div class="bacnt" id="baCnt">Còn 5 quả bóng 🎈</div>
+                <div class="bastage" id="baStage"></div>
+            </div>
+            <p class="ghint" id="baHint">Chạm nổ 5 quả bóng bay — bóng hết là thiệp mở 🎉</p>
         </div>
         <div class="gate" id="mLever">
             <div class="slwrap" id="slWrap">
@@ -1909,6 +2070,26 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             },
             demo: { title: 'Gửi Em', to: 'em', from: 'Anh', date: '14/02/2027',
                 content: 'Có một vũ trụ lời yêu thương chỉ gửi riêng em 💗\nCảm ơn em vì đã ở bên — vì mỗi ngày có em\nđều ngọt ngào hơn cả hộp chocolate.\nValentine năm nay, anh vẫn chọn em, như mọi năm.' }
+        },
+        sinhnhat: {
+            title: 'Thiệp Sinh Nhật', meta: '#170E06', seal: '🎂', hint: '🎂 Thổi tắt ngọn nến để nhận điều ước 🎂',
+            fonts: ['Fredoka:wght@400;600', 'Be+Vietnam+Pro:wght@300;400;500;600;700'],
+            icons: ['🎈', '🎈', '🎂', '🎁', '🎉', '🧁', '✨'], fall: true, rate: 700, dur: [8, 14],
+            confetti: ['#FFC94A', '#FFB6C1', '#FFF4E0', '#FF9E5A', '#8FD3C7'], burst: ['🎂', '🎈', '🎁', '🎉', '✨'],
+            badge: '🎂 Sinh Nhật Vui Vẻ', toFmt: n => `Gửi ${n} 🎂`, fromPrefix: '— ', reveal: 'lines',
+            defaultMode: 'blow',                       // mở thiệp bằng cách thổi nến thật (micro)
+            recurring: true,                           // sinh nhật lặp hằng năm — bộ đếm tự lăn sang lần kế tiếp
+            counter: { today: '🎉 HÔM NAY LÀ SINH NHẬT! Điều ước sẽ thành hiện thực' },
+            gateHints: {
+                blow: 'Thổi thật vào điện thoại — nến tắt là cả dàn thú cưng sẽ hát chúc mừng bạn 🎂',
+                lever: 'Kéo cần gạt — quay trúng 3 hộp quà là thiệp mở 🎰',
+                scratch: 'Cào lớp bạc như cào vé số — xem hôm nay bạn "trúng" điều gì 🎟️',
+                ribbon: 'Vuốt dứt khoát qua sợi ruy băng — hộp quà sinh nhật đang chờ 🎀',
+                balloon: 'Chạm nổ 5 quả bóng bay — bóng hết là thiệp mở 🎉'
+            },
+            slotMarquee: '🎂 SINH NHẬT VUI VẺ 🎂',
+            demo: { title: 'Chúc Mừng Sinh Nhật', to: 'bạn', from: 'Nhà Lệ', date: '20/11/2026',
+                content: 'Hôm nay là ngày của bạn 🎂\nThổi tắt ngọn nến và ước thật to nhé —\nchúc bạn tuổi mới rực rỡ, vui như một bữa tiệc,\nvà mọi điều ước đều thành hiện thực!' }
         }
     };
 
@@ -1922,7 +2103,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         tet: ['tet', 'laxi', 'xuan'], giangsinh: ['giangsinh', 'noel', 'xmas', 'christmas'],
         kyniem: ['kyniem', 'anniversary', 'tinhyeu', 'love'],
         chomsao: ['chomsao', 'ngoisao', 'constellation'],
-        valentine: ['valentine', 'valentin', 'tinhnhan', '1402', 'le14']
+        valentine: ['valentine', 'valentin', 'tinhnhan', '1402', 'le14'],
+        sinhnhat: ['sinhnhat', 'birthday', 'hbd']
     };
 
     // v3 · Mưa lời chúc: thỉnh thoảng một "viên chữ" bay lên cùng icon
@@ -1942,10 +2124,11 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         giangsinh: ['merry christmas 🎄', 'giáng sinh an lành ⭐', 'noel thật ấm áp 🎁'],
         kyniem: ['mãi bên nhau 💞', 'thêm nhiều kỷ niệm 🥂', 'yêu nhau thật lâu ❤️'],
         chomsao: ['chòm sao của hai đứa ✨', 'mãi sáng bên nhau ⭐', 'yêu nhau thật lâu 💫'],
-        valentine: ['yêu thương đong đầy 💗', 'mãi mãi bên nhau 🌹', 'valentine ngọt ngào 💗']
+        valentine: ['yêu thương đong đầy 💗', 'mãi mãi bên nhau 🌹', 'valentine ngọt ngào 💗'],
+        sinhnhat: ['tuổi mới rực rỡ 🎂', 'vui như bữa tiệc 🎈', 'điều ước thành thật ✨', 'sinh nhật vui vẻ 🎉']
     };
     // v3 · Tiền tố đồng hồ đếm ngược theo theme (dùng khi ngày đặc biệt chưa đến)
-    const CD_PREFIX = { tet: '🧧 Còn', giangsinh: '🎄 Còn', nhagiao: '🎓 Còn', kyniem: '✨ Còn', chomsao: '✨ Còn', valentine: '💗 Còn' };
+    const CD_PREFIX = { tet: '🧧 Còn', giangsinh: '🎄 Còn', nhagiao: '🎓 Còn', kyniem: '✨ Còn', chomsao: '✨ Còn', valentine: '💗 Còn', sinhnhat: '🎂 Còn' };
 
     const $ = id => document.getElementById(id);
     const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -2145,10 +2328,19 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const el = $('counter');
         el.classList.remove('show');
         clearInterval(cdTimer); cdTimer = null;
-        const m = String(fmtDate || '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        let m = String(fmtDate || '').match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
         if (!m) return;
         const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date()).split('-').map(Number);
-        const diff = Math.round((Date.UTC(today[0], today[1] - 1, today[2]) - Date.UTC(+m[3], +m[2] - 1, +m[1])) / 86400000);
+        let diff = Math.round((Date.UTC(today[0], today[1] - 1, today[2]) - Date.UTC(+m[3], +m[2] - 1, +m[1])) / 86400000);
+        // v6.7 · ngày lặp hằng năm (sinh nhật): trùng ngày-tháng hôm nay → lời chúc đúng ngày;
+        // đã qua trong năm thì tự lăn sang lần kế tiếp (năm sau) rồi đếm ngược như thường
+        if (T.recurring) {
+            if (+m[2] === today[1] && +m[1] === today[2]) { if (T.counter) { el.textContent = T.counter.today; el.classList.add('show'); } return; }
+            let y = today[0];
+            if (Date.UTC(y, +m[2] - 1, +m[1]) <= Date.UTC(today[0], today[1] - 1, today[2])) y += 1;
+            m = [m[0], m[1], m[2], String(y)];      // giữ đúng 4 slot [full, dd, mm, yyyy]
+            diff = Math.round((Date.UTC(today[0], today[1] - 1, today[2]) - Date.UTC(+m[3], +m[2] - 1, +m[1])) / 86400000);
+        }
         if (diff === 0) { if (T.counter) { el.textContent = T.counter.today; el.classList.add('show'); } return; }
         if (diff > 0) { if (T.counter) { el.textContent = T.counter.past(diff); el.classList.add('show'); } return; }
         const target = Date.UTC(+m[3], +m[2] - 1, +m[1]) - 7 * 3600000;   // 0h giờ Việt Nam (UTC+7)
@@ -3203,11 +3395,12 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
     //         + V5 thêm 5 kiểu xu hướng: pet · bio · ribbon · blow · lever
     //         + V6 thêm 8 kiểu kawaii: water · petal · bee · dandelion · clay · jelly · fur · glass
     //         + V6.6 thêm wish 💗: vũ trụ lời chúc (Valentine)
+    //         + V6.7 thêm balloon 🎈: nổ bóng bay (Sinh nhật) + dàn thú cưng hát khi thổi nến
     // Mỗi mode là một "cửa" (gate) hiện trước khi vào thiệp; hoàn tất thì gọi
-    // finishOpen(). Màu lấy theo biến theme nên 16 mẫu × 20 kiểu đều tự hòa hợp.
+    // finishOpen(). Màu lấy theo biến theme nên 17 mẫu × 21 kiểu đều tự hòa hợp.
     // =====================================================================
     const MODES = ['envelope', 'hold', 'scratch', 'chat', 'stories', 'pet', 'bio', 'ribbon', 'blow', 'lever',
-        'water', 'petal', 'bee', 'dandelion', 'clay', 'jelly', 'fur', 'glass', 'chom', 'wish'];
+        'water', 'petal', 'bee', 'dandelion', 'clay', 'jelly', 'fur', 'glass', 'chom', 'wish', 'balloon'];
     const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     let gateBooted = false, musicPrewarmed = false;
     const gateCleanups = [];                            // v5: dọn micro/timer khi gate đóng
@@ -3226,14 +3419,20 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
         const map = { hold: 'mHold', scratch: 'mScratch', chat: 'mChat', stories: 'mStories',
             pet: 'mPet', bio: 'mBio', ribbon: 'mRibbon', blow: 'mBlow', lever: 'mLever',
             water: 'mWater', petal: 'mPetal', bee: 'mBee', dandelion: 'mDandelion',
-            clay: 'mClay', jelly: 'mJelly', fur: 'mFur', glass: 'mGlass', chom: 'mChom', wish: 'mWish' };
+            clay: 'mClay', jelly: 'mJelly', fur: 'mFur', glass: 'mGlass', chom: 'mChom', wish: 'mWish', balloon: 'mBalloon' };
         const gate = $(map[m]);
         if (!gate) return;
+        // v6.7: chủ đề có lời nh riêng cho từng kiểu mở (sinh nhật: Vegas / vé số / kraft…)
+        if (T.gateHints && T.gateHints[m]) {
+            const gh = gate.querySelector('.ghint');
+            if (gh) gh.textContent = T.gateHints[m];
+        }
+        if (T.slotMarquee && m === 'lever') $('slMarquee').textContent = T.slotMarquee;
         gate.classList.add('show');
         const boot = { hold: initHold, scratch: initScratch, chat: initChat, stories: initStories,
             pet: initPet, bio: initBio, ribbon: initRibbon, blow: initBlow, lever: initLever,
             water: initWater, petal: initPetal, bee: initBee, dandelion: initDandelion,
-            clay: initClay, jelly: initJelly, fur: initFur, glass: initGlass, chom: initChom, wish: initWish };
+            clay: initClay, jelly: initJelly, fur: initFur, glass: initGlass, chom: initChom, wish: initWish, balloon: initBalloon };
         if (boot[m]) boot[m]();
     }
     // iOS/Safari chỉ cho phát nhạc trong sự kiện chạm → bật sẵn (âm lượng 0) ngay
@@ -3869,6 +4068,8 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
             buzz([12, 60, 12]);
             hint.textContent = 'Nến tắt rồi — điều ước sẽ thành hiện thực 🎂';
             releaseMic();
+            // v6.7: chủ đề sinh nhật → dàn thú cưng chibi hát Happy Birthday rồi mới mở thiệp
+            if (themeKey === 'sinhnhat' && FX) return playTroupe(() => finishOpen(400));
             setTimeout(() => finishOpen(400), 1100);      // chờ làn khói bay lên đã
         };
         stage.addEventListener('click', () => {           // phương án dự phòng: không có/không cho micro
@@ -3914,6 +4115,142 @@ var qrcode=(function(){var P=function(x,w){var g=236,l=17,n=x,s=O[w],t=null,r=0,
                 hint.textContent = 'Không có micro? Chạm vào NGỌN NẾN để thổi tắt nhé 👆';
                 dbg('blow: ' + (err && err.message || err));
             }
+        });
+    }
+
+    // =====================================================================
+    // v6.7 · DÀN THÚ CƯNG CHIBI HÁT HAPPY BIRTHDAY (chủ đề sinh nhật)
+    // Thổi tắt nến xong: mèo → chó → heo đeo mũ tiệc chui ra, hát 4 câu
+    // "Happy Birthday" (tổng hợp âm bằng WebAudio — không cần file nhạc),
+    // mỗi câu một "giọng" khác nhau. Chạm bất kỳ để mở thiệp luôn.
+    // =====================================================================
+    function playTroupe(done) {
+        const tr = $('troupe'), cap = $('troupeCap');
+        if (!tr) { done(); return; }
+        let finished = false;
+        const timers = [];
+        let ac = null;
+        const cleanup = () => {
+            timers.forEach(id => clearTimeout(id));
+            if (ac) { try { ac.close(); } catch (e) {} ac = null; }
+        };
+        gateCleanups.push(cleanup);
+        const end = ok => {
+            if (finished) return;
+            finished = true;
+            cleanup();
+            tr.classList.remove('show');
+            if (ok) burstConfetti();
+            done();
+        };
+        tr.addEventListener('click', () => end(true));    // chạm để bỏ qua
+        tr.classList.add('show');
+        const pets = [$('tpet0'), $('tpet1'), $('tpet2')];
+        const NOTE = { C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392.00, A4: 440.00, Bb4: 466.16, C5: 523.25 };
+        const LINES = [                                   // "Happy Birthday" — 4 câu, đơn vị = giây
+            [['C4', .22], ['C4', .22], ['D4', .44], ['C4', .44], ['F4', .44], ['E4', .88]],
+            [['C4', .22], ['C4', .22], ['D4', .44], ['C4', .44], ['G4', .44], ['F4', .88]],
+            [['C4', .22], ['C4', .22], ['C5', .44], ['A4', .44], ['F4', .44], ['E4', .44], ['D4', .88]],
+            [['Bb4', .22], ['Bb4', .22], ['A4', .44], ['F4', .44], ['G4', .44], ['F4', .88]]
+        ];
+        const CAPS = ['♪ Happy birthday to you…', 'Chúc bạn tuổi mới thật rực rỡ ♫',
+            '♪ Happy birthday to you…', 'Chúc bạn thật nhiều may mắn nhé!'];
+        const AC = window.AudioContext || window.webkitAudioContext;
+        try { ac = new AC(); if (ac.state === 'suspended') ac.resume().catch(() => {}); } catch (e) { ac = null; }
+        const t0 = ac ? ac.currentTime + .45 : 0;
+        const sing = (line, voice) => {                   // hát 1 câu — trả về tổng thời gian (giây)
+            let t = t0;
+            line.forEach(([n, d]) => {
+                const dur = d;
+                if (ac) {
+                    const o = ac.createOscillator(), g = ac.createGain();
+                    const f = NOTE[n] * (voice === 0 ? 2 : voice === 2 ? .84 : 1);   // mèo cao, heo trầm
+                    o.type = 'triangle'; o.frequency.value = f;
+                    const lfo = ac.createOscillator(), lg = ac.createGain();         // vibrato nhẹ như giọng hát
+                    lfo.frequency.value = 5.5; lg.gain.value = 5;
+                    lfo.connect(lg); lg.connect(o.frequency);
+                    lfo.start(t); lfo.stop(t + dur + .3);
+                    g.gain.setValueAtTime(0, t);
+                    g.gain.linearRampToValueAtTime(.16, t + .04);
+                    g.gain.setValueAtTime(.16, Math.max(t + .05, t + dur - .12));
+                    g.gain.linearRampToValueAtTime(0, t + dur + .18);
+                    o.connect(g); g.connect(ac.destination);
+                    o.start(t); o.stop(t + dur + .25);
+                }
+                t += dur;
+            });
+            return t - t0;
+        };
+        let elapsed = 0;
+        LINES.forEach((line, i) => {
+            const delay = elapsed;
+            timers.push(setTimeout(() => {
+                if (finished) return;
+                cap.textContent = CAPS[i];
+                pets.forEach(p => p.classList.remove('sing'));
+                if (i < 3) pets[i].classList.add('sing'); else pets.forEach(p => p.classList.add('sing'));
+            }, delay * 1000 + 380));
+            elapsed += sing(line, i);
+        });
+        timers.push(setTimeout(() => end(true), elapsed * 1000 + 500));
+    }
+
+    // =====================================================================
+    // v6.7 · C5 · NỔ BÓNG BAY: 5 quả bóng lơ lửng, chạm nổ từng quả,
+    // nổ đủ 5 là thiệp mở. Âm "phịch" tổng hợp bằng WebAudio + rung nhẹ.
+    // =====================================================================
+    function initBalloon() {
+        const stage = $('baStage'), cnt = $('baCnt'), hint = $('baHint');
+        const COLORS = ['#FF8FA3', '#8FD3C7', '#FFC94A', '#B490F5', '#7EC8F5'];
+        const POS = [[10, 14], [56, 8], [32, 44], [74, 50], [16, 68]];    // vị trí % left/top
+        let left = 5, popped = 0;
+        const timers = [];
+        gateCleanups.push(() => timers.forEach(id => clearTimeout(id)));
+        let ac = null;
+        const popSound = () => {                          // "phịch" vui tai: pitch rơi nhanh
+            try {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (!AC) return;
+                if (!ac) ac = new AC();
+                if (ac.state === 'suspended') ac.resume().catch(() => {});
+                const t = ac.currentTime, o = ac.createOscillator(), g = ac.createGain();
+                o.type = 'square';
+                o.frequency.setValueAtTime(880, t);
+                o.frequency.exponentialRampToValueAtTime(160, t + .09);
+                g.gain.setValueAtTime(.2, t);
+                g.gain.exponentialRampToValueAtTime(.001, t + .12);
+                o.connect(g); g.connect(ac.destination);
+                o.start(t); o.stop(t + .14);
+            } catch (e) {}
+        };
+        gateCleanups.push(() => { if (ac) { try { ac.close(); } catch (e) {} ac = null; } });
+        COLORS.forEach((c, i) => {
+            const b = document.createElement('div');
+            b.className = 'balloon';
+            b.style.left = POS[i][0] + '%';
+            b.style.top = POS[i][1] + '%';
+            b.style.animationDelay = (i * .14) + 's';
+            b.style.animationDuration = (1.7 + i * .13) + 's';
+            b.innerHTML = '<svg viewBox="0 0 64 92" aria-hidden="true">' +
+                '<path d="M32 60 q7 9 0 15 q-6 7 1 13" stroke="rgba(255,244,224,.5)" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+                '<ellipse cx="32" cy="33" rx="24" ry="28" fill="' + c + '"/>' +
+                '<ellipse cx="23" cy="24" rx="7" ry="10" fill="rgba(255,255,255,.4)"/>' +
+                '<path d="M32 59 l-6 5 h12 Z" fill="rgba(0,0,0,.18)"/></svg>';
+            b.addEventListener('pointerdown', () => {
+                if (b.classList.contains('pop')) return;
+                b.classList.add('pop');
+                popped++; left--;
+                popSound(); buzz(18);
+                cnt.textContent = left > 0 ? ('Nổ ' + popped + '/5 — còn ' + left + ' quả bóng 🎈') : 'Hết bóng rồi!';
+                if (left === 0) {
+                    hint.textContent = 'Xong! Hộp quà sinh nhật mở ra nhé 🎉';
+                    burstConfetti();
+                    timers.push(setTimeout(() => finishOpen(400), 650));
+                } else {
+                    timers.push(setTimeout(() => b.remove(), 320));
+                }
+            }, { passive: true });
+            stage.appendChild(b);
         });
     }
 
